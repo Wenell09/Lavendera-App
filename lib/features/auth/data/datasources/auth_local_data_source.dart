@@ -1,7 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthLocalDataSource {
-  static const _secureStorage = FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage;
+
+  AuthLocalDataSource({required this._secureStorage});
 
   Future<void> saveSession({required String id, required String token}) async {
     await _secureStorage.write(key: 'id', value: id);

@@ -21,12 +21,15 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     required this._deleteCustomerUsecase,
   }) : super(CustomerInitial()) {
     on<GetCustomersRequest>((event, emit) async {
+      if (state is CustomerPaginationLoading || state is CustomerLoading) return;
+
       final isFirstPage = event.page == 1;
       List<Customer> currentCustomers = [];
+
       if (state is CustomerLoaded) {
         currentCustomers = (state as CustomerLoaded).customers;
-      } else if (state is CustomerPaginationLoading) {
-        currentCustomers = (state as CustomerPaginationLoading).customers;
+      } else if (state is CustomerError) {
+        currentCustomers = (state as CustomerError).cachedCustomers ?? [];
       }
 
       if (isFirstPage) {
@@ -35,7 +38,9 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         emit(
           CustomerPaginationLoading(
             customers: currentCustomers,
-            currentPage: event.page - 1,
+            currentPage: (state is CustomerLoaded)
+                ? (state as CustomerLoaded).currentPage
+                : event.page - 1,
             hasMorePages: true,
           ),
         );
@@ -57,9 +62,16 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
           hasMore = newCustomers.length >= event.limit;
         }
 
-        final fullList = isFirstPage
-            ? newCustomers
-            : [...currentCustomers, ...newCustomers];
+        List<Customer> fullList;
+        if (isFirstPage) {
+          fullList = newCustomers;
+        } else {
+          final existingIds = currentCustomers.map((e) => e.id).toSet();
+          final uniqueNewCustomers =
+              newCustomers.where((e) => !existingIds.contains(e.id)).toList();
+          fullList = [...currentCustomers, ...uniqueNewCustomers];
+        }
+
         emit(
           CustomerLoaded(
             customers: fullList,

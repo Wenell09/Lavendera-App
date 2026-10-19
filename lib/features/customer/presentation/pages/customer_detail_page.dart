@@ -42,8 +42,9 @@ class _CustomerDetailView extends StatelessWidget {
         actions: [
           BlocBuilder<CustomerDetailBloc, CustomerDetailState>(
             builder: (context, state) {
-              if (state is! CustomerDetailLoaded)
+              if (state is! CustomerDetailLoaded) {
                 return const SizedBox.shrink();
+              }
               final customer = state.customer;
               return Container(
                 margin: const EdgeInsets.only(right: 8),
@@ -78,8 +79,9 @@ class _CustomerDetailView extends StatelessWidget {
           ),
           BlocBuilder<CustomerDetailBloc, CustomerDetailState>(
             builder: (context, state) {
-              if (state is! CustomerDetailLoaded)
+              if (state is! CustomerDetailLoaded) {
                 return const SizedBox.shrink();
+              }
               return Container(
                 margin: const EdgeInsets.only(right: 16),
                 decoration: BoxDecoration(

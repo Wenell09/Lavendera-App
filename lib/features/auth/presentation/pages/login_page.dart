@@ -4,7 +4,7 @@ import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/register_page.dart';
-import 'package:lavendera/home.dart';
+import 'package:lavendera/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

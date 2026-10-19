@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:lavendera/home.dart';
+import 'package:lavendera/home_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
 
 void main() async {
@@ -23,10 +24,11 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<AuthBloc>()..add(LoadDataRequest())),
+        BlocProvider(create: (_) => sl<CustomerBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'TalentForce',
+        title: 'Lavendera',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: Colors.white,

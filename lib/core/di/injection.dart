@@ -19,6 +19,14 @@ import 'package:lavendera/features/customer/domain/usecases/get_customers_usecas
 import 'package:lavendera/features/customer/domain/usecases/update_customer_usecase.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/detail/customer_detail_bloc.dart';
+import 'package:lavendera/features/discount/data/datasources/discount_remote_data_source.dart';
+import 'package:lavendera/features/discount/data/repositories/discount_repository_impl.dart';
+import 'package:lavendera/features/discount/domain/usecases/create_discount_usecase.dart';
+import 'package:lavendera/features/discount/domain/usecases/delete_discount_usecase.dart';
+import 'package:lavendera/features/discount/domain/usecases/get_discount_by_id_usecase.dart';
+import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
+import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
+import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -91,6 +99,38 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => CustomerDetailBloc(
       getCustomerByIdUsecase: sl<GetCustomerByIdUsecase>(),
+    ),
+  );
+  // Discount
+  sl.registerLazySingleton<DiscountRemoteDataSource>(
+    () => DiscountRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<DiscountRepositoryImpl>(
+    () => DiscountRepositoryImpl(
+      remoteDataSource: sl<DiscountRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetDiscountsUsecase(sl<DiscountRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => CreateDiscountUsecase(sl<DiscountRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetDiscountByIdUsecase(sl<DiscountRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateDiscountUsecase(sl<DiscountRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteDiscountUsecase(sl<DiscountRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => DiscountBloc(
+      getDiscountsUsecase: sl<GetDiscountsUsecase>(),
+      createDiscountUsecase: sl<CreateDiscountUsecase>(),
+      updateDiscountUsecase: sl<UpdateDiscountUsecase>(),
+      deleteDiscountUsecase: sl<DeleteDiscountUsecase>(),
     ),
   );
 }

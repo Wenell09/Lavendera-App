@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lavendera/features/customer/presentation/pages/customer_page.dart';
+import 'package:lavendera/features/discount/presentation/pages/discount_page.dart';
 
 class Home extends StatelessWidget {
   const new({super.key});
@@ -17,6 +18,12 @@ class Home extends StatelessWidget {
                 context,
               ).push(MaterialPageRoute(builder: (context) => CustomerPage())),
               child: Text("CUSTOMER"),
+            ),
+             GestureDetector(
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => DiscountPage())),
+              child: Text("DISCOUNT"),
             ),
           ],
         ),

@@ -263,6 +263,15 @@ class _DiscountPageState extends State<DiscountPage> {
                             color: Colors.black87,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _searchController.text.isNotEmpty
+                              ? 'Coba kata kunci pencarian yang lain'
+                              : 'Tambahkan diskon baru untuk mulai',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
                       ],
                     ),
                   );

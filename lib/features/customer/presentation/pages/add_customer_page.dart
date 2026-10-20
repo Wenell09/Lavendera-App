@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/button_widget.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/text_field_widget.dart';
 
 class AddCustomerPage extends StatefulWidget {
   const AddCustomerPage({super.key});
@@ -58,6 +59,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           } else if (state is CustomerError) {
@@ -66,6 +68,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -77,7 +80,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AppTextField(
+                TextFieldWidget(
                   controller: _nameController,
                   label: 'Nama Lengkap',
                   hint: 'Masukkan nama pelanggan',
@@ -85,7 +88,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                   validator: (v) => v!.isEmpty ? 'Nama wajib diisi' : null,
                 ),
                 const SizedBox(height: 20),
-                AppTextField(
+                TextFieldWidget(
                   controller: _phoneController,
                   label: 'Nomor Telepon',
                   hint: 'Contoh: 628123456789',
@@ -95,7 +98,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                       v!.isEmpty ? 'Nomor telepon wajib diisi' : null,
                 ),
                 const SizedBox(height: 20),
-                AppTextField(
+                TextFieldWidget(
                   controller: _addressController,
                   label: 'Alamat (Opsional)',
                   hint: 'Masukkan alamat lengkap',
@@ -105,7 +108,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 const SizedBox(height: 40),
                 BlocBuilder<CustomerBloc, CustomerState>(
                   builder: (context, state) {
-                    return AppButton(
+                    return ButtonWidget(
                       label: 'Simpan Pelanggan',
                       isLoading: state is CustomerLoading,
                       onPressed: () {

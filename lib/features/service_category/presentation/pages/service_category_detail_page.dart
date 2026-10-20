@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+
 import '../../domain/entities/service_category.dart';
 import '../bloc/service_category_bloc.dart';
 
@@ -44,8 +45,8 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
           TextButton(
             onPressed: () {
               context.read<ServiceCategoryBloc>().add(
-                    DeleteServiceCategoryRequest(id: widget.category.id),
-                  );
+                DeleteServiceCategoryRequest(id: widget.category.id),
+              );
               Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -87,14 +88,15 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
       body: BlocListener<ServiceCategoryBloc, ServiceCategoryState>(
         listener: (context, state) {
           if (state is ServiceCategoryActionSuccess) {
-            context
-                .read<ServiceCategoryBloc>()
-                .add(GetServiceCategoriesRequest());
+            context.read<ServiceCategoryBloc>().add(
+              GetServiceCategoriesRequest(),
+            );
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           } else if (state is ServiceCategoryError) {
@@ -103,6 +105,7 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -123,7 +126,8 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
                     final trimmed = v?.trim() ?? '';
                     if (trimmed.isEmpty) return 'Nama wajib diisi';
                     if (trimmed.length < 2) return 'Nama minimal 2 karakter';
-                    if (trimmed.length > 100) return 'Nama maksimal 100 karakter';
+                    if (trimmed.length > 100)
+                      return 'Nama maksimal 100 karakter';
                     return null;
                   },
                 ),
@@ -163,8 +167,9 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -179,8 +184,10 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -198,21 +205,20 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
               : () {
                   if (_formKey.currentState!.validate()) {
                     context.read<ServiceCategoryBloc>().add(
-                          UpdateServiceCategoryRequest(
-                            id: widget.category.id,
-                            body: {
-                              'name': _nameController.text.trim(),
-                            },
-                          ),
-                        );
+                      UpdateServiceCategoryRequest(
+                        id: widget.category.id,
+                        body: {'name': _nameController.text.trim()},
+                      ),
+                    );
                   }
                 },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A99AD),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 18),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             elevation: 0,
           ),
           child: isLoading

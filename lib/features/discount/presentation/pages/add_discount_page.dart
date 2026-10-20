@@ -41,8 +41,11 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              size: 20, color: Colors.black87),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -53,8 +56,10 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(state.message),
-                  behavior: SnackBarBehavior.floating),
+                content: Text(state.message),
+                behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
+              ),
             );
           } else if (state is DiscountError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -62,6 +67,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -95,9 +101,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                       child: _buildTypeOption('percentage', 'Persentase (%)'),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildTypeOption('fixed', 'Nominal (Rp)'),
-                    ),
+                    Expanded(child: _buildTypeOption('fixed', 'Nominal (Rp)')),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -213,8 +217,9 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -229,8 +234,10 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -251,23 +258,24 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                         ? _valueController.text.replaceAll('.', '')
                         : _valueController.text;
                     context.read<DiscountBloc>().add(
-                          CreateDiscountRequest(
-                            body: {
-                              'name': _nameController.text,
-                              'type': _type,
-                              'value': num.tryParse(cleanValue) ?? 0,
-                              'is_active': _isActive,
-                            },
-                          ),
-                        );
+                      CreateDiscountRequest(
+                        body: {
+                          'name': _nameController.text,
+                          'type': _type,
+                          'value': num.tryParse(cleanValue) ?? 0,
+                          'is_active': _isActive,
+                        },
+                      ),
+                    );
                   }
                 },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A99AD),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 18),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             elevation: 0,
           ),
           child: isLoading
@@ -275,7 +283,9 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white),
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               : Text(
                   'Simpan Diskon',

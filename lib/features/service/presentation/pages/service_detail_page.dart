@@ -6,6 +6,7 @@ import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
+
 import '../../domain/entities/service_item.dart';
 import '../bloc/service_bloc.dart';
 
@@ -39,10 +40,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     _priceController = TextEditingController(
       text: CurrencyFormatter.formatNumber(widget.service.price),
     );
-    _minQuantityController =
-        TextEditingController(text: widget.service.minQuantity.toString());
-    _durationDaysController =
-        TextEditingController(text: widget.service.durationDays.toString());
+    _minQuantityController = TextEditingController(
+      text: widget.service.minQuantity.toString(),
+    );
+    _durationDaysController = TextEditingController(
+      text: widget.service.durationDays.toString(),
+    );
     _selectedCategoryId = widget.service.category.id.isNotEmpty
         ? widget.service.category.id
         : null;
@@ -92,8 +95,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           TextButton(
             onPressed: () {
               context.read<ServiceBloc>().add(
-                    DeleteServiceRequest(id: widget.service.id),
-                  );
+                DeleteServiceRequest(id: widget.service.id),
+              );
               Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -141,6 +144,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           } else if (state is ServiceError) {
@@ -149,6 +153,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -210,8 +215,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: Colors.grey.shade100),
+                            borderSide: BorderSide(color: Colors.grey.shade100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -427,8 +431,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -443,8 +448,10 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -461,28 +468,27 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
-                    final cleanPrice = int.tryParse(
+                    final cleanPrice =
+                        int.tryParse(
                           _priceController.text.replaceAll('.', ''),
                         ) ??
                         0;
                     context.read<ServiceBloc>().add(
-                          UpdateServiceRequest(
-                            id: widget.service.id,
-                            body: {
-                              'category_id': _selectedCategoryId,
-                              'name': _nameController.text.trim(),
-                              'price': cleanPrice,
-                              'min_quantity':
-                                  num.tryParse(_minQuantityController.text) ??
-                                      1,
-                              'unit': _unit,
-                              'duration_days':
-                                  int.tryParse(_durationDaysController.text) ??
-                                      1,
-                              'is_active': _isActive,
-                            },
-                          ),
-                        );
+                      UpdateServiceRequest(
+                        id: widget.service.id,
+                        body: {
+                          'category_id': _selectedCategoryId,
+                          'name': _nameController.text.trim(),
+                          'price': cleanPrice,
+                          'min_quantity':
+                              num.tryParse(_minQuantityController.text) ?? 1,
+                          'unit': _unit,
+                          'duration_days':
+                              int.tryParse(_durationDaysController.text) ?? 1,
+                          'is_active': _isActive,
+                        },
+                      ),
+                    );
                   }
                 },
           style: ElevatedButton.styleFrom(

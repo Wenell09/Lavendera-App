@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../config/typography/app_text_styles.dart';
+import 'package:lavendera/config/typography/app_text_styles.dart';
 
-class AppDialogs {
-  AppDialogs._();
-
+class DialogWidget {
   static Future<bool?> showDeleteConfirmation(
     BuildContext context, {
     required String title,
@@ -16,10 +14,7 @@ class AppDialogs {
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title, style: AppTextStyles.headlineSmall),
-        content: Text(
-          content,
-          style: AppTextStyles.bodyMedium,
-        ),
+        content: Text(content, style: AppTextStyles.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),

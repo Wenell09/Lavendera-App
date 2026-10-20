@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../config/colors/app_colors.dart';
-import '../../../config/typography/app_text_styles.dart';
+import 'package:lavendera/config/colors/app_colors.dart';
+import 'package:lavendera/config/typography/app_text_styles.dart';
 
-class AppInfoTile extends StatelessWidget {
+class InfoTileWidget extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
   final Color? iconColor;
 
-  const AppInfoTile({
+  const InfoTileWidget({
     super.key,
     required this.icon,
     required this.label,
@@ -33,11 +33,7 @@ class AppInfoTile extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(
-            icon,
-            color: iconColor ?? AppColors.blue.color,
-            size: 20,
-          ),
+          child: Icon(icon, color: iconColor ?? AppColors.blue.color, size: 20),
         ),
         const SizedBox(width: 16),
         Expanded(

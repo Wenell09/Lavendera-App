@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../config/colors/app_colors.dart';
+import 'package:lavendera/config/colors/app_colors.dart';
 
-class AppButton extends StatelessWidget {
+class ButtonWidget extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -12,7 +12,7 @@ class AppButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final IconData? icon;
 
-  const AppButton({
+  const ButtonWidget({
     super.key,
     required this.label,
     required this.onPressed,

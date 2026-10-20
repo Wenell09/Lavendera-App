@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lavendera/features/auth/presentation/pages/widgets/button_widget.dart';
+import 'package:lavendera/features/auth/presentation/pages/widgets/text_field_widget.dart';
 import 'package:lavendera/home_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -63,6 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
               const SnackBar(
                 content: Text('Registration failed. Please try again.'),
                 backgroundColor: Colors.redAccent,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -115,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 28),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _tenantNameController,
                         label: 'Tenant Name',
                         hint: 'Laundry Sejahtera',
@@ -127,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _nameController,
                         label: 'Full Name',
                         hint: 'Budi Santoso',
@@ -139,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _emailController,
                         label: 'Email',
                         hint: 'budi@laundrysejahtera.com',
@@ -152,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _passwordController,
                         label: 'Password',
                         hint: '••••••••',
@@ -178,22 +180,22 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 28),
-                      AppButton(
+                      ButtonWidget(
                         label: 'Register',
                         isLoading: state is AuthLoading,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthBloc>().add(
-                                  RegisterRequest(
-                                    data: {
-                                      'tenant_name':
-                                          _tenantNameController.text.trim(),
-                                      'name': _nameController.text.trim(),
-                                      'email': _emailController.text.trim(),
-                                      'password': _passwordController.text,
-                                    },
-                                  ),
-                                );
+                              RegisterRequest(
+                                data: {
+                                  'tenant_name': _tenantNameController.text
+                                      .trim(),
+                                  'name': _nameController.text.trim(),
+                                  'email': _emailController.text.trim(),
+                                  'password': _passwordController.text,
+                                },
+                              ),
+                            );
                           }
                         },
                       ),

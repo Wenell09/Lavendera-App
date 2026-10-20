@@ -94,6 +94,7 @@ class _AddServicePageState extends State<AddServicePage> {
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           } else if (state is ServiceError) {
@@ -102,6 +103,7 @@ class _AddServicePageState extends State<AddServicePage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -422,27 +424,26 @@ class _AddServicePageState extends State<AddServicePage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
-                    final cleanPrice = int.tryParse(
+                    final cleanPrice =
+                        int.tryParse(
                           _priceController.text.replaceAll('.', ''),
                         ) ??
                         0;
                     context.read<ServiceBloc>().add(
-                          CreateServiceRequest(
-                            body: {
-                              'category_id': _selectedCategoryId,
-                              'name': _nameController.text.trim(),
-                              'price': cleanPrice,
-                              'min_quantity':
-                                  num.tryParse(_minQuantityController.text) ??
-                                      1,
-                              'unit': _unit,
-                              'duration_days':
-                                  int.tryParse(_durationDaysController.text) ??
-                                      1,
-                              'is_active': _isActive,
-                            },
-                          ),
-                        );
+                      CreateServiceRequest(
+                        body: {
+                          'category_id': _selectedCategoryId,
+                          'name': _nameController.text.trim(),
+                          'price': cleanPrice,
+                          'min_quantity':
+                              num.tryParse(_minQuantityController.text) ?? 1,
+                          'unit': _unit,
+                          'duration_days':
+                              int.tryParse(_durationDaysController.text) ?? 1,
+                          'is_active': _isActive,
+                        },
+                      ),
+                    );
                   }
                 },
           style: ElevatedButton.styleFrom(

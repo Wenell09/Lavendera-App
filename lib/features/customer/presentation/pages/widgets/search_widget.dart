@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import '../../../config/colors/app_colors.dart';
-import '../../../config/typography/app_text_styles.dart';
 
-class AppSearchBar extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:lavendera/config/colors/app_colors.dart';
+import 'package:lavendera/config/typography/app_text_styles.dart';
+
+class SearchWidget extends StatefulWidget {
   final String hintText;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onClear;
   final TextEditingController? controller;
   final Duration debounceDuration;
 
-  const AppSearchBar({
+  const SearchWidget({
     super.key,
     this.hintText = 'Cari...',
     this.onChanged,
@@ -20,10 +21,10 @@ class AppSearchBar extends StatefulWidget {
   });
 
   @override
-  State<AppSearchBar> createState() => _AppSearchBarState();
+  State<SearchWidget> createState() => _AppSearchBarState();
 }
 
-class _AppSearchBarState extends State<AppSearchBar> {
+class _AppSearchBarState extends State<SearchWidget> {
   late TextEditingController _controller;
   Timer? _debounce;
   bool _isLocalController = false;
@@ -67,11 +68,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
         hintStyle: AppTextStyles.bodyMedium.copyWith(
           color: Colors.grey.shade400,
         ),
-        prefixIcon: Icon(
-          Icons.search,
-          color: AppColors.blue.color,
-          size: 20,
-        ),
+        prefixIcon: Icon(Icons.search, color: AppColors.blue.color, size: 20),
         suffixIcon: _controller.text.isNotEmpty
             ? IconButton(
                 icon: const Icon(Icons.close, size: 18),
@@ -101,10 +98,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: AppColors.blue.color,
-            width: 1.5,
-          ),
+          borderSide: BorderSide(color: AppColors.blue.color, width: 1.5),
         ),
       ),
     );

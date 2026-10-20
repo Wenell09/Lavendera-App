@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/customer/domain/entities/customer.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/add_customer_page.dart';
 import 'package:lavendera/features/customer/presentation/pages/customer_detail_page.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/card_widget.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/empty_widget.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/search_widget.dart';
 
 class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key});
@@ -101,7 +103,7 @@ class _CustomerPageState extends State<CustomerPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: AppSearchBar(
+            child: SearchWidget(
               controller: _searchController,
               hintText: 'Cari nama atau telepon...',
               onChanged: _onSearch,
@@ -152,7 +154,7 @@ class _CustomerPageState extends State<CustomerPage> {
                   customers = state.cachedCustomers!;
                 }
                 if (customers.isEmpty) {
-                  return AppEmptyState(
+                  return EmptyWidget(
                     icon: Icons.people_outline,
                     title: _searchController.text.isNotEmpty
                         ? 'Pelanggan tidak ditemukan'
@@ -185,7 +187,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       );
                     }
                     final customer = customers[index];
-                    return AppCard(
+                    return CardWidget(
                       padding: EdgeInsets.zero,
                       onTap: () {
                         Navigator.push(

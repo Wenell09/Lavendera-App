@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/register_page.dart';
+import 'package:lavendera/features/auth/presentation/pages/widgets/button_widget.dart';
+import 'package:lavendera/features/auth/presentation/pages/widgets/text_field_widget.dart';
 import 'package:lavendera/home_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -49,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
               const SnackBar(
                 content: Text('Login failed. Please check your credentials.'),
                 backgroundColor: Colors.redAccent,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -101,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _emailController,
                         label: 'Email',
                         hint: 'budi@laundrysejahtera.com',
@@ -114,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      AppTextField(
+                      TextFieldWidget(
                         controller: _passwordController,
                         label: 'Password',
                         hint: '••••••••',
@@ -140,17 +142,17 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       const SizedBox(height: 32),
-                      AppButton(
+                      ButtonWidget(
                         label: 'Login',
                         isLoading: state is AuthLoading,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             context.read<AuthBloc>().add(
-                                  LoginRequest(
-                                    email: _emailController.text.trim(),
-                                    password: _passwordController.text,
-                                  ),
-                                );
+                              LoginRequest(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text,
+                              ),
+                            );
                           }
                         },
                       ),

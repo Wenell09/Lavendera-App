@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../config/colors/app_colors.dart';
-import '../../../config/typography/app_text_styles.dart';
 
-class AppTextField extends StatelessWidget {
+import '../../../../../config/colors/app_colors.dart';
+import '../../../../../config/typography/app_text_styles.dart';
+
+class TextFieldWidget extends StatelessWidget {
   final TextEditingController? controller;
   final String? label;
   final String? hint;
@@ -18,7 +19,7 @@ class AppTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
 
-  const AppTextField({
+  const TextFieldWidget({
     super.key,
     this.controller,
     this.label,
@@ -86,10 +87,7 @@ class AppTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: AppColors.blue.color,
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: AppColors.blue.color, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

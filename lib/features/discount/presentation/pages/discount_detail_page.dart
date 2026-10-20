@@ -54,9 +54,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              context
-                  .read<DiscountBloc>()
-                  .add(DeleteDiscountRequest(id: widget.discount.id));
+              context.read<DiscountBloc>().add(
+                DeleteDiscountRequest(id: widget.discount.id),
+              );
               Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -81,8 +81,11 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              size: 20, color: Colors.black87),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -99,8 +102,10 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content: Text(state.message),
-                  behavior: SnackBarBehavior.floating),
+                content: Text(state.message),
+                behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
+              ),
             );
           } else if (state is DiscountError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +113,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -138,8 +144,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 Row(
                   children: [
                     Expanded(
-                        child:
-                            _buildTypeOption('percentage', 'Persentase (%)')),
+                      child: _buildTypeOption('percentage', 'Persentase (%)'),
+                    ),
                     const SizedBox(width: 12),
                     Expanded(child: _buildTypeOption('fixed', 'Nominal (Rp)')),
                   ],
@@ -257,8 +263,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -273,8 +280,10 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -295,24 +304,25 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                         ? _valueController.text.replaceAll('.', '')
                         : _valueController.text;
                     context.read<DiscountBloc>().add(
-                          UpdateDiscountRequest(
-                            id: widget.discount.id,
-                            body: {
-                              'name': _nameController.text,
-                              'type': _type,
-                              'value': num.tryParse(cleanValue) ?? 0,
-                              'is_active': _isActive,
-                            },
-                          ),
-                        );
+                      UpdateDiscountRequest(
+                        id: widget.discount.id,
+                        body: {
+                          'name': _nameController.text,
+                          'type': _type,
+                          'value': num.tryParse(cleanValue) ?? 0,
+                          'is_active': _isActive,
+                        },
+                      ),
+                    );
                   }
                 },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A99AD),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 18),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             elevation: 0,
           ),
           child: isLoading
@@ -320,7 +330,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.white),
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               : Text(
                   'Perbarui Diskon',

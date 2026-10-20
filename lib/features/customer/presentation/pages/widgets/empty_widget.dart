@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../config/typography/app_text_styles.dart';
+import 'package:lavendera/config/typography/app_text_styles.dart';
 
-class AppEmptyState extends StatelessWidget {
+class EmptyWidget extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
   final Widget? action;
 
-  const AppEmptyState({
+  const EmptyWidget({
     super.key,
     required this.icon,
     required this.title,
@@ -27,18 +27,12 @@ class AppEmptyState extends StatelessWidget {
               color: Colors.grey.shade50,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              size: 64,
-              color: Colors.grey.shade300,
-            ),
+            child: Icon(icon, size: 64, color: Colors.grey.shade300),
           ),
           const SizedBox(height: 24),
           Text(
             title,
-            style: AppTextStyles.headlineSmall.copyWith(
-              color: Colors.black87,
-            ),
+            style: AppTextStyles.headlineSmall.copyWith(color: Colors.black87),
             textAlign: TextAlign.center,
           ),
           if (subtitle != null) ...[
@@ -51,10 +45,7 @@ class AppEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
-          if (action != null) ...[
-            const SizedBox(height: 24),
-            action!,
-          ],
+          if (action != null) ...[const SizedBox(height: 24), action!],
         ],
       ),
     );

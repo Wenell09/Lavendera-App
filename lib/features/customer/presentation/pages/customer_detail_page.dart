@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
-import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/detail/customer_detail_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/edit_customer_page.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/dialog_widget.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/info_tile_widget.dart';
 
 class CustomerDetailPage extends StatelessWidget {
   final String customerId;
@@ -112,6 +113,7 @@ class _CustomerDetailView extends StatelessWidget {
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }
@@ -145,7 +147,8 @@ class _CustomerDetailView extends StatelessWidget {
                         final detailBloc = context.read<CustomerDetailBloc>();
                         final parent = context
                             .findAncestorWidgetOfExactType<
-                                CustomerDetailPage>();
+                              CustomerDetailPage
+                            >();
                         if (parent != null) {
                           detailBloc.add(
                             GetCustomerByIdRequest(id: parent.customerId),
@@ -204,13 +207,13 @@ class _CustomerDetailView extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          AppInfoTile(
+                          InfoTileWidget(
                             icon: Icons.phone_outlined,
                             label: 'Nomor Telepon',
                             value: customer.phone,
                           ),
                           const Divider(height: 32, thickness: 0.5),
-                          AppInfoTile(
+                          InfoTileWidget(
                             icon: Icons.location_on_outlined,
                             label: 'Alamat Lengkap',
                             value: customer.address ?? 'Alamat belum diatur',
@@ -228,7 +231,7 @@ class _CustomerDetailView extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          AppInfoTile(
+                          InfoTileWidget(
                             icon: Icons.calendar_today_outlined,
                             label: 'Bergabung Sejak',
                             value: _formatDate(customer.createdAt),
@@ -250,16 +253,13 @@ class _CustomerDetailView extends StatelessWidget {
   }
 
   void _showDeleteDialog(BuildContext context, String customerId) async {
-    final confirmed = await AppDialogs.showDeleteConfirmation(
+    final confirmed = await DialogWidget.showDeleteConfirmation(
       context,
       title: 'Hapus Pelanggan?',
-      content:
-          'Tindakan ini tidak dapat dibatalkan. Semua data terkait pelanggan ini akan hilang.',
+      content: 'Tindakan ini tidak dapat dibatalkan. Semua data terkait pelanggan ini akan hilang.',
     );
     if (confirmed == true && context.mounted) {
-      context.read<CustomerBloc>().add(
-            DeleteCustomerRequest(id: customerId),
-          );
+      context.read<CustomerBloc>().add(DeleteCustomerRequest(id: customerId));
     }
   }
 

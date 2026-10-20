@@ -68,6 +68,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }

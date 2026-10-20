@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/customer/domain/entities/customer.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/add_customer_page.dart';
@@ -18,7 +17,6 @@ class CustomerPage extends StatefulWidget {
 class _CustomerPageState extends State<CustomerPage> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
-  Timer? _debounce;
 
   @override
   void initState() {
@@ -34,7 +32,6 @@ class _CustomerPageState extends State<CustomerPage> {
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
 
@@ -62,15 +59,10 @@ class _CustomerPageState extends State<CustomerPage> {
     return currentScroll >= (maxScroll - 200);
   }
 
-  void _onSearchChanged(String query) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      final text = query.trim();
-      context.read<CustomerBloc>().add(
-        GetCustomersRequest(search: text.isEmpty ? null : text, page: 1),
-      );
-    });
-    setState(() {});
+  void _onSearch(String query) {
+    context.read<CustomerBloc>().add(
+      GetCustomersRequest(search: query.isEmpty ? null : query, page: 1),
+    );
   }
 
   @override
@@ -99,13 +91,7 @@ class _CustomerPageState extends State<CustomerPage> {
             child: IconButton(
               icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
               onPressed: () {
-                final text = _searchController.text.trim();
-                context.read<CustomerBloc>().add(
-                  GetCustomersRequest(
-                    search: text.isEmpty ? null : text,
-                    page: 1,
-                  ),
-                );
+                _onSearch(_searchController.text);
               },
             ),
           ),
@@ -115,53 +101,10 @@ class _CustomerPageState extends State<CustomerPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: TextField(
+            child: AppSearchBar(
               controller: _searchController,
-              onChanged: _onSearchChanged,
-              style: AppTextStyles.bodyLarge,
-              decoration: InputDecoration(
-                hintText: 'Cari nama atau telepon...',
-                hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.grey.shade400,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Color(0xFF4A99AD),
-                  size: 20,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.close, size: 18),
-                        color: Colors.grey.shade400,
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearchChanged('');
-                          setState(() {});
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: Colors.grey.shade50,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF4A99AD),
-                    width: 1.5,
-                  ),
-                ),
-              ),
+              hintText: 'Cari nama atau telepon...',
+              onChanged: _onSearch,
             ),
           ),
           Expanded(
@@ -180,7 +123,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         state.cachedCustomers!.isEmpty)) {
                   return Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
                       children: [
                         Icon(
                           Icons.error_outline,
@@ -190,15 +133,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         const SizedBox(height: 16),
                         Text(state.message, style: AppTextStyles.bodyLarge),
                         TextButton(
-                          onPressed: () {
-                            final text = _searchController.text.trim();
-                            context.read<CustomerBloc>().add(
-                              GetCustomersRequest(
-                                search: text.isEmpty ? null : text,
-                                page: 1,
-                              ),
-                            );
-                          },
+                          onPressed: () => _onSearch(_searchController.text),
                           child: const Text('Coba Lagi'),
                         ),
                       ],
@@ -217,42 +152,14 @@ class _CustomerPageState extends State<CustomerPage> {
                   customers = state.cachedCustomers!;
                 }
                 if (customers.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.people_outline,
-                            size: 64,
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          _searchController.text.isNotEmpty
-                              ? 'Pelanggan tidak ditemukan'
-                              : 'Belum ada pelanggan',
-                          style: AppTextStyles.headlineSmall.copyWith(
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _searchController.text.isNotEmpty
-                              ? 'Coba kata kunci pencarian yang lain'
-                              : 'Tambahkan pelanggan baru untuk mulai',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                      ],
-                    ),
+                  return AppEmptyState(
+                    icon: Icons.people_outline,
+                    title: _searchController.text.isNotEmpty
+                        ? 'Pelanggan tidak ditemukan'
+                        : 'Belum ada pelanggan',
+                    subtitle: _searchController.text.isNotEmpty
+                        ? 'Coba kata kunci pencarian yang lain'
+                        : 'Tambahkan pelanggan baru untuk mulai',
                   );
                 }
                 return ListView.separated(
@@ -278,82 +185,68 @@ class _CustomerPageState extends State<CustomerPage> {
                       );
                     }
                     final customer = customers[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade100),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                    return AppCard(
+                      padding: EdgeInsets.zero,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CustomerDetailPage(customerId: customer.id),
                           ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          leading: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF4A99AD)
-                                  .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Text(
-                                customer.name.isNotEmpty
-                                    ? customer.name[0].toUpperCase()
-                                    : '?',
-                                style: AppTextStyles.headlineSmall.copyWith(
-                                  color: const Color(0xFF4A99AD),
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        );
+                      },
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4A99AD)
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              customer.name.isNotEmpty
+                                  ? customer.name[0].toUpperCase()
+                                  : '?',
+                              style: AppTextStyles.headlineSmall.copyWith(
+                                color: const Color(0xFF4A99AD),
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          title: Text(
-                            customer.name,
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: Colors.black87,
-                            ),
+                        ),
+                        title: Text(
+                          customer.name,
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: Colors.black87,
                           ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.phone_outlined,
-                                  size: 14,
-                                  color: Colors.grey.shade500,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  customer.phone,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            size: 14,
-                            color: Colors.grey.shade300,
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CustomerDetailPage(customerId: customer.id),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.phone_outlined,
+                                size: 14,
+                                color: Colors.grey.shade500,
                               ),
-                            );
-                          },
+                              const SizedBox(width: 4),
+                              Text(
+                                customer.phone,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: Colors.grey.shade300,
                         ),
                       ),
                     );

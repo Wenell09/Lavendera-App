@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
+import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
+
 import '../bloc/service_bloc.dart';
 
 class AddServicePage extends StatefulWidget {
@@ -160,8 +163,7 @@ class _AddServicePageState extends State<AddServicePage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: Colors.grey.shade100),
+                            borderSide: BorderSide(color: Colors.grey.shade100),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -231,16 +233,23 @@ class _AddServicePageState extends State<AddServicePage> {
                 _buildTextField(
                   controller: _priceController,
                   label: 'Harga (Rp)',
-                  hint: 'Contoh: 8000',
+                  hint: 'Contoh: 8.000',
                   icon: Icons.payments_outlined,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [CurrencyInputFormatter()],
                   validator: (v) {
                     final trimmed = v?.trim() ?? '';
-                    if (trimmed.isEmpty) return 'Harga wajib diisi';
-                    final parsed = num.tryParse(trimmed);
+
+                    if (trimmed.isEmpty) {
+                      return 'Harga wajib diisi';
+                    }
+
+                    final parsed = int.tryParse(trimmed.replaceAll('.', ''));
+
                     if (parsed == null || parsed < 0) {
                       return 'Harga tidak boleh kurang dari 0';
                     }
+
                     return null;
                   },
                 ),
@@ -355,6 +364,7 @@ class _AddServicePageState extends State<AddServicePage> {
     required IconData icon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,12 +380,14 @@ class _AddServicePageState extends State<AddServicePage> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle:
-                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -390,8 +402,10 @@ class _AddServicePageState extends State<AddServicePage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -408,13 +422,16 @@ class _AddServicePageState extends State<AddServicePage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
+                    final cleanPrice = int.tryParse(
+                          _priceController.text.replaceAll('.', ''),
+                        ) ??
+                        0;
                     context.read<ServiceBloc>().add(
                           CreateServiceRequest(
                             body: {
                               'category_id': _selectedCategoryId,
                               'name': _nameController.text.trim(),
-                              'price':
-                                  num.tryParse(_priceController.text) ?? 0,
+                              'price': cleanPrice,
                               'min_quantity':
                                   num.tryParse(_minQuantityController.text) ??
                                       1,

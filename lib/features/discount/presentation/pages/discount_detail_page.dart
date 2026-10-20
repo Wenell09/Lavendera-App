@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 
@@ -23,9 +25,13 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.discount.name);
-    _valueController = TextEditingController(text: widget.discount.value.toString());
     _type = widget.discount.type;
     _isActive = widget.discount.isActive;
+    _valueController = TextEditingController(
+      text: _type == 'fixed'
+          ? CurrencyFormatter.formatNumber(widget.discount.value)
+          : widget.discount.value.toString(),
+    );
   }
 
   @override
@@ -48,7 +54,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<DiscountBloc>().add(DeleteDiscountRequest(id: widget.discount.id));
+              context
+                  .read<DiscountBloc>()
+                  .add(DeleteDiscountRequest(id: widget.discount.id));
               Navigator.pop(context);
             },
             child: const Text('Hapus', style: TextStyle(color: Colors.red)),
@@ -73,7 +81,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              size: 20, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -89,7 +98,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             context.read<DiscountBloc>().add(GetDiscountsRequest());
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), behavior: SnackBarBehavior.floating),
+              SnackBar(
+                  content: Text(state.message),
+                  behavior: SnackBarBehavior.floating),
             );
           } else if (state is DiscountError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +137,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildTypeOption('percentage', 'Persentase (%)')),
+                    Expanded(
+                        child:
+                            _buildTypeOption('percentage', 'Persentase (%)')),
                     const SizedBox(width: 12),
                     Expanded(child: _buildTypeOption('fixed', 'Nominal (Rp)')),
                   ],
@@ -135,10 +148,29 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 _buildTextField(
                   controller: _valueController,
                   label: 'Nilai Diskon',
-                  hint: _type == 'percentage' ? 'Contoh: 15' : 'Contoh: 10000',
-                  icon: _type == 'percentage' ? Icons.percent : Icons.account_balance_wallet_outlined,
+                  hint: _type == 'percentage' ? 'Contoh: 15' : 'Contoh: 10.000',
+                  icon: _type == 'percentage'
+                      ? Icons.percent
+                      : Icons.account_balance_wallet_outlined,
                   keyboardType: TextInputType.number,
-                  validator: (v) => v!.isEmpty ? 'Nilai wajib diisi' : null,
+                  inputFormatters: _type == 'fixed'
+                      ? [CurrencyInputFormatter()]
+                      : [FilteringTextInputFormatter.digitsOnly],
+                  validator: (v) {
+                    final trimmed = v?.trim() ?? '';
+                    if (trimmed.isEmpty) return 'Nilai wajib diisi';
+                    final cleanValue = _type == 'fixed'
+                        ? trimmed.replaceAll('.', '')
+                        : trimmed;
+                    final parsed = num.tryParse(cleanValue);
+                    if (parsed == null || parsed <= 0) {
+                      return 'Nilai harus lebih dari 0';
+                    }
+                    if (_type == 'percentage' && parsed > 100) {
+                      return 'Persentase tidak boleh lebih dari 100';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 SwitchListTile(
@@ -167,11 +199,18 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   Widget _buildTypeOption(String val, String label) {
     bool isSelected = _type == val;
     return GestureDetector(
-      onTap: () => setState(() => _type = val),
+      onTap: () {
+        setState(() {
+          _type = val;
+          _valueController.clear();
+        });
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4A99AD).withValues(alpha: 0.1) : Colors.grey.shade50,
+          color: isSelected
+              ? const Color(0xFF4A99AD).withValues(alpha: 0.1)
+              : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFF4A99AD) : Colors.grey.shade200,
@@ -196,6 +235,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
     required String hint,
     required IconData icon,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -212,11 +252,13 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle:
+                AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -231,7 +273,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide:
+                  const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
             ),
           ),
         ),
@@ -248,13 +291,16 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
+                    final cleanValue = _type == 'fixed'
+                        ? _valueController.text.replaceAll('.', '')
+                        : _valueController.text;
                     context.read<DiscountBloc>().add(
                           UpdateDiscountRequest(
                             id: widget.discount.id,
                             body: {
                               'name': _nameController.text,
                               'type': _type,
-                              'value': num.tryParse(_valueController.text) ?? 0,
+                              'value': num.tryParse(cleanValue) ?? 0,
                               'is_active': _isActive,
                             },
                           ),
@@ -265,14 +311,16 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             backgroundColor: const Color(0xFF4A99AD),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 0,
           ),
           child: isLoading
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
                 )
               : Text(
                   'Perbarui Diskon',

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
+import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
 import '../../domain/entities/service_item.dart';
@@ -34,8 +36,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.service.name);
-    _priceController =
-        TextEditingController(text: widget.service.price.toString());
+    _priceController = TextEditingController(
+      text: CurrencyFormatter.formatNumber(widget.service.price),
+    );
     _minQuantityController =
         TextEditingController(text: widget.service.minQuantity.toString());
     _durationDaysController =
@@ -278,13 +281,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                 _buildTextField(
                   controller: _priceController,
                   label: 'Harga (Rp)',
-                  hint: 'Contoh: 8000',
+                  hint: 'Contoh: 8.000',
                   icon: Icons.payments_outlined,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [CurrencyInputFormatter()],
                   validator: (v) {
                     final trimmed = v?.trim() ?? '';
                     if (trimmed.isEmpty) return 'Harga wajib diisi';
-                    final parsed = num.tryParse(trimmed);
+                    final parsed = int.tryParse(trimmed.replaceAll('.', ''));
                     if (parsed == null || parsed < 0) {
                       return 'Harga tidak boleh kurang dari 0';
                     }
@@ -402,6 +406,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
     required IconData icon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,6 +422,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
@@ -455,14 +461,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
+                    final cleanPrice = int.tryParse(
+                          _priceController.text.replaceAll('.', ''),
+                        ) ??
+                        0;
                     context.read<ServiceBloc>().add(
                           UpdateServiceRequest(
                             id: widget.service.id,
                             body: {
                               'category_id': _selectedCategoryId,
                               'name': _nameController.text.trim(),
-                              'price':
-                                  num.tryParse(_priceController.text) ?? 0,
+                              'price': cleanPrice,
                               'min_quantity':
                                   num.tryParse(_minQuantityController.text) ??
                                       1,

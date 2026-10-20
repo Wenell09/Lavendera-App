@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 
 class AddDiscountPage extends StatefulWidget {
@@ -102,12 +104,29 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                 _buildTextField(
                   controller: _valueController,
                   label: 'Nilai Diskon',
-                  hint: _type == 'percentage' ? 'Contoh: 15' : 'Contoh: 10000',
+                  hint: _type == 'percentage' ? 'Contoh: 15' : 'Contoh: 10.000',
                   icon: _type == 'percentage'
                       ? Icons.percent
                       : Icons.account_balance_wallet_outlined,
                   keyboardType: TextInputType.number,
-                  validator: (v) => v!.isEmpty ? 'Nilai wajib diisi' : null,
+                  inputFormatters: _type == 'fixed'
+                      ? [CurrencyInputFormatter()]
+                      : [FilteringTextInputFormatter.digitsOnly],
+                  validator: (v) {
+                    final trimmed = v?.trim() ?? '';
+                    if (trimmed.isEmpty) return 'Nilai wajib diisi';
+                    final cleanValue = _type == 'fixed'
+                        ? trimmed.replaceAll('.', '')
+                        : trimmed;
+                    final parsed = num.tryParse(cleanValue);
+                    if (parsed == null || parsed <= 0) {
+                      return 'Nilai harus lebih dari 0';
+                    }
+                    if (_type == 'percentage' && parsed > 100) {
+                      return 'Persentase tidak boleh lebih dari 100';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 SwitchListTile(
@@ -136,7 +155,12 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
   Widget _buildTypeOption(String val, String label) {
     bool isSelected = _type == val;
     return GestureDetector(
-      onTap: () => setState(() => _type = val),
+      onTap: () {
+        setState(() {
+          _type = val;
+          _valueController.clear();
+        });
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
@@ -167,6 +191,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
     required String hint,
     required IconData icon,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -183,6 +208,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
@@ -221,12 +247,15 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
+                    final cleanValue = _type == 'fixed'
+                        ? _valueController.text.replaceAll('.', '')
+                        : _valueController.text;
                     context.read<DiscountBloc>().add(
                           CreateDiscountRequest(
                             body: {
                               'name': _nameController.text,
                               'type': _type,
-                              'value': num.tryParse(_valueController.text) ?? 0,
+                              'value': num.tryParse(cleanValue) ?? 0,
                               'is_active': _isActive,
                             },
                           ),

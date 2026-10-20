@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/presentation/widgets/widgets.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/home_page.dart';
 
@@ -114,42 +115,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       const SizedBox(height: 28),
-                      Text(
-                        'Tenant Name',
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+                      AppTextField(
                         controller: _tenantNameController,
-                        decoration: InputDecoration(
-                          hintText: 'Laundry Sejahtera',
-                          hintStyle: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey[400],
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.blue.color,
-                              width: 1.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
+                        label: 'Tenant Name',
+                        hint: 'Laundry Sejahtera',
                         validator: (value) {
                           if (value == null || value.trim().length < 3) {
                             return 'Tenant name must be at least 3 characters';
@@ -158,42 +127,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Full Name',
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+                      AppTextField(
                         controller: _nameController,
-                        decoration: InputDecoration(
-                          hintText: 'Budi Santoso',
-                          hintStyle: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey[400],
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.blue.color,
-                              width: 1.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
+                        label: 'Full Name',
+                        hint: 'Budi Santoso',
                         validator: (value) {
                           if (value == null || value.trim().length < 2) {
                             return 'Name must be at least 2 characters';
@@ -202,43 +139,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Email',
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+                      AppTextField(
                         controller: _emailController,
+                        label: 'Email',
+                        hint: 'budi@laundrysejahtera.com',
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'budi@laundrysejahtera.com',
-                          hintStyle: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey[400],
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.blue.color,
-                              width: 1.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                        ),
                         validator: (value) {
                           if (value == null || !value.contains('@')) {
                             return 'Please enter a valid email address';
@@ -247,55 +152,23 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      Text(
-                        'Password',
-                        style: AppTextStyles.labelLarge.copyWith(
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+                      AppTextField(
                         controller: _passwordController,
+                        label: 'Password',
+                        hint: '••••••••',
                         obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: '••••••••',
-                          hintStyle: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey[400],
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Colors.grey,
                           ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: AppColors.blue.color,
-                              width: 1.5,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
                         validator: (value) {
                           if (value == null || value.length < 8) {
@@ -305,55 +178,24 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       ),
                       const SizedBox(height: 28),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.blue.color,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          onPressed: state is AuthLoading
-                              ? null
-                              : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    context.read<AuthBloc>().add(
-                                          RegisterRequest(
-                                            data: {
-                                              'tenant_name':
-                                                  _tenantNameController.text.trim(),
-                                              'name':
-                                                  _nameController.text.trim(),
-                                              'email':
-                                                  _emailController.text.trim(),
-                                              'password':
-                                                  _passwordController.text,
-                                            },
-                                          ),
-                                        );
-                                  }
-                                },
-                          child: state is AuthLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                      AppButton(
+                        label: 'Register',
+                        isLoading: state is AuthLoading,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            context.read<AuthBloc>().add(
+                                  RegisterRequest(
+                                    data: {
+                                      'tenant_name':
+                                          _tenantNameController.text.trim(),
+                                      'name': _nameController.text.trim(),
+                                      'email': _emailController.text.trim(),
+                                      'password': _passwordController.text,
+                                    },
                                   ),
-                                )
-                              : Text(
-                                  'Register',
-                                  style: AppTextStyles.titleMedium.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
+                                );
+                          }
+                        },
                       ),
                       const SizedBox(height: 24),
                       Row(

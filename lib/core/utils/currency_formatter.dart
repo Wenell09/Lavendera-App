@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 class CurrencyFormatter {
   /// Format angka menjadi format mata uang Rupiah dengan pemisah ribuan titik.
   /// Contoh:
@@ -44,7 +46,61 @@ class CurrencyFormatter {
   static String formatDynamic(dynamic value, {bool withSymbol = true}) {
     if (value == null) return withSymbol ? 'Rp 0' : '0';
     if (value is num) return format(value, withSymbol: withSymbol);
-    final parsed = num.tryParse(value.toString().replaceAll(RegExp(r'[^0-9.-]'), ''));
+    final parsed = num.tryParse(
+      value.toString().replaceAll(RegExp(r'[^0-9.-]'), ''),
+    );
     return format(parsed ?? 0, withSymbol: withSymbol);
+  }
+}
+
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Ambil angka saja, tanpa titik, koma, atau karakter lainnya.
+    final digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.isEmpty) {
+      return const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    // Hitung jumlah digit sebelum posisi kursor.
+    final cursorPosition = newValue.selection.extentOffset.clamp(
+      0,
+      newValue.text.length,
+    );
+
+    final digitsBeforeCursor = newValue.text
+        .substring(0, cursorPosition)
+        .replaceAll(RegExp(r'[^0-9]'), '')
+        .length;
+
+    // Format angka dengan pemisah ribuan berupa titik.
+    final formatted = digits.replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+
+    // Tentukan kembali posisi kursor setelah pemformatan.
+    var newCursorPosition = 0;
+    var digitCount = 0;
+
+    while (newCursorPosition < formatted.length &&
+        digitCount < digitsBeforeCursor) {
+      if (RegExp(r'[0-9]').hasMatch(formatted[newCursorPosition])) {
+        digitCount++;
+      }
+      newCursorPosition++;
+    }
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
   }
 }

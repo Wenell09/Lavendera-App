@@ -27,6 +27,14 @@ import 'package:lavendera/features/discount/domain/usecases/get_discount_by_id_u
 import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
 import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
+import 'package:lavendera/features/service_category/data/datasources/service_category_remote_data_source.dart';
+import 'package:lavendera/features/service_category/data/repositories/service_category_repository_impl.dart';
+import 'package:lavendera/features/service_category/domain/usecases/create_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/delete_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/get_service_category_by_id_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -34,6 +42,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(),
   );
+  sl.registerLazySingleton<Dio>(() {
+    final dio = Dio();
+    dio.interceptors.add(
+      AuthInterceptor(secureStorage: sl<FlutterSecureStorage>()),
+    );
+    return dio;
+  });
   // Auth
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSource());
   sl.registerLazySingleton<AuthLocalDataSource>(
@@ -58,13 +73,6 @@ Future<void> initDependencies() async {
     ),
   );
   // Customer
-  sl.registerLazySingleton<Dio>(() {
-    final dio = Dio();
-    dio.interceptors.add(
-      AuthInterceptor(secureStorage: sl<FlutterSecureStorage>()),
-    );
-    return dio;
-  });
   sl.registerLazySingleton<CustomerRemoteDataSource>(
     () => CustomerRemoteDataSource(dio: sl<Dio>()),
   );
@@ -131,6 +139,38 @@ Future<void> initDependencies() async {
       createDiscountUsecase: sl<CreateDiscountUsecase>(),
       updateDiscountUsecase: sl<UpdateDiscountUsecase>(),
       deleteDiscountUsecase: sl<DeleteDiscountUsecase>(),
+    ),
+  );
+  // Service Category
+  sl.registerLazySingleton<ServiceCategoryRemoteDataSource>(
+    () => ServiceCategoryRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<ServiceCategoryRepositoryImpl>(
+    () => ServiceCategoryRepositoryImpl(
+      remoteDataSource: sl<ServiceCategoryRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetServiceCategoriesUsecase(sl<ServiceCategoryRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetServiceCategoryByIdUsecase(sl<ServiceCategoryRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => CreateServiceCategoryUsecase(sl<ServiceCategoryRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateServiceCategoryUsecase(sl<ServiceCategoryRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteServiceCategoryUsecase(sl<ServiceCategoryRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => ServiceCategoryBloc(
+      getServiceCategoriesUsecase: sl<GetServiceCategoriesUsecase>(),
+      createServiceCategoryUsecase: sl<CreateServiceCategoryUsecase>(),
+      updateServiceCategoryUsecase: sl<UpdateServiceCategoryUsecase>(),
+      deleteServiceCategoryUsecase: sl<DeleteServiceCategoryUsecase>(),
     ),
   );
 }

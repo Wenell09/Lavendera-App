@@ -5,6 +5,7 @@ import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
+import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
 
 void main() async {
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<AuthBloc>()..add(LoadDataRequest())),
         BlocProvider(create: (_) => sl<CustomerBloc>()),
         BlocProvider(create: (_) => sl<DiscountBloc>()),
+        BlocProvider(create: (_) => sl<ServiceCategoryBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

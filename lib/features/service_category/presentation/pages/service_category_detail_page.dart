@@ -124,10 +124,15 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
                   icon: Icons.label_outline,
                   validator: (v) {
                     final trimmed = v?.trim() ?? '';
-                    if (trimmed.isEmpty) return 'Nama wajib diisi';
-                    if (trimmed.length < 2) return 'Nama minimal 2 karakter';
-                    if (trimmed.length > 100)
+                    if (trimmed.isEmpty) {
+                      return 'Nama wajib diisi';
+                    }
+                    if (trimmed.length < 2) {
+                      return 'Nama minimal 2 karakter';
+                    }
+                    if (trimmed.length > 100) {
                       return 'Nama maksimal 100 karakter';
+                    }
                     return null;
                   },
                 ),

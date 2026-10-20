@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 import 'package:lavendera/features/discount/presentation/pages/add_discount_page.dart';
@@ -370,7 +371,7 @@ class _DiscountPageState extends State<DiscountPage> {
                 Text(
                   discount.type == 'percentage'
                       ? '${discount.value}%'
-                      : 'Rp ${discount.value}',
+                      : CurrencyFormatter.format(discount.value),
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: const Color(0xFF4A99AD),
                     fontWeight: FontWeight.bold,

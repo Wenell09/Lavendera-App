@@ -35,6 +35,14 @@ import 'package:lavendera/features/service_category/domain/usecases/get_service_
 import 'package:lavendera/features/service_category/domain/usecases/get_service_category_by_id_usecase.dart';
 import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
+import 'package:lavendera/features/service/data/datasources/service_remote_data_source.dart';
+import 'package:lavendera/features/service/data/repositories/service_repository_impl.dart';
+import 'package:lavendera/features/service/domain/usecases/create_service_usecase.dart';
+import 'package:lavendera/features/service/domain/usecases/delete_service_usecase.dart';
+import 'package:lavendera/features/service/domain/usecases/get_service_by_id_usecase.dart';
+import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
+import 'package:lavendera/features/service/domain/usecases/update_service_usecase.dart';
+import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -171,6 +179,38 @@ Future<void> initDependencies() async {
       createServiceCategoryUsecase: sl<CreateServiceCategoryUsecase>(),
       updateServiceCategoryUsecase: sl<UpdateServiceCategoryUsecase>(),
       deleteServiceCategoryUsecase: sl<DeleteServiceCategoryUsecase>(),
+    ),
+  );
+  // Service
+  sl.registerLazySingleton<ServiceRemoteDataSource>(
+    () => ServiceRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<ServiceRepositoryImpl>(
+    () => ServiceRepositoryImpl(
+      remoteDataSource: sl<ServiceRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetServicesUsecase(sl<ServiceRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetServiceByIdUsecase(sl<ServiceRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => CreateServiceUsecase(sl<ServiceRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateServiceUsecase(sl<ServiceRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteServiceUsecase(sl<ServiceRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => ServiceBloc(
+      getServicesUsecase: sl<GetServicesUsecase>(),
+      createServiceUsecase: sl<CreateServiceUsecase>(),
+      updateServiceUsecase: sl<UpdateServiceUsecase>(),
+      deleteServiceUsecase: sl<DeleteServiceUsecase>(),
     ),
   );
 }

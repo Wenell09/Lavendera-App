@@ -3,6 +3,7 @@ import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/presentation/pages/customer_page.dart';
 import 'package:lavendera/features/discount/presentation/pages/discount_page.dart';
 import 'package:lavendera/features/service_category/presentation/pages/service_category_page.dart';
+import 'package:lavendera/features/service/presentation/pages/service_page.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -56,6 +57,19 @@ class Home extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => const ServiceCategoryPage(),
                   ),
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+            _buildMenuCard(
+              context: context,
+              title: 'Layanan',
+              subtitle: 'Kelola jenis layanan laundry, harga, unit, dan durasi',
+              icon: Icons.local_laundry_service_rounded,
+              color: const Color(0xFF6366F1),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ServicePage()),
                 );
               },
             ),

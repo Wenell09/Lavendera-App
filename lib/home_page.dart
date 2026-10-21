@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/presentation/pages/customer_page.dart';
 import 'package:lavendera/features/discount/presentation/pages/discount_page.dart';
-import 'package:lavendera/features/service_category/presentation/pages/service_category_page.dart';
+import 'package:lavendera/features/outlet/presentation/pages/outlet_page.dart';
 import 'package:lavendera/features/service/presentation/pages/service_page.dart';
+import 'package:lavendera/features/service_category/presentation/pages/service_category_page.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -49,7 +50,8 @@ class Home extends StatelessWidget {
             _buildMenuCard(
               context: context,
               title: 'Kategori Layanan',
-              subtitle: 'Kelola kategori service seperti Kiloan, Dry Clean, dll.',
+              subtitle:
+                  'Kelola kategori service seperti Kiloan, Dry Clean, dll.',
               icon: Icons.category_rounded,
               color: primaryColor,
               onTap: () {
@@ -99,6 +101,19 @@ class Home extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 14),
+            _buildMenuCard(
+              context: context,
+              title: 'Outlet',
+              subtitle: 'Kelola outlet cabang',
+              icon: Icons.store,
+              color: const Color(0xFF10B981),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const OutletPage()),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -142,9 +157,7 @@ class Home extends StatelessWidget {
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Center(
-                    child: Icon(icon, color: color, size: 26),
-                  ),
+                  child: Center(child: Icon(icon, color: color, size: 26)),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

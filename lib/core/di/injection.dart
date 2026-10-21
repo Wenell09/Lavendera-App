@@ -27,14 +27,14 @@ import 'package:lavendera/features/discount/domain/usecases/get_discount_by_id_u
 import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
 import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
-import 'package:lavendera/features/service_category/data/datasources/service_category_remote_data_source.dart';
-import 'package:lavendera/features/service_category/data/repositories/service_category_repository_impl.dart';
-import 'package:lavendera/features/service_category/domain/usecases/create_service_category_usecase.dart';
-import 'package:lavendera/features/service_category/domain/usecases/delete_service_category_usecase.dart';
-import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
-import 'package:lavendera/features/service_category/domain/usecases/get_service_category_by_id_usecase.dart';
-import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
-import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
+import 'package:lavendera/features/outlet/data/datasources/outlet_remote_data_source.dart';
+import 'package:lavendera/features/outlet/data/repositories/outlet_repository_impl.dart';
+import 'package:lavendera/features/outlet/domain/usecases/create_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/delete_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/get_outlet_by_id_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/update_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/service/data/datasources/service_remote_data_source.dart';
 import 'package:lavendera/features/service/data/repositories/service_repository_impl.dart';
 import 'package:lavendera/features/service/domain/usecases/create_service_usecase.dart';
@@ -43,6 +43,14 @@ import 'package:lavendera/features/service/domain/usecases/get_service_by_id_use
 import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
 import 'package:lavendera/features/service/domain/usecases/update_service_usecase.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
+import 'package:lavendera/features/service_category/data/datasources/service_category_remote_data_source.dart';
+import 'package:lavendera/features/service_category/data/repositories/service_category_repository_impl.dart';
+import 'package:lavendera/features/service_category/domain/usecases/create_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/delete_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/get_service_category_by_id_usecase.dart';
+import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -186,9 +194,8 @@ Future<void> initDependencies() async {
     () => ServiceRemoteDataSource(dio: sl<Dio>()),
   );
   sl.registerLazySingleton<ServiceRepositoryImpl>(
-    () => ServiceRepositoryImpl(
-      remoteDataSource: sl<ServiceRemoteDataSource>(),
-    ),
+    () =>
+        ServiceRepositoryImpl(remoteDataSource: sl<ServiceRemoteDataSource>()),
   );
   sl.registerLazySingleton(
     () => GetServicesUsecase(sl<ServiceRepositoryImpl>()),
@@ -211,6 +218,34 @@ Future<void> initDependencies() async {
       createServiceUsecase: sl<CreateServiceUsecase>(),
       updateServiceUsecase: sl<UpdateServiceUsecase>(),
       deleteServiceUsecase: sl<DeleteServiceUsecase>(),
+    ),
+  );
+  // Outlet
+  sl.registerLazySingleton<OutletRemoteDataSource>(
+    () => OutletRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<OutletRepositoryImpl>(
+    () => OutletRepositoryImpl(remoteDataSource: sl<OutletRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetOutletsUsecase(sl<OutletRepositoryImpl>()));
+  sl.registerLazySingleton(
+    () => CreateOutletUsecase(sl<OutletRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetOutletByIdUsecase(sl<OutletRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateOutletUsecase(sl<OutletRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteOutletUsecase(sl<OutletRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => OutletBloc(
+      getOutletsUsecase: sl<GetOutletsUsecase>(),
+      createOutletUsecase: sl<CreateOutletUsecase>(),
+      updateOutletUsecase: sl<UpdateOutletUsecase>(),
+      deleteOutletUsecase: sl<DeleteOutletUsecase>(),
     ),
   );
 }

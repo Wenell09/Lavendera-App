@@ -1,13 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lavendera/config/base_url/base_url.dart';
+import 'package:lavendera/core/error/api_error_handler.dart';
 import 'package:lavendera/core/models/pagination_model.dart';
-
-import '../models/customer_model.dart';
+import 'package:lavendera/features/customer/data/models/customer_model.dart';
 
 class CustomerRemoteDataSource {
   final Dio dio;
-
   CustomerRemoteDataSource({required this.dio});
 
   Future<CustomerModel> createCustomer(Map<String, dynamic> body) async {
@@ -18,10 +17,7 @@ class CustomerRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Create Customer Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -42,12 +38,11 @@ class CustomerRemoteDataSource {
       debugPrint('Get Customers Result: ${response.data}');
       final List list = response.data['data'] ?? [];
       final models = list.map((json) => CustomerModel.fromJson(json)).toList();
-      
       Pagination? pagination;
-      if (response.data['meta'] != null && response.data['meta']['pagination'] != null) {
+      if (response.data['meta'] != null &&
+          response.data['meta']['pagination'] != null) {
         pagination = Pagination.fromJson(response.data['meta']['pagination']);
       }
-
       return PaginatedResult<CustomerModel>(
         data: models,
         pagination: pagination,
@@ -55,10 +50,7 @@ class CustomerRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Customers Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -70,10 +62,7 @@ class CustomerRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Customer By Id Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -88,10 +77,7 @@ class CustomerRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Update Customer Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -102,10 +88,7 @@ class CustomerRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Delete Customer Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 }

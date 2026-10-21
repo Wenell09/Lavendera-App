@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:lavendera/core/error/api_exception.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/create_service_category_usecase.dart';
 import 'package:lavendera/features/service_category/domain/usecases/delete_service_category_usecase.dart';
@@ -33,6 +34,13 @@ class ServiceCategoryBloc
       try {
         final categories = await getServiceCategoriesUsecase.call();
         emit(ServiceCategoryLoaded(categories: categories));
+      } on ApiException catch (e) {
+        emit(
+          ServiceCategoryError(
+            message: e.message,
+            cachedCategories: currentCategories,
+          ),
+        );
       } catch (e) {
         emit(
           ServiceCategoryError(
@@ -52,6 +60,8 @@ class ServiceCategoryBloc
             message: 'Berhasil menambahkan kategori layanan',
           ),
         );
+      } on ApiException catch (e) {
+        emit(ServiceCategoryError(message: e.message));
       } catch (e) {
         emit(
           ServiceCategoryError(message: 'Gagal menambahkan kategori layanan'),
@@ -68,6 +78,8 @@ class ServiceCategoryBloc
             message: 'Berhasil memperbarui kategori layanan',
           ),
         );
+      } on ApiException catch (e) {
+        emit(ServiceCategoryError(message: e.message));
       } catch (e) {
         emit(
           ServiceCategoryError(message: 'Gagal memperbarui kategori layanan'),
@@ -84,6 +96,8 @@ class ServiceCategoryBloc
             message: 'Berhasil menghapus kategori layanan',
           ),
         );
+      } on ApiException catch (e) {
+        emit(ServiceCategoryError(message: e.message));
       } catch (e) {
         emit(ServiceCategoryError(message: 'Gagal menghapus kategori layanan'));
       }

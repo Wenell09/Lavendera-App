@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-
-import '../../domain/entities/outlet.dart';
-import '../../domain/usecases/create_outlet_usecase.dart';
-import '../../domain/usecases/delete_outlet_usecase.dart';
-import '../../domain/usecases/get_outlets_usecase.dart';
-import '../../domain/usecases/update_outlet_usecase.dart';
+import 'package:lavendera/core/error/api_exception.dart';
+import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
+import 'package:lavendera/features/outlet/domain/usecases/create_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/delete_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
+import 'package:lavendera/features/outlet/domain/usecases/update_outlet_usecase.dart';
 
 part 'outlet_event.dart';
 part 'outlet_state.dart';
@@ -75,6 +75,8 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
             hasMorePages: hasMore,
           ),
         );
+      } on ApiException catch (e) {
+        emit(OutletError(message: e.message, cachedOutlets: currentOutlets));
       } catch (e) {
         emit(
           OutletError(
@@ -90,6 +92,8 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
       try {
         await _createOutletUsecase.call(event.body);
         emit(OutletActionSuccess(message: 'Berhasil menambah outlet'));
+      } on ApiException catch (e) {
+        emit(OutletError(message: e.message));
       } catch (e) {
         emit(OutletError(message: 'Gagal menambah outlet'));
       }
@@ -100,6 +104,8 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
       try {
         await _updateOutletUsecase.call(event.id, event.body);
         emit(OutletActionSuccess(message: 'Berhasil memperbarui outlet'));
+      } on ApiException catch (e) {
+        emit(OutletError(message: e.message));
       } catch (e) {
         emit(OutletError(message: 'Gagal memperbarui outlet'));
       }
@@ -110,6 +116,8 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
       try {
         await _deleteOutletUsecase.call(event.id);
         emit(OutletActionSuccess(message: 'Berhasil menghapus outlet'));
+      } on ApiException catch (e) {
+        emit(OutletError(message: e.message));
       } catch (e) {
         emit(OutletError(message: 'Gagal menghapus outlet'));
       }

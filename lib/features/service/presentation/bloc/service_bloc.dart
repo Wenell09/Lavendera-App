@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:lavendera/core/error/api_exception.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
 import 'package:lavendera/features/service/domain/usecases/create_service_usecase.dart';
 import 'package:lavendera/features/service/domain/usecases/delete_service_usecase.dart';
@@ -24,16 +25,13 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       if (state is ServicePaginationLoading || state is ServiceLoading) {
         return;
       }
-
       final isFirstPage = event.page == 1;
       List<LaundryService> currentServices = [];
-
       if (state is ServiceLoaded) {
         currentServices = (state as ServiceLoaded).services;
       } else if (state is ServiceError) {
         currentServices = (state as ServiceError).cachedServices ?? [];
       }
-
       if (isFirstPage) {
         emit(ServiceLoading());
       } else {
@@ -47,7 +45,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
           ),
         );
       }
-
       try {
         final result = await getServicesUsecase.call(
           search: event.search,
@@ -55,7 +52,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
           page: event.page,
           limit: event.limit,
         );
-
         final newServices = result.data;
         final pagination = result.pagination;
         final bool hasMore;
@@ -64,7 +60,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         } else {
           hasMore = newServices.length >= event.limit;
         }
-
         List<LaundryService> fullList;
         if (isFirstPage) {
           fullList = newServices;
@@ -75,7 +70,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
               .toList();
           fullList = [...currentServices, ...uniqueNewServices];
         }
-
         emit(
           ServiceLoaded(
             services: fullList,
@@ -83,6 +77,8 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
             hasMorePages: hasMore,
           ),
         );
+      } on ApiException catch (e) {
+        emit(ServiceError(message: e.message, cachedServices: currentServices));
       } catch (e) {
         emit(
           ServiceError(
@@ -98,6 +94,8 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       try {
         await createServiceUsecase.call(event.body);
         emit(ServiceActionSuccess(message: 'Berhasil menambah layanan'));
+      } on ApiException catch (e) {
+        emit(ServiceError(message: e.message));
       } catch (e) {
         emit(ServiceError(message: 'Gagal menambah layanan'));
       }
@@ -108,6 +106,8 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       try {
         await updateServiceUsecase.call(event.id, event.body);
         emit(ServiceActionSuccess(message: 'Berhasil memperbarui layanan'));
+      } on ApiException catch (e) {
+        emit(ServiceError(message: e.message));
       } catch (e) {
         emit(ServiceError(message: 'Gagal memperbarui layanan'));
       }
@@ -118,6 +118,8 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
       try {
         await deleteServiceUsecase.call(event.id);
         emit(ServiceActionSuccess(message: 'Berhasil menghapus layanan'));
+      } on ApiException catch (e) {
+        emit(ServiceError(message: e.message));
       } catch (e) {
         emit(ServiceError(message: 'Gagal menghapus layanan'));
       }

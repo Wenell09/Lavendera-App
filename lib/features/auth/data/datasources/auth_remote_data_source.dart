@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lavendera/config/base_url/base_url.dart';
+import 'package:lavendera/core/error/api_error_handler.dart';
 
 class AuthRemoteDataSource {
   final dio = Dio();
@@ -23,27 +24,18 @@ class AuthRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Unexpected error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
   Future<void> register({required Map<String, dynamic> data}) async {
     try {
       final response = await dio.post('$baseUrl/auth/register', data: data);
-      if (response.statusCode != 201) {
-        throw Exception('Failed to register');
-      }
       debugPrint('Registration successful: ${response.data}');
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Unexpected error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 }

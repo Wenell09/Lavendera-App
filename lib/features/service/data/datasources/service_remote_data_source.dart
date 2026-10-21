@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lavendera/config/base_url/base_url.dart';
+import 'package:lavendera/core/error/api_error_handler.dart';
 import 'package:lavendera/core/models/pagination_model.dart';
-import '../models/service_model.dart';
+import 'package:lavendera/features/service/data/models/service_model.dart';
 
 class ServiceRemoteDataSource {
   final Dio dio;
-
   ServiceRemoteDataSource({required this.dio});
 
   Future<PaginatedResult<ServiceModel>> getServices({
@@ -29,13 +29,11 @@ class ServiceRemoteDataSource {
       debugPrint('Get Services Result: ${response.data}');
       final List list = response.data['data'] ?? [];
       final models = list.map((json) => ServiceModel.fromJson(json)).toList();
-
       Pagination? pagination;
       if (response.data['meta'] != null &&
           response.data['meta']['pagination'] != null) {
         pagination = Pagination.fromJson(response.data['meta']['pagination']);
       }
-
       return PaginatedResult<ServiceModel>(
         data: models,
         pagination: pagination,
@@ -43,10 +41,7 @@ class ServiceRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Services Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -58,10 +53,7 @@ class ServiceRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Service By Id Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -73,10 +65,7 @@ class ServiceRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Create Service Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -91,10 +80,7 @@ class ServiceRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Update Service Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -105,10 +91,7 @@ class ServiceRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Delete Service Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 }

@@ -16,4 +16,7 @@ final class Authenticated extends AuthState {}
 
 final class Unauthenticated extends AuthState {}
 
-final class AuthError extends AuthState {}
+final class AuthError extends AuthState {
+  final String message;
+  AuthError({this.message = 'Terjadi kesalahan yang tidak terduga.'});
+}

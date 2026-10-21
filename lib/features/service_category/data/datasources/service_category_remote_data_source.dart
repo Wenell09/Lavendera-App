@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lavendera/config/base_url/base_url.dart';
-import '../models/service_category_model.dart';
+import 'package:lavendera/core/error/api_error_handler.dart';
+import 'package:lavendera/features/service_category/data/models/service_category_model.dart';
 
 class ServiceCategoryRemoteDataSource {
   final Dio dio;
-
   ServiceCategoryRemoteDataSource({required this.dio});
 
   Future<List<ServiceCategoryModel>> getServiceCategories() async {
@@ -17,10 +17,7 @@ class ServiceCategoryRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Service Categories Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -32,10 +29,7 @@ class ServiceCategoryRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Get Service Category By Id Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -52,10 +46,7 @@ class ServiceCategoryRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Create Service Category Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -73,10 +64,7 @@ class ServiceCategoryRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Update Service Category Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 
@@ -87,10 +75,7 @@ class ServiceCategoryRemoteDataSource {
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');
-      rethrow;
-    } catch (e) {
-      debugPrint('Delete Service Category Error: $e');
-      rethrow;
+      throw ApiErrorHandler.fromDioException(e);
     }
   }
 }

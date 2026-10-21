@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:lavendera/core/error/api_exception.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/domain/usecases/create_discount_usecase.dart';
 import 'package:lavendera/features/discount/domain/usecases/delete_discount_usecase.dart';
@@ -75,6 +76,10 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
             hasMorePages: hasMore,
           ),
         );
+      } on ApiException catch (e) {
+        emit(
+          DiscountError(message: e.message, cachedDiscounts: currentDiscounts),
+        );
       } catch (e) {
         emit(
           DiscountError(
@@ -90,6 +95,8 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       try {
         await _createDiscountUsecase.call(event.body);
         emit(DiscountActionSuccess(message: 'Berhasil menambah diskon'));
+      } on ApiException catch (e) {
+        emit(DiscountError(message: e.message));
       } catch (e) {
         emit(DiscountError(message: 'Gagal menambah diskon'));
       }
@@ -100,6 +107,8 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       try {
         await _updateDiscountUsecase.call(event.id, event.body);
         emit(DiscountActionSuccess(message: 'Berhasil memperbarui diskon'));
+      } on ApiException catch (e) {
+        emit(DiscountError(message: e.message));
       } catch (e) {
         emit(DiscountError(message: 'Gagal memperbarui diskon'));
       }
@@ -110,6 +119,8 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       try {
         await _deleteDiscountUsecase.call(event.id);
         emit(DiscountActionSuccess(message: 'Berhasil menghapus diskon'));
+      } on ApiException catch (e) {
+        emit(DiscountError(message: e.message));
       } catch (e) {
         emit(DiscountError(message: 'Gagal menghapus diskon'));
       }

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:lavendera/core/error/api_exception.dart';
 import 'package:lavendera/features/customer/domain/entities/customer.dart';
 import 'package:lavendera/features/customer/domain/usecases/create_customer_usecase.dart';
 import 'package:lavendera/features/customer/domain/usecases/delete_customer_usecase.dart';
@@ -21,17 +22,16 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     required this._deleteCustomerUsecase,
   }) : super(CustomerInitial()) {
     on<GetCustomersRequest>((event, emit) async {
-      if (state is CustomerPaginationLoading || state is CustomerLoading) return;
-
+      if (state is CustomerPaginationLoading || state is CustomerLoading) {
+        return;
+      }
       final isFirstPage = event.page == 1;
       List<Customer> currentCustomers = [];
-
       if (state is CustomerLoaded) {
         currentCustomers = (state as CustomerLoaded).customers;
       } else if (state is CustomerError) {
         currentCustomers = (state as CustomerError).cachedCustomers ?? [];
       }
-
       if (isFirstPage) {
         emit(CustomerLoading());
       } else {
@@ -45,14 +45,12 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
           ),
         );
       }
-
       try {
         final result = await _getCustomersUsecase.call(
           search: event.search,
           page: event.page,
           limit: event.limit,
         );
-
         final newCustomers = result.data;
         final pagination = result.pagination;
         final bool hasMore;
@@ -61,23 +59,26 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         } else {
           hasMore = newCustomers.length >= event.limit;
         }
-
         List<Customer> fullList;
         if (isFirstPage) {
           fullList = newCustomers;
         } else {
           final existingIds = currentCustomers.map((e) => e.id).toSet();
-          final uniqueNewCustomers =
-              newCustomers.where((e) => !existingIds.contains(e.id)).toList();
+          final uniqueNewCustomers = newCustomers
+              .where((e) => !existingIds.contains(e.id))
+              .toList();
           fullList = [...currentCustomers, ...uniqueNewCustomers];
         }
-
         emit(
           CustomerLoaded(
             customers: fullList,
             currentPage: event.page,
             hasMorePages: hasMore,
           ),
+        );
+      } on ApiException catch (e) {
+        emit(
+          CustomerError(message: e.message, cachedCustomers: currentCustomers),
         );
       } catch (e) {
         emit(
@@ -94,6 +95,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       try {
         await _createCustomerUsecase.call(event.body);
         emit(CustomerActionSuccess(message: 'berhasil menambah pelanggan'));
+      } on ApiException catch (e) {
+        emit(CustomerError(message: e.message));
       } catch (e) {
         emit(CustomerError(message: 'Gagal menambah pelanggan'));
       }
@@ -104,6 +107,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       try {
         await _updateCustomerUsecase.call(event.id, event.body);
         emit(CustomerActionSuccess(message: 'berhasil memperbarui pelanggan'));
+      } on ApiException catch (e) {
+        emit(CustomerError(message: e.message));
       } catch (e) {
         emit(CustomerError(message: 'Gagal memperbarui pelanggan'));
       }
@@ -114,6 +119,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       try {
         await _deleteCustomerUsecase.call(event.id);
         emit(CustomerActionSuccess(message: 'berhasil menghapus pelanggan'));
+      } on ApiException catch (e) {
+        emit(CustomerError(message: e.message));
       } catch (e) {
         emit(CustomerError(message: 'Gagal menghapus pelanggan'));
       }

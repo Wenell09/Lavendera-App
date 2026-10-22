@@ -135,9 +135,6 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
           ),
           Expanded(
             child: BlocBuilder<ServiceCategoryBloc, ServiceCategoryState>(
-              buildWhen: (previous, current) {
-                return current is! ServiceCategoryActionError;
-              },
               builder: (context, state) {
                 if (state is ServiceCategoryLoading) {
                   return const Center(

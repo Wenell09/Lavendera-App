@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/button_widget.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/text_field_widget.dart';
 
@@ -50,7 +51,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<CustomerBloc, CustomerState>(
+      body: BlocListener<CustomerActionBloc, CustomerActionState>(
         listener: (context, state) {
           if (state is CustomerActionSuccess) {
             context.read<CustomerBloc>().add(GetCustomersRequest());
@@ -106,22 +107,22 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                   maxLines: 3,
                 ),
                 const SizedBox(height: 40),
-                BlocBuilder<CustomerBloc, CustomerState>(
+                BlocBuilder<CustomerActionBloc, CustomerActionState>(
                   builder: (context, state) {
                     return ButtonWidget(
                       label: 'Simpan Pelanggan',
-                      isLoading: state is CustomerLoading,
+                      isLoading: state is CustomerActionLoading,
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          context.read<CustomerBloc>().add(
-                            CreateCustomerRequest(
-                              body: {
-                                'name': _nameController.text,
-                                'phone': _phoneController.text,
-                                'address': _addressController.text,
-                              },
-                            ),
-                          );
+                          context.read<CustomerActionBloc>().add(
+                                CreateCustomerActionRequest(
+                                  body: {
+                                    'name': _nameController.text,
+                                    'phone': _phoneController.text,
+                                    'address': _addressController.text,
+                                  },
+                                ),
+                              );
                         }
                       },
                     );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
-import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 
 class EditOutletPage extends StatefulWidget {
   final Outlet outlet;
@@ -73,7 +73,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<OutletBloc, OutletState>(
+      body: BlocListener<OutletActionBloc, OutletActionState>(
         listener: (context, state) {
           if (state is OutletActionSuccess) {
             Navigator.pop(context, true);
@@ -189,9 +189,9 @@ class _EditOutletPageState extends State<EditOutletPage> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                BlocBuilder<OutletBloc, OutletState>(
+                BlocBuilder<OutletActionBloc, OutletActionState>(
                   builder: (context, state) {
-                    final isLoading = state is OutletLoading;
+                    final isLoading = state is OutletActionLoading;
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
@@ -210,8 +210,8 @@ class _EditOutletPageState extends State<EditOutletPage> {
                             ? null
                             : () {
                                 if (_formKey.currentState!.validate()) {
-                                  context.read<OutletBloc>().add(
-                                    UpdateOutletRequest(
+                                  context.read<OutletActionBloc>().add(
+                                    UpdateOutletActionRequest(
                                       id: widget.outlet.id,
                                       body: {
                                         'name': _nameController.text.trim(),

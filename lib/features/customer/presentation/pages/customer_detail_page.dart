@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/detail/customer_detail_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/edit_customer_page.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/dialog_widget.dart';
@@ -86,7 +87,7 @@ class CustomerDetailPage extends StatelessWidget {
             ),
           ],
         ),
-        body: BlocListener<CustomerBloc, CustomerState>(
+        body: BlocListener<CustomerActionBloc, CustomerActionState>(
           listener: (context, state) {
             if (state is CustomerActionSuccess) {
               context.read<CustomerBloc>().add(GetCustomersRequest());
@@ -94,6 +95,15 @@ class CustomerDetailPage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
+                  behavior: SnackBarBehavior.floating,
+                  dismissDirection: DismissDirection.horizontal,
+                ),
+              );
+            } else if (state is CustomerActionError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.redAccent,
                   behavior: SnackBarBehavior.floating,
                   dismissDirection: DismissDirection.horizontal,
                 ),
@@ -239,7 +249,7 @@ class CustomerDetailPage extends StatelessWidget {
       content: 'Tindakan ini tidak dapat dibatalkan. Semua data terkait pelanggan ini akan hilang.',
     );
     if (confirmed == true && context.mounted) {
-      context.read<CustomerBloc>().add(DeleteCustomerRequest(id: customerId));
+      context.read<CustomerActionBloc>().add(DeleteCustomerActionRequest(id: customerId));
     }
   }
 

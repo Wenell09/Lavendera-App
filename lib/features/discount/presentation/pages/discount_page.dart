@@ -180,9 +180,6 @@ class _DiscountPageState extends State<DiscountPage> {
           ),
           Expanded(
             child: BlocBuilder<DiscountBloc, DiscountState>(
-              buildWhen: (previous, current) {
-                return current is! DiscountActionError;
-              },
               builder: (context, state) {
                 if (state is DiscountLoading) {
                   return const Center(

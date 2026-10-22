@@ -1,25 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:lavendera/core/error/api_exception.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
-import 'package:lavendera/features/service/domain/usecases/create_service_usecase.dart';
-import 'package:lavendera/features/service/domain/usecases/delete_service_usecase.dart';
 import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
-import 'package:lavendera/features/service/domain/usecases/update_service_usecase.dart';
 
 part 'service_event.dart';
 part 'service_state.dart';
 
 class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
   final GetServicesUsecase getServicesUsecase;
-  final CreateServiceUsecase createServiceUsecase;
-  final UpdateServiceUsecase updateServiceUsecase;
-  final DeleteServiceUsecase deleteServiceUsecase;
 
   ServiceBloc({
     required this.getServicesUsecase,
-    required this.createServiceUsecase,
-    required this.updateServiceUsecase,
-    required this.deleteServiceUsecase,
   }) : super(ServiceInitial()) {
     on<GetServicesRequest>((event, emit) async {
       if (state is ServicePaginationLoading || state is ServiceLoading) {
@@ -91,39 +82,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
             cachedServices: currentServices,
           ),
         );
-      }
-    });
-
-    on<CreateServiceRequest>((event, emit) async {
-      try {
-        await createServiceUsecase.call(event.body);
-        emit(ServiceActionSuccess(message: 'Berhasil menambah layanan'));
-      } on ApiException catch (e) {
-        emit(ServiceActionError(message: e.message));
-      } catch (e) {
-        emit(ServiceActionError(message: 'Gagal menambah layanan'));
-      }
-    });
-
-    on<UpdateServiceRequest>((event, emit) async {
-      try {
-        await updateServiceUsecase.call(event.id, event.body);
-        emit(ServiceActionSuccess(message: 'Berhasil memperbarui layanan'));
-      } on ApiException catch (e) {
-        emit(ServiceActionError(message: e.message));
-      } catch (e) {
-        emit(ServiceActionError(message: 'Gagal memperbarui layanan'));
-      }
-    });
-
-    on<DeleteServiceRequest>((event, emit) async {
-      try {
-        await deleteServiceUsecase.call(event.id);
-        emit(ServiceActionSuccess(message: 'Berhasil menghapus layanan'));
-      } on ApiException catch (e) {
-        emit(ServiceActionError(message: e.message));
-      } catch (e) {
-        emit(ServiceActionError(message: 'Gagal menghapus layanan'));
       }
     });
   }

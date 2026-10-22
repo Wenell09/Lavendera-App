@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 
 class AddOutletPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AddOutletPageState extends State<AddOutletPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<OutletBloc, OutletState>(
+      body: BlocListener<OutletActionBloc, OutletActionState>(
         listener: (context, state) {
           if (state is OutletActionSuccess) {
             context.read<OutletBloc>().add(GetOutletsRequest());
@@ -241,16 +242,16 @@ class _AddOutletPageState extends State<AddOutletPage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<OutletBloc, OutletState>(
+    return BlocBuilder<OutletActionBloc, OutletActionState>(
       builder: (context, state) {
-        final isLoading = state is OutletLoading;
+        final isLoading = state is OutletActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
-                    context.read<OutletBloc>().add(
-                      CreateOutletRequest(
+                    context.read<OutletActionBloc>().add(
+                      CreateOutletActionRequest(
                         body: {
                           'name': _nameController.text.trim(),
                           'phone': _phoneController.text.trim(),

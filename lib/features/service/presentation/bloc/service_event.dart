@@ -15,19 +15,3 @@ class GetServicesRequest extends ServiceEvent {
     this.limit = 10,
   });
 }
-
-class CreateServiceRequest extends ServiceEvent {
-  final Map<String, dynamic> body;
-  CreateServiceRequest({required this.body});
-}
-
-class UpdateServiceRequest extends ServiceEvent {
-  final String id;
-  final Map<String, dynamic> body;
-  UpdateServiceRequest({required this.id, required this.body});
-}
-
-class DeleteServiceRequest extends ServiceEvent {
-  final String id;
-  DeleteServiceRequest({required this.id});
-}

@@ -179,9 +179,6 @@ class _OutletPageState extends State<OutletPage> {
           ),
           Expanded(
             child: BlocBuilder<OutletBloc, OutletState>(
-              buildWhen: (previous, current) {
-                return current is! OutletActionError;
-              },
               builder: (context, state) {
                 if (state is OutletLoading) {
                   return const Center(

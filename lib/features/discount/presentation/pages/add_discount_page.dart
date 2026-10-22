@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
+import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 
 class AddDiscountPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<DiscountBloc, DiscountState>(
+      body: BlocListener<DiscountActionBloc, DiscountActionState>(
         listener: (context, state) {
           if (state is DiscountActionSuccess) {
             context.read<DiscountBloc>().add(GetDiscountsRequest());
@@ -246,9 +247,9 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<DiscountBloc, DiscountState>(
+    return BlocBuilder<DiscountActionBloc, DiscountActionState>(
       builder: (context, state) {
-        final isLoading = state is DiscountLoading;
+        final isLoading = state is DiscountActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
@@ -257,8 +258,8 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                     final cleanValue = _type == 'fixed'
                         ? _valueController.text.replaceAll('.', '')
                         : _valueController.text;
-                    context.read<DiscountBloc>().add(
-                      CreateDiscountRequest(
+                    context.read<DiscountActionBloc>().add(
+                      CreateDiscountActionRequest(
                         body: {
                           'name': _nameController.text,
                           'type': _type,

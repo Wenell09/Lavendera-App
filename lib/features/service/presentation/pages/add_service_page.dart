@@ -7,6 +7,7 @@ import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
 
+import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import '../bloc/service_bloc.dart';
 
 class AddServicePage extends StatefulWidget {
@@ -85,7 +86,7 @@ class _AddServicePageState extends State<AddServicePage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<ServiceBloc, ServiceState>(
+      body: BlocListener<ServiceActionBloc, ServiceActionState>(
         listener: (context, state) {
           if (state is ServiceActionSuccess) {
             context.read<ServiceBloc>().add(GetServicesRequest());
@@ -416,9 +417,9 @@ class _AddServicePageState extends State<AddServicePage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<ServiceBloc, ServiceState>(
+    return BlocBuilder<ServiceActionBloc, ServiceActionState>(
       builder: (context, state) {
-        final isLoading = state is ServiceLoading;
+        final isLoading = state is ServiceActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
@@ -429,8 +430,8 @@ class _AddServicePageState extends State<AddServicePage> {
                           _priceController.text.replaceAll('.', ''),
                         ) ??
                         0;
-                    context.read<ServiceBloc>().add(
-                      CreateServiceRequest(
+                    context.read<ServiceActionBloc>().add(
+                      CreateServiceActionRequest(
                         body: {
                           'category_id': _selectedCategoryId,
                           'name': _nameController.text.trim(),

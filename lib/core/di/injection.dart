@@ -17,6 +17,7 @@ import 'package:lavendera/features/customer/domain/usecases/delete_customer_usec
 import 'package:lavendera/features/customer/domain/usecases/get_customer_by_id_usecase.dart';
 import 'package:lavendera/features/customer/domain/usecases/get_customers_usecase.dart';
 import 'package:lavendera/features/customer/domain/usecases/update_customer_usecase.dart';
+import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/detail/customer_detail_bloc.dart';
 import 'package:lavendera/features/discount/data/datasources/discount_remote_data_source.dart';
@@ -26,6 +27,7 @@ import 'package:lavendera/features/discount/domain/usecases/delete_discount_usec
 import 'package:lavendera/features/discount/domain/usecases/get_discount_by_id_usecase.dart';
 import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
 import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
+import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 import 'package:lavendera/features/outlet/data/datasources/outlet_remote_data_source.dart';
 import 'package:lavendera/features/outlet/data/repositories/outlet_repository_impl.dart';
@@ -34,6 +36,7 @@ import 'package:lavendera/features/outlet/domain/usecases/delete_outlet_usecase.
 import 'package:lavendera/features/outlet/domain/usecases/get_outlet_by_id_usecase.dart';
 import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
 import 'package:lavendera/features/outlet/domain/usecases/update_outlet_usecase.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/service/data/datasources/service_remote_data_source.dart';
 import 'package:lavendera/features/service/data/repositories/service_repository_impl.dart';
@@ -42,6 +45,7 @@ import 'package:lavendera/features/service/domain/usecases/delete_service_usecas
 import 'package:lavendera/features/service/domain/usecases/get_service_by_id_usecase.dart';
 import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
 import 'package:lavendera/features/service/domain/usecases/update_service_usecase.dart';
+import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 import 'package:lavendera/features/service_category/data/datasources/service_category_remote_data_source.dart';
 import 'package:lavendera/features/service_category/data/repositories/service_category_repository_impl.dart';
@@ -50,6 +54,7 @@ import 'package:lavendera/features/service_category/domain/usecases/delete_servi
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_category_by_id_usecase.dart';
 import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
+import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 
 final sl = GetIt.instance;
@@ -115,6 +120,10 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => CustomerBloc(
       getCustomersUsecase: sl<GetCustomersUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => CustomerActionBloc(
       createCustomerUsecase: sl<CreateCustomerUsecase>(),
       updateCustomerUsecase: sl<UpdateCustomerUsecase>(),
       deleteCustomerUsecase: sl<DeleteCustomerUsecase>(),
@@ -152,6 +161,10 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => DiscountBloc(
       getDiscountsUsecase: sl<GetDiscountsUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => DiscountActionBloc(
       createDiscountUsecase: sl<CreateDiscountUsecase>(),
       updateDiscountUsecase: sl<UpdateDiscountUsecase>(),
       deleteDiscountUsecase: sl<DeleteDiscountUsecase>(),
@@ -184,6 +197,10 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => ServiceCategoryBloc(
       getServiceCategoriesUsecase: sl<GetServiceCategoriesUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => ServiceCategoryActionBloc(
       createServiceCategoryUsecase: sl<CreateServiceCategoryUsecase>(),
       updateServiceCategoryUsecase: sl<UpdateServiceCategoryUsecase>(),
       deleteServiceCategoryUsecase: sl<DeleteServiceCategoryUsecase>(),
@@ -215,6 +232,10 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => ServiceBloc(
       getServicesUsecase: sl<GetServicesUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => ServiceActionBloc(
       createServiceUsecase: sl<CreateServiceUsecase>(),
       updateServiceUsecase: sl<UpdateServiceUsecase>(),
       deleteServiceUsecase: sl<DeleteServiceUsecase>(),
@@ -243,6 +264,10 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => OutletBloc(
       getOutletsUsecase: sl<GetOutletsUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => OutletActionBloc(
       createOutletUsecase: sl<CreateOutletUsecase>(),
       updateOutletUsecase: sl<UpdateOutletUsecase>(),
       deleteOutletUsecase: sl<DeleteOutletUsecase>(),

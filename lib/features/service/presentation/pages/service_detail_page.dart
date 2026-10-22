@@ -8,6 +8,7 @@ import 'package:lavendera/features/service_category/domain/entities/service_cate
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
 
 import '../../domain/entities/service_item.dart';
+import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import '../bloc/service_bloc.dart';
 
 class ServiceDetailPage extends StatefulWidget {
@@ -94,8 +95,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<ServiceBloc>().add(
-                DeleteServiceRequest(id: widget.service.id),
+              context.read<ServiceActionBloc>().add(
+                DeleteServiceActionRequest(id: widget.service.id),
               );
               Navigator.pop(context);
             },
@@ -135,7 +136,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           ),
         ],
       ),
-      body: BlocListener<ServiceBloc, ServiceState>(
+      body: BlocListener<ServiceActionBloc, ServiceActionState>(
         listener: (context, state) {
           if (state is ServiceActionSuccess) {
             context.read<ServiceBloc>().add(GetServicesRequest());
@@ -460,9 +461,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<ServiceBloc, ServiceState>(
+    return BlocBuilder<ServiceActionBloc, ServiceActionState>(
       builder: (context, state) {
-        final isLoading = state is ServiceLoading;
+        final isLoading = state is ServiceActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
@@ -473,8 +474,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                           _priceController.text.replaceAll('.', ''),
                         ) ??
                         0;
-                    context.read<ServiceBloc>().add(
-                      UpdateServiceRequest(
+                    context.read<ServiceActionBloc>().add(
+                      UpdateServiceActionRequest(
                         id: widget.service.id,
                         body: {
                           'category_id': _selectedCategoryId,

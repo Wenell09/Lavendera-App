@@ -168,9 +168,6 @@ class _CustomerPageState extends State<CustomerPage> {
           ),
           Expanded(
             child: BlocBuilder<CustomerBloc, CustomerState>(
-              buildWhen: (previous, current) {
-                return current is! CustomerActionError;
-              },
               builder: (context, state) {
                 if (state is CustomerLoading) {
                   return const Center(
@@ -179,7 +176,8 @@ class _CustomerPageState extends State<CustomerPage> {
                       color: Color(0xFF4A99AD),
                     ),
                   );
-                } else if (state is CustomerError) {
+                }
+                if (state is CustomerError) {
                   final cachedCustomers = state.cachedCustomers ?? [];
                   if (cachedCustomers.isEmpty) {
                     return Center(

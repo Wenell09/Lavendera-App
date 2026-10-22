@@ -1,6 +1,6 @@
 part of 'outlet_bloc.dart';
 
-class OutletState {}
+abstract class OutletState {}
 
 final class OutletInitial extends OutletState {}
 
@@ -26,16 +26,6 @@ final class OutletLoaded extends OutletState {
     required this.currentPage,
     required this.hasMorePages,
   });
-}
-
-final class OutletActionSuccess extends OutletState {
-  final String message;
-  OutletActionSuccess({required this.message});
-}
-
-final class OutletActionError extends OutletState {
-  final String message;
-  OutletActionError({required this.message});
 }
 
 final class OutletError extends OutletState {

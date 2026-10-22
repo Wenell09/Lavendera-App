@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
+import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 
 class DiscountDetailPage extends StatefulWidget {
@@ -54,8 +55,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<DiscountBloc>().add(
-                DeleteDiscountRequest(id: widget.discount.id),
+              context.read<DiscountActionBloc>().add(
+                DeleteDiscountActionRequest(id: widget.discount.id),
               );
               Navigator.pop(context);
             },
@@ -95,7 +96,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           ),
         ],
       ),
-      body: BlocListener<DiscountBloc, DiscountState>(
+      body: BlocListener<DiscountActionBloc, DiscountActionState>(
         listener: (context, state) {
           if (state is DiscountActionSuccess) {
             context.read<DiscountBloc>().add(GetDiscountsRequest());
@@ -292,9 +293,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<DiscountBloc, DiscountState>(
+    return BlocBuilder<DiscountActionBloc, DiscountActionState>(
       builder: (context, state) {
-        final isLoading = state is DiscountLoading;
+        final isLoading = state is DiscountActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
@@ -303,8 +304,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                     final cleanValue = _type == 'fixed'
                         ? _valueController.text.replaceAll('.', '')
                         : _valueController.text;
-                    context.read<DiscountBloc>().add(
-                      UpdateDiscountRequest(
+                    context.read<DiscountActionBloc>().add(
+                      UpdateDiscountActionRequest(
                         id: widget.discount.id,
                         body: {
                           'name': _nameController.text,

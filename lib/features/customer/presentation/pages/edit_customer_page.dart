@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/domain/entities/customer.dart';
-import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
 
 class EditCustomerPage extends StatefulWidget {
   final Customer customer;
@@ -60,7 +60,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<CustomerBloc, CustomerState>(
+      body: BlocListener<CustomerActionBloc, CustomerActionState>(
         listener: (context, state) {
           if (state is CustomerActionSuccess) {
             Navigator.pop(context, true);
@@ -108,9 +108,9 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                   maxLines: 3,
                 ),
                 const SizedBox(height: 40),
-                BlocBuilder<CustomerBloc, CustomerState>(
+                BlocBuilder<CustomerActionBloc, CustomerActionState>(
                   builder: (context, state) {
-                    final isLoading = state is CustomerLoading;
+                    final isLoading = state is CustomerActionLoading;
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
@@ -129,8 +129,8 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                             ? null
                             : () {
                                 if (_formKey.currentState!.validate()) {
-                                  context.read<CustomerBloc>().add(
-                                    UpdateCustomerRequest(
+                                  context.read<CustomerActionBloc>().add(
+                                    UpdateCustomerActionRequest(
                                       id: widget.customer.id,
                                       body: {
                                         'name': _nameController.text,

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/info_tile_widget.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/pages/edit_outlet_page.dart';
 
@@ -47,8 +48,8 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
           ),
           TextButton(
             onPressed: () {
-              context.read<OutletBloc>().add(
-                DeleteOutletRequest(id: _outlet.id),
+              context.read<OutletActionBloc>().add(
+                DeleteOutletActionRequest(id: _outlet.id),
               );
               Navigator.pop(context);
             },
@@ -113,13 +114,22 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
           ),
         ],
       ),
-      body: BlocListener<OutletBloc, OutletState>(
+      body: BlocListener<OutletActionBloc, OutletActionState>(
         listener: (context, state) {
           if (state is OutletActionSuccess) {
+            context.read<OutletBloc>().add(GetOutletsRequest());
             Navigator.pop(context, true);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } else if (state is OutletActionError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
               ),
             );

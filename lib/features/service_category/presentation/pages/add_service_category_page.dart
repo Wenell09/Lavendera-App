@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 
+import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import '../bloc/service_category_bloc.dart';
 
 class AddServiceCategoryPage extends StatefulWidget {
@@ -44,7 +45,7 @@ class _AddServiceCategoryPageState extends State<AddServiceCategoryPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocListener<ServiceCategoryBloc, ServiceCategoryState>(
+      body: BlocListener<ServiceCategoryActionBloc, ServiceCategoryActionState>(
         listener: (context, state) {
           if (state is ServiceCategoryActionSuccess) {
             context.read<ServiceCategoryBloc>().add(
@@ -160,16 +161,16 @@ class _AddServiceCategoryPageState extends State<AddServiceCategoryPage> {
   }
 
   Widget _buildSubmitButton() {
-    return BlocBuilder<ServiceCategoryBloc, ServiceCategoryState>(
+    return BlocBuilder<ServiceCategoryActionBloc, ServiceCategoryActionState>(
       builder: (context, state) {
-        final isLoading = state is ServiceCategoryLoading;
+        final isLoading = state is ServiceCategoryActionLoading;
         return ElevatedButton(
           onPressed: isLoading
               ? null
               : () {
                   if (_formKey.currentState!.validate()) {
-                    context.read<ServiceCategoryBloc>().add(
-                      CreateServiceCategoryRequest(
+                    context.read<ServiceCategoryActionBloc>().add(
+                      CreateServiceCategoryActionRequest(
                         body: {'name': _nameController.text.trim()},
                       ),
                     );

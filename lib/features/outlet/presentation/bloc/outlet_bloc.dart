@@ -93,7 +93,6 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
     });
 
     on<CreateOutletRequest>((event, emit) async {
-      emit(OutletLoading());
       try {
         await _createOutletUsecase.call(event.body);
         emit(OutletActionSuccess(message: 'Berhasil menambah outlet'));
@@ -105,7 +104,6 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
     });
 
     on<UpdateOutletRequest>((event, emit) async {
-      emit(OutletLoading());
       try {
         await _updateOutletUsecase.call(event.id, event.body);
         emit(OutletActionSuccess(message: 'Berhasil memperbarui outlet'));
@@ -117,7 +115,6 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
     });
 
     on<DeleteOutletRequest>((event, emit) async {
-      emit(OutletLoading());
       try {
         await _deleteOutletUsecase.call(event.id);
         emit(OutletActionSuccess(message: 'Berhasil menghapus outlet'));

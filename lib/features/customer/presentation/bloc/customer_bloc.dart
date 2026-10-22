@@ -94,7 +94,6 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     });
 
     on<CreateCustomerRequest>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await _createCustomerUsecase.call(event.body);
         emit(CustomerActionSuccess(message: 'berhasil menambah pelanggan'));
@@ -106,7 +105,6 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     });
 
     on<UpdateCustomerRequest>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await _updateCustomerUsecase.call(event.id, event.body);
         emit(CustomerActionSuccess(message: 'berhasil memperbarui pelanggan'));
@@ -118,7 +116,6 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     });
 
     on<DeleteCustomerRequest>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await _deleteCustomerUsecase.call(event.id);
         emit(CustomerActionSuccess(message: 'berhasil menghapus pelanggan'));

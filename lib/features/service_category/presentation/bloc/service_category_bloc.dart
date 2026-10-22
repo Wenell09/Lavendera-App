@@ -52,7 +52,6 @@ class ServiceCategoryBloc
     });
 
     on<CreateServiceCategoryRequest>((event, emit) async {
-      emit(ServiceCategoryLoading());
       try {
         await createServiceCategoryUsecase.call(event.body);
         emit(
@@ -72,7 +71,6 @@ class ServiceCategoryBloc
     });
 
     on<UpdateServiceCategoryRequest>((event, emit) async {
-      emit(ServiceCategoryLoading());
       try {
         await updateServiceCategoryUsecase.call(event.id, event.body);
         emit(
@@ -92,7 +90,6 @@ class ServiceCategoryBloc
     });
 
     on<DeleteServiceCategoryRequest>((event, emit) async {
-      emit(ServiceCategoryLoading());
       try {
         await deleteServiceCategoryUsecase.call(event.id);
         emit(

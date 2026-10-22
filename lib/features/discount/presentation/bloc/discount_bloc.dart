@@ -94,7 +94,6 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     });
 
     on<CreateDiscountRequest>((event, emit) async {
-      emit(DiscountLoading());
       try {
         await _createDiscountUsecase.call(event.body);
         emit(DiscountActionSuccess(message: 'Berhasil menambah diskon'));
@@ -106,7 +105,6 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     });
 
     on<UpdateDiscountRequest>((event, emit) async {
-      emit(DiscountLoading());
       try {
         await _updateDiscountUsecase.call(event.id, event.body);
         emit(DiscountActionSuccess(message: 'Berhasil memperbarui diskon'));
@@ -118,7 +116,6 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     });
 
     on<DeleteDiscountRequest>((event, emit) async {
-      emit(DiscountLoading());
       try {
         await _deleteDiscountUsecase.call(event.id);
         emit(DiscountActionSuccess(message: 'Berhasil menghapus diskon'));

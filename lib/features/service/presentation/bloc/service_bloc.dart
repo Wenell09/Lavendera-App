@@ -95,7 +95,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     });
 
     on<CreateServiceRequest>((event, emit) async {
-      emit(ServiceLoading());
       try {
         await createServiceUsecase.call(event.body);
         emit(ServiceActionSuccess(message: 'Berhasil menambah layanan'));
@@ -107,7 +106,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     });
 
     on<UpdateServiceRequest>((event, emit) async {
-      emit(ServiceLoading());
       try {
         await updateServiceUsecase.call(event.id, event.body);
         emit(ServiceActionSuccess(message: 'Berhasil memperbarui layanan'));
@@ -119,7 +117,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     });
 
     on<DeleteServiceRequest>((event, emit) async {
-      emit(ServiceLoading());
       try {
         await deleteServiceUsecase.call(event.id);
         emit(ServiceActionSuccess(message: 'Berhasil menghapus layanan'));

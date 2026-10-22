@@ -183,6 +183,9 @@ class _ServicePageState extends State<ServicePage> {
           ),
           Expanded(
             child: BlocBuilder<ServiceBloc, ServiceState>(
+              buildWhen: (previous, current) {
+                return current is! ServiceActionError;
+              },
               builder: (context, state) {
                 if (state is ServiceLoading) {
                   return const Center(

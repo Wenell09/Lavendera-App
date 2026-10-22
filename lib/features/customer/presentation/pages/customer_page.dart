@@ -337,7 +337,7 @@ class _CustomerPageState extends State<CustomerPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
-          'Tambah',
+          'Tambah Customer',
           style: AppTextStyles.labelLarge.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,

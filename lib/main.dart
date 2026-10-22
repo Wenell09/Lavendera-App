@@ -14,6 +14,8 @@ import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
+import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
+import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<ServiceActionBloc>()),
         BlocProvider(create: (_) => sl<OutletBloc>()),
         BlocProvider(create: (_) => sl<OutletActionBloc>()),
+        BlocProvider(create: (_) => sl<UserBloc>()),
+        BlocProvider(create: (_) => sl<UserActionBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

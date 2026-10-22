@@ -56,6 +56,16 @@ import 'package:lavendera/features/service_category/domain/usecases/get_service_
 import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
+import 'package:lavendera/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:lavendera/features/user/data/repositories/user_repository_impl.dart';
+import 'package:lavendera/features/user/domain/usecases/create_user_usecase.dart';
+import 'package:lavendera/features/user/domain/usecases/delete_user_usecase.dart';
+import 'package:lavendera/features/user/domain/usecases/get_user_by_id_usecase.dart';
+import 'package:lavendera/features/user/domain/usecases/get_users_usecase.dart';
+import 'package:lavendera/features/user/domain/usecases/update_user_usecase.dart';
+import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
+import 'package:lavendera/features/user/presentation/bloc/detail/user_detail_bloc.dart';
+import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -272,5 +282,30 @@ Future<void> initDependencies() async {
       updateOutletUsecase: sl<UpdateOutletUsecase>(),
       deleteOutletUsecase: sl<DeleteOutletUsecase>(),
     ),
+  );
+  // User
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<UserRepositoryImpl>(
+    () => UserRepositoryImpl(remoteDataSource: sl<UserRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetUsersUsecase(sl<UserRepositoryImpl>()));
+  sl.registerLazySingleton(() => CreateUserUsecase(sl<UserRepositoryImpl>()));
+  sl.registerLazySingleton(() => GetUserByIdUsecase(sl<UserRepositoryImpl>()));
+  sl.registerLazySingleton(() => UpdateUserUsecase(sl<UserRepositoryImpl>()));
+  sl.registerLazySingleton(() => DeleteUserUsecase(sl<UserRepositoryImpl>()));
+  sl.registerFactory(
+    () => UserBloc(getUsersUsecase: sl<GetUsersUsecase>()),
+  );
+  sl.registerFactory(
+    () => UserActionBloc(
+      createUserUsecase: sl<CreateUserUsecase>(),
+      updateUserUsecase: sl<UpdateUserUsecase>(),
+      deleteUserUsecase: sl<DeleteUserUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => UserDetailBloc(getUserByIdUsecase: sl<GetUserByIdUsecase>()),
   );
 }

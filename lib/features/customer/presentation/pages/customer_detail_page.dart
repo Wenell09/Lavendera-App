@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
-import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/detail/customer_detail_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/edit_customer_page.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/dialog_widget.dart';
@@ -131,7 +131,11 @@ class CustomerDetailPage extends StatelessWidget {
                         color: Colors.red.shade300,
                       ),
                       const SizedBox(height: 16),
-                      Text(state.message, style: AppTextStyles.bodyLarge),
+                      Text(
+                        state.message,
+                        style: AppTextStyles.bodyLarge,
+                        textAlign: .center,
+                      ),
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () {
@@ -249,7 +253,9 @@ class CustomerDetailPage extends StatelessWidget {
       content: 'Tindakan ini tidak dapat dibatalkan. Semua data terkait pelanggan ini akan hilang.',
     );
     if (confirmed == true && context.mounted) {
-      context.read<CustomerActionBloc>().add(DeleteCustomerActionRequest(id: customerId));
+      context.read<CustomerActionBloc>().add(
+        DeleteCustomerActionRequest(id: customerId),
+      );
     }
   }
 

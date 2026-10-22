@@ -5,6 +5,7 @@ import 'package:lavendera/features/discount/presentation/pages/discount_page.dar
 import 'package:lavendera/features/outlet/presentation/pages/outlet_page.dart';
 import 'package:lavendera/features/service/presentation/pages/service_page.dart';
 import 'package:lavendera/features/service_category/presentation/pages/service_category_page.dart';
+import 'package:lavendera/features/user/presentation/pages/user_page.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -111,6 +112,19 @@ class Home extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const OutletPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 14),
+            _buildMenuCard(
+              context: context,
+              title: 'Staff',
+              subtitle: 'Kelola staff',
+              icon: Icons.person,
+              color: const Color(0xFF10B981),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const UserPage()),
                 );
               },
             ),

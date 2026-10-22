@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
@@ -7,7 +9,6 @@ import 'package:lavendera/features/customer/presentation/pages/add_customer_page
 import 'package:lavendera/features/customer/presentation/pages/customer_detail_page.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/card_widget.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/empty_widget.dart';
-import 'package:lavendera/features/customer/presentation/pages/widgets/search_widget.dart';
 
 class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key});
@@ -19,6 +20,7 @@ class CustomerPage extends StatefulWidget {
 class _CustomerPageState extends State<CustomerPage> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _CustomerPageState extends State<CustomerPage> {
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -61,10 +64,15 @@ class _CustomerPageState extends State<CustomerPage> {
     return currentScroll >= (maxScroll - 200);
   }
 
-  void _onSearch(String query) {
-    context.read<CustomerBloc>().add(
-      GetCustomersRequest(search: query.isEmpty ? null : query, page: 1),
-    );
+  void _onSearchChanged(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      final text = query.trim();
+      context.read<CustomerBloc>().add(
+        GetCustomersRequest(search: text.isEmpty ? null : text, page: 1),
+      );
+    });
+    setState(() {});
   }
 
   @override
@@ -93,7 +101,13 @@ class _CustomerPageState extends State<CustomerPage> {
             child: IconButton(
               icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
               onPressed: () {
-                _onSearch(_searchController.text);
+                final text = _searchController.text.trim();
+                context.read<CustomerBloc>().add(
+                  GetCustomersRequest(
+                    search: text.isEmpty ? null : text,
+                    page: 1,
+                  ),
+                );
               },
             ),
           ),
@@ -103,10 +117,53 @@ class _CustomerPageState extends State<CustomerPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: SearchWidget(
+            child: TextField(
               controller: _searchController,
-              hintText: 'Cari nama atau telepon...',
-              onChanged: _onSearch,
+              onChanged: _onSearchChanged,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(
+                hintText: 'Cari nama atau telepon...',
+                hintStyle: AppTextStyles.bodyMedium.copyWith(
+                  color: Colors.grey.shade400,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Color(0xFF4A99AD),
+                  size: 20,
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.close, size: 18),
+                        color: Colors.grey.shade400,
+                        onPressed: () {
+                          _searchController.clear();
+                          _onSearchChanged('');
+                          setState(() {});
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF4A99AD),
+                    width: 1.5,
+                  ),
+                ),
+              ),
             ),
           ),
           Expanded(
@@ -119,28 +176,35 @@ class _CustomerPageState extends State<CustomerPage> {
                       color: Color(0xFF4A99AD),
                     ),
                   );
-                }
-                if (state is CustomerError &&
-                    (state.cachedCustomers == null ||
-                        state.cachedCustomers!.isEmpty)) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(state.message, style: AppTextStyles.bodyLarge),
-                        TextButton(
-                          onPressed: () => _onSearch(_searchController.text),
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+                } else if (state is CustomerError) {
+                  final cachedCustomers = state.cachedCustomers ?? [];
+                  if (cachedCustomers.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            state.message,
+                            style: AppTextStyles.bodyLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: () {
+                              _onSearchChanged(_searchController.text);
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
                 List<Customer> customers = [];
                 bool isPaginationLoading = false;
@@ -149,9 +213,8 @@ class _CustomerPageState extends State<CustomerPage> {
                 } else if (state is CustomerPaginationLoading) {
                   customers = state.customers;
                   isPaginationLoading = true;
-                } else if (state is CustomerError &&
-                    state.cachedCustomers != null) {
-                  customers = state.cachedCustomers!;
+                } else if (state is CustomerError) {
+                  customers = state.cachedCustomers ?? [];
                 }
                 if (customers.isEmpty) {
                   return EmptyWidget(
@@ -171,6 +234,7 @@ class _CustomerPageState extends State<CustomerPage> {
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 12),
                   itemBuilder: (context, index) {
+                    // Indikator loading pagination
                     if (index >= customers.length) {
                       return const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),

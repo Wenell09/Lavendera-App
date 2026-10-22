@@ -76,9 +76,12 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
             hasMorePages: hasMore,
           ),
         );
-      } on ApiException catch (e) {
+      } on ApiException {
         emit(
-          DiscountError(message: e.message, cachedDiscounts: currentDiscounts),
+          DiscountError(
+            message: 'Gagal memuat data diskon',
+            cachedDiscounts: currentDiscounts,
+          ),
         );
       } catch (e) {
         emit(
@@ -96,9 +99,9 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
         await _createDiscountUsecase.call(event.body);
         emit(DiscountActionSuccess(message: 'Berhasil menambah diskon'));
       } on ApiException catch (e) {
-        emit(DiscountError(message: e.message));
+        emit(DiscountActionError(message: e.message));
       } catch (e) {
-        emit(DiscountError(message: 'Gagal menambah diskon'));
+        emit(DiscountActionError(message: 'Gagal menambah diskon'));
       }
     });
 
@@ -108,9 +111,9 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
         await _updateDiscountUsecase.call(event.id, event.body);
         emit(DiscountActionSuccess(message: 'Berhasil memperbarui diskon'));
       } on ApiException catch (e) {
-        emit(DiscountError(message: e.message));
+        emit(DiscountActionError(message: e.message));
       } catch (e) {
-        emit(DiscountError(message: 'Gagal memperbarui diskon'));
+        emit(DiscountActionError(message: 'Gagal memperbarui diskon'));
       }
     });
 
@@ -120,9 +123,9 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
         await _deleteDiscountUsecase.call(event.id);
         emit(DiscountActionSuccess(message: 'Berhasil menghapus diskon'));
       } on ApiException catch (e) {
-        emit(DiscountError(message: e.message));
+        emit(DiscountActionError(message: e.message));
       } catch (e) {
-        emit(DiscountError(message: 'Gagal menghapus diskon'));
+        emit(DiscountActionError(message: 'Gagal menghapus diskon'));
       }
     });
   }

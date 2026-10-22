@@ -88,17 +88,12 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                 color: Colors.black87,
                 size: 20,
               ),
-              onPressed: () async {
-                final updated = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditOutletPage(outlet: _outlet),
-                  ),
-                );
-                if (updated == true && context.mounted) {
-                  context.read<OutletBloc>().add(GetOutletsRequest());
-                }
-              },
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditOutletPage(outlet: _outlet),
+                ),
+              ),
             ),
           ),
           Container(

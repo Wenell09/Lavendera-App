@@ -23,7 +23,9 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
     super.initState();
     _nameController = TextEditingController(text: widget.customer.name);
     _phoneController = TextEditingController(text: widget.customer.phone);
-    _addressController = TextEditingController(text: widget.customer.address ?? '');
+    _addressController = TextEditingController(
+      text: widget.customer.address ?? '',
+    );
   }
 
   @override
@@ -62,7 +64,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
         listener: (context, state) {
           if (state is CustomerActionSuccess) {
             Navigator.pop(context, true);
-          } else if (state is CustomerError) {
+          } else if (state is CustomerActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -94,7 +96,8 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                   hint: 'Contoh: 628123456789',
                   icon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
-                  validator: (v) => v!.isEmpty ? 'Nomor telepon wajib diisi' : null,
+                  validator: (v) =>
+                      v!.isEmpty ? 'Nomor telepon wajib diisi' : null,
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
@@ -114,7 +117,8 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                         boxShadow: [
                           if (!isLoading)
                             BoxShadow(
-                              color: const Color(0xFF4A99AD).withValues(alpha: 0.3),
+                              color: const Color(0xFF4A99AD)
+                                  .withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -126,15 +130,15 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                             : () {
                                 if (_formKey.currentState!.validate()) {
                                   context.read<CustomerBloc>().add(
-                                        UpdateCustomerRequest(
-                                          id: widget.customer.id,
-                                          body: {
-                                            'name': _nameController.text,
-                                            'phone': _phoneController.text,
-                                            'address': _addressController.text,
-                                          },
-                                        ),
-                                      );
+                                    UpdateCustomerRequest(
+                                      id: widget.customer.id,
+                                      body: {
+                                        'name': _nameController.text,
+                                        'phone': _phoneController.text,
+                                        'address': _addressController.text,
+                                      },
+                                    ),
+                                  );
                                 }
                               },
                         style: ElevatedButton.styleFrom(
@@ -204,11 +208,16 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
           style: AppTextStyles.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: AppTextStyles.bodyMedium.copyWith(color: Colors.grey.shade400),
+            hintStyle: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.grey.shade400,
+            ),
             prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
             filled: true,
             fillColor: Colors.grey.shade50,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
@@ -219,7 +228,10 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF4A99AD), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF4A99AD),
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

@@ -189,37 +189,37 @@ class _DiscountPageState extends State<DiscountPage> {
                     ),
                   );
                 }
-                if (state is DiscountError &&
-                    (state.cachedDiscounts == null ||
-                        state.cachedDiscounts!.isEmpty)) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(state.message, style: AppTextStyles.bodyLarge),
-                        TextButton(
-                          onPressed: () {
-                            final text = _searchController.text.trim();
-                            context.read<DiscountBloc>().add(
-                              GetDiscountsRequest(
-                                search: text.isEmpty ? null : text,
-                                page: 1,
-                              ),
-                            );
-                          },
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+                if (state is DiscountError) {
+                  final cachedDiscounts = state.cachedDiscounts ?? [];
+                  if (cachedDiscounts.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          TextButton(
+                            onPressed: () {
+                              final text = _searchController.text.trim();
+                              context.read<DiscountBloc>().add(
+                                GetDiscountsRequest(
+                                  search: text.isEmpty ? null : text,
+                                  page: 1,
+                                ),
+                              );
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
-
                 List<Discount> discounts = [];
                 bool isPaginationLoading = false;
                 if (state is DiscountLoaded) {
@@ -227,17 +227,14 @@ class _DiscountPageState extends State<DiscountPage> {
                 } else if (state is DiscountPaginationLoading) {
                   discounts = state.discounts;
                   isPaginationLoading = true;
-                } else if (state is DiscountError &&
-                    state.cachedDiscounts != null) {
-                  discounts = state.cachedDiscounts!;
+                } else if (state is DiscountError) {
+                  discounts = state.cachedDiscounts ?? [];
                 }
-
                 if (_typeFilter != null) {
                   discounts = discounts
                       .where((d) => d.type == _typeFilter)
                       .toList();
                 }
-
                 if (discounts.isEmpty) {
                   return Center(
                     child: Column(
@@ -277,7 +274,6 @@ class _DiscountPageState extends State<DiscountPage> {
                     ),
                   );
                 }
-
                 return ListView.separated(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),

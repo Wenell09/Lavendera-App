@@ -107,7 +107,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is DiscountError) {
+          } else if (state is DiscountActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

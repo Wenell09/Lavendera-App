@@ -61,7 +61,7 @@ class _AddOutletPageState extends State<AddOutletPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is OutletError) {
+          } else if (state is OutletActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

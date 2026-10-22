@@ -34,10 +34,10 @@ class ServiceCategoryBloc
       try {
         final categories = await getServiceCategoriesUsecase.call();
         emit(ServiceCategoryLoaded(categories: categories));
-      } on ApiException catch (e) {
+      } on ApiException {
         emit(
           ServiceCategoryError(
-            message: e.message,
+            message: 'Gagal memuat kategori layanan',
             cachedCategories: currentCategories,
           ),
         );
@@ -61,10 +61,12 @@ class ServiceCategoryBloc
           ),
         );
       } on ApiException catch (e) {
-        emit(ServiceCategoryError(message: e.message));
+        emit(ServiceCategoryActionError(message: e.message));
       } catch (e) {
         emit(
-          ServiceCategoryError(message: 'Gagal menambahkan kategori layanan'),
+          ServiceCategoryActionError(
+            message: 'Gagal menambahkan kategori layanan',
+          ),
         );
       }
     });
@@ -79,10 +81,12 @@ class ServiceCategoryBloc
           ),
         );
       } on ApiException catch (e) {
-        emit(ServiceCategoryError(message: e.message));
+        emit(ServiceCategoryActionError(message: e.message));
       } catch (e) {
         emit(
-          ServiceCategoryError(message: 'Gagal memperbarui kategori layanan'),
+          ServiceCategoryActionError(
+            message: 'Gagal memperbarui kategori layanan',
+          ),
         );
       }
     });
@@ -97,9 +101,13 @@ class ServiceCategoryBloc
           ),
         );
       } on ApiException catch (e) {
-        emit(ServiceCategoryError(message: e.message));
+        emit(ServiceCategoryActionError(message: e.message));
       } catch (e) {
-        emit(ServiceCategoryError(message: 'Gagal menghapus kategori layanan'));
+        emit(
+          ServiceCategoryActionError(
+            message: 'Gagal menghapus kategori layanan',
+          ),
+        );
       }
     });
   }

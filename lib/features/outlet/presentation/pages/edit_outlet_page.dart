@@ -77,7 +77,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
         listener: (context, state) {
           if (state is OutletActionSuccess) {
             Navigator.pop(context, true);
-          } else if (state is OutletError) {
+          } else if (state is OutletActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
@@ -187,37 +188,37 @@ class _OutletPageState extends State<OutletPage> {
                     ),
                   );
                 }
-                if (state is OutletError &&
-                    (state.cachedOutlets == null ||
-                        state.cachedOutlets!.isEmpty)) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(state.message, style: AppTextStyles.bodyLarge),
-                        TextButton(
-                          onPressed: () {
-                            final text = _searchController.text.trim();
-                            context.read<OutletBloc>().add(
-                              GetOutletsRequest(
-                                search: text.isEmpty ? null : text,
-                                page: 1,
-                              ),
-                            );
-                          },
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+                if (state is OutletError) {
+                  final cachedOutles = state.cachedOutlets ?? [];
+                  if (cachedOutles.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          TextButton(
+                            onPressed: () {
+                              final text = _searchController.text.trim();
+                              context.read<OutletBloc>().add(
+                                GetOutletsRequest(
+                                  search: text.isEmpty ? null : text,
+                                  page: 1,
+                                ),
+                              );
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
-
                 List<Outlet> outlets = [];
                 bool isPaginationLoading = false;
                 if (state is OutletLoaded) {
@@ -225,17 +226,14 @@ class _OutletPageState extends State<OutletPage> {
                 } else if (state is OutletPaginationLoading) {
                   outlets = state.outlets;
                   isPaginationLoading = true;
-                } else if (state is OutletError &&
-                    state.cachedOutlets != null) {
-                  outlets = state.cachedOutlets!;
+                } else if (state is OutletError) {
+                  outlets = state.cachedOutlets ?? [];
                 }
-
                 if (_statusFilter != null) {
                   outlets = outlets
                       .where((o) => o.isActive == _statusFilter)
                       .toList();
                 }
-
                 if (outlets.isEmpty) {
                   return Center(
                     child: Column(
@@ -275,7 +273,6 @@ class _OutletPageState extends State<OutletPage> {
                     ),
                   );
                 }
-
                 return ListView.separated(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
@@ -371,7 +368,10 @@ class _OutletPageState extends State<OutletPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Center(
-                    child: Icon(Icons.storefront_rounded, color: Color(0xFF4A99AD)),
+                    child: Icon(
+                      Icons.storefront_rounded,
+                      color: Color(0xFF4A99AD),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -404,7 +404,9 @@ class _OutletPageState extends State<OutletPage> {
                             child: Text(
                               outlet.isActive ? 'Aktif' : 'Non-aktif',
                               style: AppTextStyles.labelSmall.copyWith(
-                                color: outlet.isActive ? Colors.green : Colors.red,
+                                color: outlet.isActive
+                                    ? Colors.green
+                                    : Colors.red,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -414,7 +416,11 @@ class _OutletPageState extends State<OutletPage> {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.phone_outlined, size: 14, color: Colors.grey.shade500),
+                          Icon(
+                            Icons.phone_outlined,
+                            size: 14,
+                            color: Colors.grey.shade500,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             outlet.phone,
@@ -428,7 +434,11 @@ class _OutletPageState extends State<OutletPage> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.location_on_outlined, size: 14, color: Colors.grey.shade500),
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: Colors.grey.shade500,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
@@ -451,7 +461,8 @@ class _OutletPageState extends State<OutletPage> {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4A99AD).withValues(alpha: 0.08),
+                            color: const Color(0xFF4A99AD)
+                                .withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Row(

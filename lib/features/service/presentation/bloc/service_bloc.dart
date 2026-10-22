@@ -77,8 +77,13 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
             hasMorePages: hasMore,
           ),
         );
-      } on ApiException catch (e) {
-        emit(ServiceError(message: e.message, cachedServices: currentServices));
+      } on ApiException {
+        emit(
+          ServiceError(
+            message: 'Gagal memuat data layanan',
+            cachedServices: currentServices,
+          ),
+        );
       } catch (e) {
         emit(
           ServiceError(
@@ -95,9 +100,9 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         await createServiceUsecase.call(event.body);
         emit(ServiceActionSuccess(message: 'Berhasil menambah layanan'));
       } on ApiException catch (e) {
-        emit(ServiceError(message: e.message));
+        emit(ServiceActionError(message: e.message));
       } catch (e) {
-        emit(ServiceError(message: 'Gagal menambah layanan'));
+        emit(ServiceActionError(message: 'Gagal menambah layanan'));
       }
     });
 
@@ -107,9 +112,9 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         await updateServiceUsecase.call(event.id, event.body);
         emit(ServiceActionSuccess(message: 'Berhasil memperbarui layanan'));
       } on ApiException catch (e) {
-        emit(ServiceError(message: e.message));
+        emit(ServiceActionError(message: e.message));
       } catch (e) {
-        emit(ServiceError(message: 'Gagal memperbarui layanan'));
+        emit(ServiceActionError(message: 'Gagal memperbarui layanan'));
       }
     });
 
@@ -119,9 +124,9 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         await deleteServiceUsecase.call(event.id);
         emit(ServiceActionSuccess(message: 'Berhasil menghapus layanan'));
       } on ApiException catch (e) {
-        emit(ServiceError(message: e.message));
+        emit(ServiceActionError(message: e.message));
       } catch (e) {
-        emit(ServiceError(message: 'Gagal menghapus layanan'));
+        emit(ServiceActionError(message: 'Gagal menghapus layanan'));
       }
     });
   }

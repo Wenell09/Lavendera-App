@@ -192,38 +192,37 @@ class _ServicePageState extends State<ServicePage> {
                     ),
                   );
                 }
-
-                if (state is ServiceError &&
-                    (state.cachedServices == null ||
-                        state.cachedServices!.isEmpty)) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(state.message, style: AppTextStyles.bodyLarge),
-                        TextButton(
-                          onPressed: () {
-                            final text = _searchController.text.trim();
-                            context.read<ServiceBloc>().add(
-                              GetServicesRequest(
-                                search: text.isEmpty ? null : text,
-                                page: 1,
-                              ),
-                            );
-                          },
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+                if (state is ServiceError) {
+                  final cachedServices = state.cachedServices ?? [];
+                  if (cachedServices.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          TextButton(
+                            onPressed: () {
+                              final text = _searchController.text.trim();
+                              context.read<ServiceBloc>().add(
+                                GetServicesRequest(
+                                  search: text.isEmpty ? null : text,
+                                  page: 1,
+                                ),
+                              );
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
-
                 List<LaundryService> services = [];
                 bool isPaginationLoading = false;
                 if (state is ServiceLoaded) {
@@ -231,17 +230,14 @@ class _ServicePageState extends State<ServicePage> {
                 } else if (state is ServicePaginationLoading) {
                   services = state.services;
                   isPaginationLoading = true;
-                } else if (state is ServiceError &&
-                    state.cachedServices != null) {
-                  services = state.cachedServices!;
+                } else if (state is ServiceError) {
+                  services = state.cachedServices ?? [];
                 }
-
                 if (_unitFilter != null) {
                   services = services
                       .where((s) => s.unit == _unitFilter)
                       .toList();
                 }
-
                 if (services.isEmpty) {
                   return Center(
                     child: Column(
@@ -281,7 +277,6 @@ class _ServicePageState extends State<ServicePage> {
                     ),
                   );
                 }
-
                 return ListView.separated(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),

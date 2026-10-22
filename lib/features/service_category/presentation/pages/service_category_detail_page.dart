@@ -99,7 +99,7 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is ServiceCategoryError) {
+          } else if (state is ServiceCategoryActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

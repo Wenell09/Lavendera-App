@@ -147,7 +147,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is ServiceError) {
+          } else if (state is ServiceActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

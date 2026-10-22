@@ -144,42 +144,39 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                     ),
                   );
                 }
-
-                if (state is ServiceCategoryError &&
-                    (state.cachedCategories == null ||
-                        state.cachedCategories!.isEmpty)) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(state.message, style: AppTextStyles.bodyLarge),
-                        TextButton(
-                          onPressed: () {
-                            context.read<ServiceCategoryBloc>().add(
-                              GetServiceCategoriesRequest(),
-                            );
-                          },
-                          child: const Text('Coba Lagi'),
-                        ),
-                      ],
-                    ),
-                  );
+                if (state is ServiceCategoryError) {
+                  final cachedServiceCategories = state.cachedCategories ?? [];
+                  if (cachedServiceCategories.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          TextButton(
+                            onPressed: () {
+                              context.read<ServiceCategoryBloc>().add(
+                                GetServiceCategoriesRequest(),
+                              );
+                            },
+                            child: const Text('Coba Lagi'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
-
                 List<ServiceCategory> categories = [];
                 if (state is ServiceCategoryLoaded) {
                   categories = state.categories;
-                } else if (state is ServiceCategoryError &&
-                    state.cachedCategories != null) {
-                  categories = state.cachedCategories!;
+                } else if (state is ServiceCategoryError) {
+                  categories = state.cachedCategories ?? [];
                 }
-
                 final filteredCategories = _searchQuery.isEmpty
                     ? categories
                     : categories
@@ -187,7 +184,6 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                             (c) => c.name.toLowerCase().contains(_searchQuery),
                           )
                           .toList();
-
                 if (filteredCategories.isEmpty) {
                   return Center(
                     child: Column(
@@ -227,7 +223,6 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                     ),
                   );
                 }
-
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
                   itemCount: filteredCategories.length,

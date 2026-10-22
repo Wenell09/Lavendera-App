@@ -76,9 +76,12 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
             hasMorePages: hasMore,
           ),
         );
-      } on ApiException catch (e) {
+      } on ApiException {
         emit(
-          CustomerError(message: e.message, cachedCustomers: currentCustomers),
+          CustomerError(
+            message: 'Gagal memuat data pelanggan',
+            cachedCustomers: currentCustomers,
+          ),
         );
       } catch (e) {
         emit(
@@ -96,9 +99,9 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await _createCustomerUsecase.call(event.body);
         emit(CustomerActionSuccess(message: 'berhasil menambah pelanggan'));
       } on ApiException catch (e) {
-        emit(CustomerError(message: e.message));
+        emit(CustomerActionError(message: e.message));
       } catch (e) {
-        emit(CustomerError(message: 'Gagal menambah pelanggan'));
+        emit(CustomerActionError(message: 'Gagal menambah pelanggan'));
       }
     });
 
@@ -108,9 +111,9 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await _updateCustomerUsecase.call(event.id, event.body);
         emit(CustomerActionSuccess(message: 'berhasil memperbarui pelanggan'));
       } on ApiException catch (e) {
-        emit(CustomerError(message: e.message));
+        emit(CustomerActionError(message: e.message));
       } catch (e) {
-        emit(CustomerError(message: 'Gagal memperbarui pelanggan'));
+        emit(CustomerActionError(message: 'Gagal memperbarui pelanggan'));
       }
     });
 
@@ -120,9 +123,9 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await _deleteCustomerUsecase.call(event.id);
         emit(CustomerActionSuccess(message: 'berhasil menghapus pelanggan'));
       } on ApiException catch (e) {
-        emit(CustomerError(message: e.message));
+        emit(CustomerActionError(message: e.message));
       } catch (e) {
-        emit(CustomerError(message: 'Gagal menghapus pelanggan'));
+        emit(CustomerActionError(message: 'Gagal menghapus pelanggan'));
       }
     });
   }

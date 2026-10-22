@@ -35,6 +35,11 @@ final class ServiceActionSuccess extends ServiceState {
   ServiceActionSuccess({required this.message});
 }
 
+final class ServiceActionError extends ServiceState {
+  final String message;
+  ServiceActionError({required this.message});
+}
+
 final class ServiceError extends ServiceState {
   final String message;
   final List<LaundryService>? cachedServices;

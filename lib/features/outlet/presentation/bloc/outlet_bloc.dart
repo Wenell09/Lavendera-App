@@ -75,8 +75,13 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
             hasMorePages: hasMore,
           ),
         );
-      } on ApiException catch (e) {
-        emit(OutletError(message: e.message, cachedOutlets: currentOutlets));
+      } on ApiException {
+        emit(
+          OutletError(
+            message: 'Gagal memuat data outlet',
+            cachedOutlets: currentOutlets,
+          ),
+        );
       } catch (e) {
         emit(
           OutletError(
@@ -93,9 +98,9 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
         await _createOutletUsecase.call(event.body);
         emit(OutletActionSuccess(message: 'Berhasil menambah outlet'));
       } on ApiException catch (e) {
-        emit(OutletError(message: e.message));
+        emit(OutletActionError(message: e.message));
       } catch (e) {
-        emit(OutletError(message: 'Gagal menambah outlet'));
+        emit(OutletActionError(message: 'Gagal menambah outlet'));
       }
     });
 
@@ -105,9 +110,9 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
         await _updateOutletUsecase.call(event.id, event.body);
         emit(OutletActionSuccess(message: 'Berhasil memperbarui outlet'));
       } on ApiException catch (e) {
-        emit(OutletError(message: e.message));
+        emit(OutletActionError(message: e.message));
       } catch (e) {
-        emit(OutletError(message: 'Gagal memperbarui outlet'));
+        emit(OutletActionError(message: 'Gagal memperbarui outlet'));
       }
     });
 
@@ -117,9 +122,9 @@ class OutletBloc extends Bloc<OutletEvent, OutletState> {
         await _deleteOutletUsecase.call(event.id);
         emit(OutletActionSuccess(message: 'Berhasil menghapus outlet'));
       } on ApiException catch (e) {
-        emit(OutletError(message: e.message));
+        emit(OutletActionError(message: e.message));
       } catch (e) {
-        emit(OutletError(message: 'Gagal menghapus outlet'));
+        emit(OutletActionError(message: 'Gagal menghapus outlet'));
       }
     });
   }

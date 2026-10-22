@@ -62,7 +62,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is CustomerError) {
+          } else if (state is CustomerActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

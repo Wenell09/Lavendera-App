@@ -33,6 +33,11 @@ final class OutletActionSuccess extends OutletState {
   OutletActionSuccess({required this.message});
 }
 
+final class OutletActionError extends OutletState {
+  final String message;
+  OutletActionError({required this.message});
+}
+
 final class OutletError extends OutletState {
   final String message;
   final List<Outlet>? cachedOutlets;

@@ -61,7 +61,7 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
-          } else if (state is DiscountError) {
+          } else if (state is DiscountActionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

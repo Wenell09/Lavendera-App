@@ -16,6 +16,11 @@ final class ServiceCategoryActionSuccess extends ServiceCategoryState {
   ServiceCategoryActionSuccess({required this.message});
 }
 
+final class ServiceCategoryActionError extends ServiceCategoryState {
+  final String message;
+  ServiceCategoryActionError({required this.message});
+}
+
 final class ServiceCategoryError extends ServiceCategoryState {
   final String message;
   final List<ServiceCategory>? cachedCategories;

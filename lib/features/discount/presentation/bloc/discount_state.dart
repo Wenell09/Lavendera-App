@@ -33,6 +33,11 @@ final class DiscountActionSuccess extends DiscountState {
   DiscountActionSuccess({required this.message});
 }
 
+final class DiscountActionError extends DiscountState {
+  final String message;
+  DiscountActionError({required this.message});
+}
+
 final class DiscountError extends DiscountState {
   final String message;
   final List<Discount>? cachedDiscounts;

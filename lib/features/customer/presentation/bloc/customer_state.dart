@@ -33,6 +33,11 @@ final class CustomerActionSuccess extends CustomerState {
   CustomerActionSuccess({required this.message});
 }
 
+final class CustomerActionError extends CustomerState {
+  final String message;
+  CustomerActionError({required this.message});
+}
+
 final class CustomerError extends CustomerState {
   final String message;
   final List<Customer>? cachedCustomers;

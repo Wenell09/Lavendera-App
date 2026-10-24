@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lavendera/config/supabase/supabase_url.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
@@ -11,6 +12,8 @@ import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
@@ -18,9 +21,12 @@ import 'package:lavendera/features/service_category/presentation/bloc/service_ca
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
 import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(url: url, publishableKey: publishableKey);
   await initDependencies();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -49,6 +55,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<OutletActionBloc>()),
         BlocProvider(create: (_) => sl<OutletUserBloc>()),
         BlocProvider(create: (_) => sl<OutletUserActionBloc>()),
+        BlocProvider(create: (_) => sl<OutletPaymentMethodBloc>()),
+        BlocProvider(create: (_) => sl<OutletPaymentMethodActionBloc>()),
         BlocProvider(create: (_) => sl<UserBloc>()),
         BlocProvider(create: (_) => sl<UserActionBloc>()),
       ],

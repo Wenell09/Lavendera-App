@@ -18,6 +18,7 @@ dependencies:
   get_it: ^9.3.0
   flutter_launcher_icons: ^0.14.4
   image_picker: ^1.2.4
+  supabase_flutter: ^2.18.3
 
 dev_dependencies:
   flutter_test:

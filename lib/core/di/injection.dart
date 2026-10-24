@@ -64,6 +64,15 @@ import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlets_
 import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_from_outlet_usecase.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/data/datasources/outlet_payment_method_remote_data_source.dart';
+import 'package:lavendera/features/outlet_payment_method/data/repositories/outlet_payment_method_repository_impl.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/create_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/delete_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_method_by_id_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_methods_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/update_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
 import 'package:lavendera/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:lavendera/features/user/data/repositories/user_repository_impl.dart';
 import 'package:lavendera/features/user/domain/usecases/create_user_usecase.dart';
@@ -334,6 +343,42 @@ Future<void> initDependencies() async {
     () => OutletUserActionBloc(
       assignUserToOutletUsecase: sl<AssignUserToOutletUsecase>(),
       unassignUserFromOutletUsecase: sl<UnassignUserFromOutletUsecase>(),
+    ),
+  );
+  // Outlet Payment Method
+  sl.registerLazySingleton<OutletPaymentMethodRemoteDataSource>(
+    () => OutletPaymentMethodRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<OutletPaymentMethodRepositoryImpl>(
+    () => OutletPaymentMethodRepositoryImpl(
+      remoteDataSource: sl<OutletPaymentMethodRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetOutletPaymentMethodsUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetOutletPaymentMethodByIdUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => CreateOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => OutletPaymentMethodBloc(
+      getOutletPaymentMethodsUsecase: sl<GetOutletPaymentMethodsUsecase>(),
+    ),
+  );
+  sl.registerFactory(
+    () => OutletPaymentMethodActionBloc(
+      createOutletPaymentMethodUsecase: sl<CreateOutletPaymentMethodUsecase>(),
+      updateOutletPaymentMethodUsecase: sl<UpdateOutletPaymentMethodUsecase>(),
+      deleteOutletPaymentMethodUsecase: sl<DeleteOutletPaymentMethodUsecase>(),
     ),
   );
 }

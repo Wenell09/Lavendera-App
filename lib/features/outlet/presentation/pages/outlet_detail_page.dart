@@ -8,6 +8,7 @@ import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/pages/edit_outlet_page.dart';
 import 'package:lavendera/features/outlet_user/presentation/pages/outlet_user_page.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/pages/outlet_payment_method_page.dart';
 
 class OutletDetailPage extends StatelessWidget {
   final Outlet outlet;
@@ -261,6 +262,58 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                           ),
                           Text(
                             'Kelola staf yang bertugas di outlet ini',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              CardWidget(
+                padding: const EdgeInsets.all(20),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        OutletPaymentMethodPage(outlet: _outlet),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.payment_outlined,
+                        color: Color(0xFF4A99AD),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Metode Pembayaran',
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Kelola transfer bank dan QRIS outlet ini',
                             style: AppTextStyles.bodySmall.copyWith(
                               color: Colors.grey,
                             ),

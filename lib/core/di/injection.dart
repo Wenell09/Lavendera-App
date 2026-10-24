@@ -56,6 +56,14 @@ import 'package:lavendera/features/service_category/domain/usecases/get_service_
 import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
+import 'package:lavendera/features/outlet_user/data/datasources/outlet_user_remote_data_source.dart';
+import 'package:lavendera/features/outlet_user/data/repositories/outlet_user_repository_impl.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/assign_user_to_outlet_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/get_outlet_users_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlets_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_from_outlet_usecase.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
 import 'package:lavendera/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:lavendera/features/user/data/repositories/user_repository_impl.dart';
 import 'package:lavendera/features/user/domain/usecases/create_user_usecase.dart';
@@ -307,5 +315,25 @@ Future<void> initDependencies() async {
   );
   sl.registerFactory(
     () => UserDetailBloc(getUserByIdUsecase: sl<GetUserByIdUsecase>()),
+  );
+  // Outlet User
+  sl.registerLazySingleton<OutletUserRemoteDataSource>(
+    () => OutletUserRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<OutletUserRepositoryImpl>(
+    () => OutletUserRepositoryImpl(remoteDataSource: sl<OutletUserRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetOutletUsersUsecase(sl<OutletUserRepositoryImpl>()));
+  sl.registerLazySingleton(() => AssignUserToOutletUsecase(sl<OutletUserRepositoryImpl>()));
+  sl.registerLazySingleton(() => UnassignUserFromOutletUsecase(sl<OutletUserRepositoryImpl>()));
+  sl.registerLazySingleton(() => GetUserOutletsUsecase(sl<OutletUserRepositoryImpl>()));
+  sl.registerFactory(
+    () => OutletUserBloc(getOutletUsersUsecase: sl<GetOutletUsersUsecase>()),
+  );
+  sl.registerFactory(
+    () => OutletUserActionBloc(
+      assignUserToOutletUsecase: sl<AssignUserToOutletUsecase>(),
+      unassignUserFromOutletUsecase: sl<UnassignUserFromOutletUsecase>(),
+    ),
   );
 }

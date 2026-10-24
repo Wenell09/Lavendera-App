@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/features/customer/presentation/pages/widgets/card_widget.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/info_tile_widget.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/pages/edit_outlet_page.dart';
+import 'package:lavendera/features/outlet_user/presentation/pages/outlet_user_page.dart';
 
 class OutletDetailPage extends StatelessWidget {
   final Outlet outlet;
@@ -223,6 +225,58 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+              CardWidget(
+                padding: const EdgeInsets.all(20),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OutletUserPage(outlet: _outlet),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.people_outline,
+                        color: Color(0xFF4A99AD),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Staf & Pengguna',
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Kelola staf yang bertugas di outlet ini',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ),

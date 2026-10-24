@@ -9,6 +9,8 @@ import 'package:lavendera/features/discount/presentation/bloc/action/discount_ac
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
@@ -45,6 +47,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<ServiceActionBloc>()),
         BlocProvider(create: (_) => sl<OutletBloc>()),
         BlocProvider(create: (_) => sl<OutletActionBloc>()),
+        BlocProvider(create: (_) => sl<OutletUserBloc>()),
+        BlocProvider(create: (_) => sl<OutletUserActionBloc>()),
         BlocProvider(create: (_) => sl<UserBloc>()),
         BlocProvider(create: (_) => sl<UserActionBloc>()),
       ],

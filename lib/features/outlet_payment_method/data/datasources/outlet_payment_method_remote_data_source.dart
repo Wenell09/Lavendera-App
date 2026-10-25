@@ -114,4 +114,44 @@ class OutletPaymentMethodRemoteDataSource {
       throw ApiErrorHandler.fromDioException(e);
     }
   }
+
+  Future<void> uploadQrisImage(
+    String outletId,
+    String paymentMethodId,
+    String filePath,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath),
+      });
+
+      final response = await dio.post(
+        '$baseUrl/outlets/$outletId/payment-methods/$paymentMethodId/qr-image',
+        data: formData,
+      );
+      debugPrint('Upload QRIS Image Result: ${response.data}');
+    } on DioException catch (e) {
+      debugPrint('Upload QRIS Status code: ${e.response?.statusCode}');
+      debugPrint('Upload QRIS Response error: ${e.response?.data}');
+    } catch (e) {
+      debugPrint('Upload QRIS error: $e');
+    }
+  }
+
+  Future<void> deleteQrisImage(
+    String outletId,
+    String paymentMethodId,
+  ) async {
+    try {
+      final response = await dio.delete(
+        '$baseUrl/outlets/$outletId/payment-methods/$paymentMethodId/qr-image',
+      );
+      debugPrint('Delete QRIS Image Result: ${response.data}');
+    } on DioException catch (e) {
+      debugPrint('Delete QRIS Status code: ${e.response?.statusCode}');
+      debugPrint('Delete QRIS Response error: ${e.response?.data}');
+    } catch (e) {
+      debugPrint('Delete QRIS error: $e');
+    }
+  }
 }

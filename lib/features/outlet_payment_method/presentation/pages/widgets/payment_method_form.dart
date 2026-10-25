@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
@@ -10,11 +12,13 @@ class PaymentMethodForm extends StatelessWidget {
   final TextEditingController accountNameController;
   final bool isActive;
   final bool isLoading;
+  final File? imageFile;
   final String? imageUrl;
   final bool isUploading;
   final Function(String) onTypeChanged;
   final Function(bool) onStatusChanged;
   final VoidCallback onPickImage;
+  final VoidCallback? onDeleteImage;
   final VoidCallback onSave;
   final bool isEdit;
 
@@ -27,7 +31,9 @@ class PaymentMethodForm extends StatelessWidget {
     required this.accountNameController,
     required this.isActive,
     required this.isLoading,
+    this.imageFile,
     this.imageUrl,
+    this.onDeleteImage,
     required this.isUploading,
     required this.onTypeChanged,
     required this.onStatusChanged,
@@ -172,42 +178,70 @@ class PaymentMethodForm extends StatelessWidget {
   }
 
   Widget _buildQRISUploader() {
-    return GestureDetector(
-      onTap: onPickImage,
-      child: Container(
-        height: 180,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade300),
+    final hasImage =
+        imageFile != null || (imageUrl != null && imageUrl!.isNotEmpty);
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: onPickImage,
+          child: Container(
+            height: 350,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: isUploading
+                ? const Center(child: CircularProgressIndicator())
+                : imageFile != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.file(imageFile!, fit: BoxFit.cover),
+                  )
+                : imageUrl != null && imageUrl!.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                            child: Icon(Icons.broken_image, color: Colors.grey),
+                          ),
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.qr_code_scanner,
+                        size: 40,
+                        color: Color(0xFF4A99AD),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Ketuk untuk unggah QRIS'),
+                    ],
+                  ),
+          ),
         ),
-        child: isUploading
-            ? const Center(child: CircularProgressIndicator())
-            : imageUrl != null && imageUrl!.isNotEmpty
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey),
-                  ),
+        if (hasImage && onDeleteImage != null && !isUploading)
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GestureDetector(
+              onTap: onDeleteImage,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
                 ),
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.qr_code_scanner,
-                    size: 40,
-                    color: Color(0xFF4A99AD),
-                  ),
-                  SizedBox(height: 8),
-                  Text('Ketuk untuk unggah QRIS'),
-                ],
+                child: const Icon(Icons.close, size: 16, color: Colors.white),
               ),
-      ),
+            ),
+          ),
+      ],
     );
   }
 

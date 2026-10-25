@@ -76,4 +76,28 @@ class OutletPaymentMethodRepositoryImpl
       paymentMethodId,
     );
   }
+
+  @override
+  Future<void> uploadQrisImage(
+    String outletId,
+    String paymentMethodId,
+    String filePath,
+  ) async {
+    return await remoteDataSource.uploadQrisImage(
+      outletId,
+      paymentMethodId,
+      filePath,
+    );
+  }
+
+  @override
+  Future<void> deleteQrisImage(
+    String outletId,
+    String paymentMethodId,
+  ) async {
+    return await remoteDataSource.deleteQrisImage(
+      outletId,
+      paymentMethodId,
+    );
+  }
 }

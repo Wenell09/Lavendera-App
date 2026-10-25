@@ -29,4 +29,15 @@ abstract class OutletPaymentMethodRepository {
     String outletId,
     String paymentMethodId,
   );
+
+  Future<void> uploadQrisImage(
+    String outletId,
+    String paymentMethodId,
+    String filePath,
+  );
+
+  Future<void> deleteQrisImage(
+    String outletId,
+    String paymentMethodId,
+  );
 }

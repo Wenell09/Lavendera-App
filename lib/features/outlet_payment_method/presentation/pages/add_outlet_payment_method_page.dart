@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
+import 'package:lavendera/features/outlet_payment_method/data/datasources/outlet_payment_method_remote_data_source.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/pages/widgets/payment_method_form.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 class AddOutletPaymentMethodPage extends StatefulWidget {
   final Outlet outlet;
@@ -29,7 +31,7 @@ class _AddOutletPaymentMethodPageState
   bool _isActive = true;
   File? _imageFile;
   String? _imageUrl;
-  bool _isUploading = false;
+  final bool _isUploading = false;
 
   @override
   void dispose() {
@@ -44,28 +46,6 @@ class _AddOutletPaymentMethodPageState
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() => _imageFile = File(pickedFile.path));
-      await _uploadImage();
-    }
-  }
-
-  Future<void> _uploadImage() async {
-    if (_imageFile == null) return;
-    setState(() => _isUploading = true);
-    try {
-      final supabase = Supabase.instance.client;
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}.${_imageFile!.path.split('.').last}';
-      final path = '${widget.outlet.id}/$fileName';
-      await supabase.storage.from('Lavendera_QRIS').upload(path, _imageFile!);
-      final publicUrl = supabase.storage
-          .from('Lavendera_QRIS')
-          .getPublicUrl(path);
-      if (mounted) setState(() => _imageUrl = publicUrl);
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Gagal upload: $e')));
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
     }
   }
 
@@ -81,7 +61,6 @@ class _AddOutletPaymentMethodPageState
               ? _accountNumberController.text.trim()
               : null,
           "account_name": _accountNameController.text.trim(),
-          "qr_image_url": _type == 'qris' ? _imageUrl : null,
           "is_active": _isActive,
         },
       ),
@@ -116,8 +95,20 @@ class _AddOutletPaymentMethodPageState
             OutletPaymentMethodActionBloc,
             OutletPaymentMethodActionState
           >(
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is OutletPaymentMethodActionSuccess) {
+                if (_imageFile != null && state.paymentMethod != null) {
+                  try {
+                    await sl<OutletPaymentMethodRemoteDataSource>().uploadQrisImage(
+                      widget.outlet.id,
+                      state.paymentMethod!.id,
+                      _imageFile!.path,
+                    );
+                  } catch (e) {
+                    debugPrint('Error uploading QRIS after create: $e');
+                  }
+                }
+                if (!mounted) return;
                 context.read<OutletPaymentMethodBloc>().add(
                   GetOutletPaymentMethodsRequest(outletId: widget.outlet.id),
                 );
@@ -156,6 +147,7 @@ class _AddOutletPaymentMethodPageState
                         accountNameController: _accountNameController,
                         isActive: _isActive,
                         isLoading: state is OutletPaymentMethodActionLoading,
+                        imageFile: _imageFile,
                         imageUrl: _imageUrl,
                         isUploading: _isUploading,
                         isEdit: false,
@@ -163,6 +155,10 @@ class _AddOutletPaymentMethodPageState
                         onStatusChanged: (val) =>
                             setState(() => _isActive = val),
                         onPickImage: _pickImage,
+                        onDeleteImage: () => setState(() {
+                          _imageFile = null;
+                          _imageUrl = null;
+                        }),
                         onSave: _save,
                       ),
                     );

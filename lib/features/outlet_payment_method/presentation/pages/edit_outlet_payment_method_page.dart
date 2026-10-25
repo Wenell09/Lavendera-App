@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
+import 'package:lavendera/features/outlet_payment_method/data/datasources/outlet_payment_method_remote_data_source.dart';
 import 'package:lavendera/features/outlet_payment_method/domain/entities/outlet_payment_method.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/pages/widgets/payment_method_form.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditOutletPaymentMethodPage extends StatefulWidget {
   final Outlet outlet;
@@ -76,18 +77,45 @@ class _EditOutletPaymentMethodPageState
     if (_imageFile == null) return;
     setState(() => _isUploading = true);
     try {
-      final supabase = Supabase.instance.client;
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}.${_imageFile!.path.split('.').last}';
-      final path = '${widget.outlet.id}/$fileName';
-      await supabase.storage.from('Lavendera_QRIS').upload(path, _imageFile!);
-      final publicUrl = supabase.storage
-          .from('Lavendera_QRIS')
-          .getPublicUrl(path);
-      if (mounted) setState(() => _imageUrl = publicUrl);
+      await sl<OutletPaymentMethodRemoteDataSource>().uploadQrisImage(
+        widget.outlet.id,
+        widget.paymentMethod.id,
+        _imageFile!.path,
+      );
+      context.read<OutletPaymentMethodBloc>().add(
+        GetOutletPaymentMethodsRequest(outletId: widget.outlet.id),
+      );
+      if (mounted) setState(() => _imageUrl = 'uploaded'); // trigger UI update
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Gagal upload: $e')));
+      debugPrint('Error upload: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Gagal upload: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Future<void> _handleDeleteImage() async {
+    setState(() => _isUploading = true);
+    try {
+      await _deleteQrisImage();
+      if (mounted) {
+        setState(() {
+          _imageFile = null;
+          _imageUrl = null;
+        });
+        context.read<OutletPaymentMethodBloc>().add(
+          GetOutletPaymentMethodsRequest(outletId: widget.outlet.id),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menghapus gambar QRIS: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -106,7 +134,6 @@ class _EditOutletPaymentMethodPageState
               ? _accountNumberController.text.trim()
               : null,
           "account_name": _accountNameController.text.trim(),
-          "qr_image_url": _type == 'qris' ? _imageUrl : null,
           "is_active": _isActive,
         },
       ),
@@ -154,67 +181,13 @@ class _EditOutletPaymentMethodPageState
   }
 
   Future<void> _deleteQrisImage() async {
-    final imageUrl = (_imageUrl?.isNotEmpty == true)
-        ? _imageUrl
-        : widget.paymentMethod.qrImageUrl;
-
-    if (imageUrl == null || imageUrl.isEmpty) {
-      debugPrint('QRIS: URL gambar kosong.');
-      return;
-    }
-
-    const bucketName = 'Lavendera_QRIS';
-
     try {
-      final uri = Uri.parse(imageUrl);
-      final segments = uri.pathSegments;
-      final bucketIndex = segments.indexOf(bucketName);
-
-      if (bucketIndex == -1 || bucketIndex + 1 >= segments.length) {
-        throw Exception('URL QRIS tidak valid: $imageUrl');
-      }
-
-      final storagePath = segments.skip(bucketIndex + 1).join('/');
-      final slashIndex = storagePath.lastIndexOf('/');
-      final folderPath = slashIndex == -1
-          ? ''
-          : storagePath.substring(0, slashIndex);
-      final fileName = storagePath.substring(slashIndex + 1);
-
-      final storage = Supabase.instance.client.storage.from(bucketName);
-
-      debugPrint('QRIS target path: $storagePath');
-
-      // Periksa objek sebelum penghapusan.
-      final before = await storage.list(path: folderPath);
-      final existsBefore = before.any((f) => f.name == fileName);
-
-      debugPrint('QRIS exists before delete: $existsBefore');
-      debugPrint(
-        'QRIS folder contents before: ${before.map((f) => f.name).toList()}',
+      await sl<OutletPaymentMethodRemoteDataSource>().deleteQrisImage(
+        widget.outlet.id,
+        widget.paymentMethod.id,
       );
-
-      // Hapus objek.
-      final removed = await storage.remove([storagePath]);
-      debugPrint('QRIS remove response: $removed');
-
-      // Periksa ulang objek setelah penghapusan.
-      final after = await storage.list(path: folderPath);
-      final existsAfter = after.any((f) => f.name == fileName);
-
-      debugPrint('QRIS exists after delete: $existsAfter');
-      debugPrint(
-        'QRIS folder contents after: ${after.map((f) => f.name).toList()}',
-      );
-
-      if (existsAfter) {
-        throw Exception('Objek masih terdaftar setelah request penghapusan.');
-      }
-
-      debugPrint('QRIS: Objek tidak ditemukan setelah penghapusan.');
-    } catch (e, stackTrace) {
-      debugPrint('QRIS delete error: $e');
-      debugPrintStack(stackTrace: stackTrace);
+    } catch (e) {
+      debugPrint('Error delete QRIS: $e');
       rethrow;
     }
   }
@@ -293,6 +266,7 @@ class _EditOutletPaymentMethodPageState
                         accountNameController: _accountNameController,
                         isActive: _isActive,
                         isLoading: state is OutletPaymentMethodActionLoading,
+                        imageFile: _imageFile,
                         imageUrl: _imageUrl,
                         isUploading: _isUploading,
                         isEdit: true,
@@ -300,6 +274,7 @@ class _EditOutletPaymentMethodPageState
                         onStatusChanged: (val) =>
                             setState(() => _isActive = val),
                         onPickImage: _pickImage,
+                        onDeleteImage: _handleDeleteImage,
                         onSave: _save,
                       ),
                     );

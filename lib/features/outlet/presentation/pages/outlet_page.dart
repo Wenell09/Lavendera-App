@@ -86,9 +86,6 @@ class _OutletPageState extends State<OutletPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
         centerTitle: false,
         actions: [
           Container(

@@ -39,8 +39,6 @@ class _AddDiscountPageState extends State<AddDiscountPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,

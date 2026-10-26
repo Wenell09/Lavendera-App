@@ -25,10 +25,6 @@ class Home extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        centerTitle: false,
       ),
       body: SafeArea(
         child: ListView(
@@ -52,14 +48,13 @@ class Home extends StatelessWidget {
             _buildMenuCard(
               context: context,
               title: 'Pesanan (Order Kasir)',
-              subtitle: 'Kelola order laundry, pembayaran, dan status pengerjaan',
+              subtitle:
+                  'Kelola order laundry, pembayaran, dan status pengerjaan',
               icon: Icons.receipt_long_rounded,
               color: const Color(0xFF0284C7),
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const OrderPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const OrderPage()),
                 );
               },
             ),

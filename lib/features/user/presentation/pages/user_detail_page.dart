@@ -20,9 +20,6 @@ class UserDetailPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios_new,

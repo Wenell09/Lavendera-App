@@ -11,7 +11,6 @@ import 'package:lavendera/features/outlet_payment_method/presentation/bloc/actio
 import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/pages/widgets/payment_method_form.dart';
 
-
 class AddOutletPaymentMethodPage extends StatefulWidget {
   final Outlet outlet;
   const AddOutletPaymentMethodPage({super.key, required this.outlet});
@@ -79,8 +78,6 @@ class _AddOutletPaymentMethodPageState
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
@@ -99,11 +96,12 @@ class _AddOutletPaymentMethodPageState
               if (state is OutletPaymentMethodActionSuccess) {
                 if (_imageFile != null && state.paymentMethod != null) {
                   try {
-                    await sl<OutletPaymentMethodRemoteDataSource>().uploadQrisImage(
-                      widget.outlet.id,
-                      state.paymentMethod!.id,
-                      _imageFile!.path,
-                    );
+                    await sl<OutletPaymentMethodRemoteDataSource>()
+                        .uploadQrisImage(
+                          widget.outlet.id,
+                          state.paymentMethod!.id,
+                          _imageFile!.path,
+                        );
                   } catch (e) {
                     debugPrint('Error uploading QRIS after create: $e');
                   }

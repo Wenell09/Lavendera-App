@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
+import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
 
-import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import '../bloc/service_bloc.dart';
 
 class AddServicePage extends StatefulWidget {
@@ -75,8 +75,6 @@ class _AddServicePageState extends State<AddServicePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,

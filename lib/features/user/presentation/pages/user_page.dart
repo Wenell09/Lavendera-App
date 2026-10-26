@@ -87,10 +87,6 @@ class _UserPageState extends State<UserPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        centerTitle: false,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),

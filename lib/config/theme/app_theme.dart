@@ -36,15 +36,15 @@ class AppTheme {
         displayColor: colorScheme.onSurface,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.primary,
-        surfaceTintColor: Colors.transparent,
-        foregroundColor: colorScheme.onPrimary,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        foregroundColor: Colors.white,
         titleTextStyle: _textTheme.titleLarge?.copyWith(
           color: colorScheme.onPrimary,
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: true,
+        centerTitle: false,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: colorScheme.surface,
@@ -70,15 +70,15 @@ class AppTheme {
         displayColor: colorScheme.onSurface,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.primary,
-        surfaceTintColor: Colors.transparent,
-        foregroundColor: colorScheme.onPrimary,
+        backgroundColor: Colors.black,
+        surfaceTintColor: Colors.black,
+        foregroundColor: Colors.black,
         titleTextStyle: _textTheme.titleLarge?.copyWith(
           color: colorScheme.onPrimary,
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: true,
+        centerTitle: false,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: colorScheme.surface,

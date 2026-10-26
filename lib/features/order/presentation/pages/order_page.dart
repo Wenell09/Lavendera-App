@@ -155,14 +155,10 @@ class _OrderPageState extends State<OrderPage> {
         title: Text(
           'Pesanan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: const Color(0xFF0F172A),
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        centerTitle: false,
         actions: [
           IconButton(
             icon: Icon(

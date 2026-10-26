@@ -34,10 +34,18 @@ class OrderPaymentModel {
       status: json['status']?.toString() ?? 'BELUM_BAYAR',
       referenceNumber: json['reference_number']?.toString(),
       notes: json['notes']?.toString(),
-      paidAt: json['paid_at'] != null ? DateTime.tryParse(json['paid_at'].toString()) : null,
-      verifiedAt: json['verified_at'] != null ? DateTime.tryParse(json['verified_at'].toString()) : null,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
+      paidAt: json['paid_at'] != null
+          ? DateTime.tryParse(json['paid_at'].toString())
+          : null,
+      verifiedAt: json['verified_at'] != null
+          ? DateTime.tryParse(json['verified_at'].toString())
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())?.toLocal()
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'].toString())?.toLocal()
+          : null,
     );
   }
 
@@ -73,7 +81,9 @@ class OrderItemServiceModel {
   });
 
   factory OrderItemServiceModel.fromJson(Map<String, dynamic> json) {
-    final catJson = json['category'] is Map<String, dynamic> ? json['category'] : <String, dynamic>{};
+    final catJson = json['category'] is Map<String, dynamic>
+        ? json['category']
+        : <String, dynamic>{};
     return OrderItemServiceModel(
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
@@ -112,7 +122,9 @@ class OrderItemModel {
   });
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
-    final srvJson = json['service'] is Map<String, dynamic> ? json['service'] : <String, dynamic>{};
+    final srvJson = json['service'] is Map<String, dynamic>
+        ? json['service']
+        : <String, dynamic>{};
     return OrderItemModel(
       id: json['id']?.toString() ?? '',
       price: json['price'] ?? 0,
@@ -158,12 +170,7 @@ class OrderOutletModel {
   }
 
   OrderOutlet toEntity() {
-    return OrderOutlet(
-      id: id,
-      name: name,
-      phone: phone,
-      address: address,
-    );
+    return OrderOutlet(id: id, name: name, phone: phone, address: address);
   }
 }
 
@@ -190,12 +197,7 @@ class OrderCustomerModel {
   }
 
   OrderCustomer toEntity() {
-    return OrderCustomer(
-      id: id,
-      name: name,
-      phone: phone,
-      address: address,
-    );
+    return OrderCustomer(id: id, name: name, phone: phone, address: address);
   }
 }
 
@@ -222,12 +224,7 @@ class OrderDiscountModel {
   }
 
   OrderDiscount toEntity() {
-    return OrderDiscount(
-      id: id,
-      name: name,
-      type: type,
-      value: value,
-    );
+    return OrderDiscount(id: id, name: name, type: type, value: value);
   }
 }
 
@@ -235,10 +232,7 @@ class OrderCreatorModel {
   final String id;
   final String name;
 
-  OrderCreatorModel({
-    required this.id,
-    required this.name,
-  });
+  OrderCreatorModel({required this.id, required this.name});
 
   factory OrderCreatorModel.fromJson(Map<String, dynamic> json) {
     return OrderCreatorModel(
@@ -248,10 +242,7 @@ class OrderCreatorModel {
   }
 
   OrderCreator toEntity() {
-    return OrderCreator(
-      id: id,
-      name: name,
-    );
+    return OrderCreator(id: id, name: name);
   }
 }
 
@@ -321,39 +312,48 @@ class OrderModel {
       paidAmount: json['paid_amount'] ?? 0,
       changeAmount: json['change_amount'] ?? 0,
       outlet: OrderOutletModel.fromJson(
-        json['outlet'] is Map<String, dynamic> ? json['outlet'] : <String, dynamic>{},
+        json['outlet'] is Map<String, dynamic>
+            ? json['outlet']
+            : <String, dynamic>{},
       ),
       customer: OrderCustomerModel.fromJson(
-        json['customer'] is Map<String, dynamic> ? json['customer'] : <String, dynamic>{},
+        json['customer'] is Map<String, dynamic>
+            ? json['customer']
+            : <String, dynamic>{},
       ),
-      discount: json['discount'] != null && json['discount'] is Map<String, dynamic>
+      discount:
+          json['discount'] != null && json['discount'] is Map<String, dynamic>
           ? OrderDiscountModel.fromJson(json['discount'])
           : null,
-      creator: json['creator'] != null && json['creator'] is Map<String, dynamic>
+      creator:
+          json['creator'] != null && json['creator'] is Map<String, dynamic>
           ? OrderCreatorModel.fromJson(json['creator'])
           : null,
       items: itemsList
           .whereType<Map<String, dynamic>>()
           .map((item) => OrderItemModel.fromJson(item))
           .toList(),
-      payment: json['payment'] != null && json['payment'] is Map<String, dynamic>
+      payment:
+          json['payment'] != null && json['payment'] is Map<String, dynamic>
           ? OrderPaymentModel.fromJson(json['payment'])
           : null,
       notes: json['notes']?.toString(),
       estimatedDone: json['estimated_done'] != null
-          ? DateTime.tryParse(json['estimated_done'].toString())
+          ? DateTime.tryParse(json['estimated_done'].toString())?.toLocal()
           : null,
       completedAt: json['completed_at'] != null
-          ? DateTime.tryParse(json['completed_at'].toString())
+          ? DateTime.tryParse(json['completed_at'].toString())?.toLocal()
           : null,
       canceledAt: json['canceled_at'] != null
-          ? DateTime.tryParse(json['canceled_at'].toString())
+          ? DateTime.tryParse(json['canceled_at'].toString())?.toLocal()
           : null,
       createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+          ? DateTime.tryParse(json['created_at'].toString())?.toLocal() ??
+                DateTime.now()
           : DateTime.now(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.tryParse(json['updated_at'].toString()) ?? DateTime.now()
+          ? DateTime.tryParse(json['updated_at'].toString())?.toLocal() ??
+                DateTime.now()
           : DateTime.now(),
     );
   }

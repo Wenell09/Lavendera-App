@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
+import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/button_widget.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/text_field_widget.dart';
 
@@ -39,9 +39,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,
@@ -115,14 +112,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           context.read<CustomerActionBloc>().add(
-                                CreateCustomerActionRequest(
-                                  body: {
-                                    'name': _nameController.text,
-                                    'phone': _phoneController.text,
-                                    'address': _addressController.text,
-                                  },
-                                ),
-                              );
+                            CreateCustomerActionRequest(
+                              body: {
+                                'name': _nameController.text,
+                                'phone': _phoneController.text,
+                                'address': _addressController.text,
+                              },
+                            ),
+                          );
                         }
                       },
                     );

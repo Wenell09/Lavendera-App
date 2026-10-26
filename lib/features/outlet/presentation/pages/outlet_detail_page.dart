@@ -7,8 +7,8 @@ import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/pages/edit_outlet_page.dart';
-import 'package:lavendera/features/outlet_user/presentation/pages/outlet_user_page.dart';
 import 'package:lavendera/features/outlet_payment_method/presentation/pages/outlet_payment_method_page.dart';
+import 'package:lavendera/features/outlet_user/presentation/pages/outlet_user_page.dart';
 
 class OutletDetailPage extends StatelessWidget {
   final Outlet outlet;
@@ -68,9 +68,6 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,

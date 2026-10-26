@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
+
 import '../../domain/entities/service_category.dart';
 import '../bloc/service_category_bloc.dart';
 
@@ -69,8 +69,6 @@ class _ServiceCategoryDetailPageState extends State<ServiceCategoryDetailPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new,

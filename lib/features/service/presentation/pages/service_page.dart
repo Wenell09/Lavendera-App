@@ -88,10 +88,6 @@ class _ServicePageState extends State<ServicePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        centerTitle: false,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),

@@ -21,6 +21,8 @@ import 'package:lavendera/features/service_category/presentation/bloc/service_ca
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
 import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -59,6 +61,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<OutletPaymentMethodActionBloc>()),
         BlocProvider(create: (_) => sl<UserBloc>()),
         BlocProvider(create: (_) => sl<UserActionBloc>()),
+        BlocProvider(create: (_) => sl<OrderBloc>()),
+        BlocProvider(create: (_) => sl<OrderActionBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

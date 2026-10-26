@@ -83,6 +83,19 @@ import 'package:lavendera/features/user/domain/usecases/update_user_usecase.dart
 import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/detail/user_detail_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
+import 'package:lavendera/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:lavendera/features/order/data/repositories/order_repository_impl.dart';
+import 'package:lavendera/features/order/domain/repositories/order_repository.dart';
+import 'package:lavendera/features/order/domain/usecases/cancel_order_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/confirm_payment_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/create_order_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/get_order_by_id_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/input_cash_payment_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/update_order_status_usecase.dart';
+import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/detail/order_detail_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -379,6 +392,35 @@ Future<void> initDependencies() async {
       createOutletPaymentMethodUsecase: sl<CreateOutletPaymentMethodUsecase>(),
       updateOutletPaymentMethodUsecase: sl<UpdateOutletPaymentMethodUsecase>(),
       deleteOutletPaymentMethodUsecase: sl<DeleteOutletPaymentMethodUsecase>(),
+    ),
+  );
+  // Order
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(remoteDataSource: sl<OrderRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetOrdersUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => GetOrderByIdUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => CreateOrderUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => UpdateOrderStatusUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => CancelOrderUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => ConfirmPaymentUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(() => InputCashPaymentUsecase(sl<OrderRepository>()));
+  sl.registerFactory(
+    () => OrderBloc(getOrdersUsecase: sl<GetOrdersUsecase>()),
+  );
+  sl.registerFactory(
+    () => OrderDetailBloc(getOrderByIdUsecase: sl<GetOrderByIdUsecase>()),
+  );
+  sl.registerFactory(
+    () => OrderActionBloc(
+      createOrderUsecase: sl<CreateOrderUsecase>(),
+      updateOrderStatusUsecase: sl<UpdateOrderStatusUsecase>(),
+      cancelOrderUsecase: sl<CancelOrderUsecase>(),
+      confirmPaymentUsecase: sl<ConfirmPaymentUsecase>(),
+      inputCashPaymentUsecase: sl<InputCashPaymentUsecase>(),
     ),
   );
 }

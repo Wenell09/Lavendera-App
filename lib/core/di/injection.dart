@@ -29,6 +29,19 @@ import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecas
 import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
 import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
+import 'package:lavendera/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:lavendera/features/order/data/repositories/order_repository_impl.dart';
+import 'package:lavendera/features/order/domain/repositories/order_repository.dart';
+import 'package:lavendera/features/order/domain/usecases/cancel_order_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/confirm_payment_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/create_order_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/get_order_by_id_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/get_orders_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/input_cash_payment_usecase.dart';
+import 'package:lavendera/features/order/domain/usecases/update_order_status_usecase.dart';
+import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/detail/order_detail_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 import 'package:lavendera/features/outlet/data/datasources/outlet_remote_data_source.dart';
 import 'package:lavendera/features/outlet/data/repositories/outlet_repository_impl.dart';
 import 'package:lavendera/features/outlet/domain/usecases/create_outlet_usecase.dart';
@@ -38,6 +51,27 @@ import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.da
 import 'package:lavendera/features/outlet/domain/usecases/update_outlet_usecase.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/action/outlet_action_bloc.dart';
 import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/data/datasources/outlet_payment_method_remote_data_source.dart';
+import 'package:lavendera/features/outlet_payment_method/data/repositories/outlet_payment_method_repository_impl.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/create_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/delete_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_method_by_id_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_methods_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/usecases/update_outlet_payment_method_usecase.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
+import 'package:lavendera/features/outlet_user/data/datasources/outlet_user_remote_data_source.dart';
+import 'package:lavendera/features/outlet_user/data/repositories/outlet_user_repository_impl.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/assign_user_to_outlet_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/get_outlet_users_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlets_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_from_outlet_usecase.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
+import 'package:lavendera/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:lavendera/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:lavendera/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/data/datasources/service_remote_data_source.dart';
 import 'package:lavendera/features/service/data/repositories/service_repository_impl.dart';
 import 'package:lavendera/features/service/domain/usecases/create_service_usecase.dart';
@@ -56,23 +90,12 @@ import 'package:lavendera/features/service_category/domain/usecases/get_service_
 import 'package:lavendera/features/service_category/domain/usecases/update_service_category_usecase.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/action/service_category_action_bloc.dart';
 import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
-import 'package:lavendera/features/outlet_user/data/datasources/outlet_user_remote_data_source.dart';
-import 'package:lavendera/features/outlet_user/data/repositories/outlet_user_repository_impl.dart';
-import 'package:lavendera/features/outlet_user/domain/usecases/assign_user_to_outlet_usecase.dart';
-import 'package:lavendera/features/outlet_user/domain/usecases/get_outlet_users_usecase.dart';
-import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlets_usecase.dart';
-import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_from_outlet_usecase.dart';
-import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
-import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
-import 'package:lavendera/features/outlet_payment_method/data/datasources/outlet_payment_method_remote_data_source.dart';
-import 'package:lavendera/features/outlet_payment_method/data/repositories/outlet_payment_method_repository_impl.dart';
-import 'package:lavendera/features/outlet_payment_method/domain/usecases/create_outlet_payment_method_usecase.dart';
-import 'package:lavendera/features/outlet_payment_method/domain/usecases/delete_outlet_payment_method_usecase.dart';
-import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_method_by_id_usecase.dart';
-import 'package:lavendera/features/outlet_payment_method/domain/usecases/get_outlet_payment_methods_usecase.dart';
-import 'package:lavendera/features/outlet_payment_method/domain/usecases/update_outlet_payment_method_usecase.dart';
-import 'package:lavendera/features/outlet_payment_method/presentation/bloc/action/outlet_payment_method_action_bloc.dart';
-import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
+import 'package:lavendera/features/tenant/data/datasources/tenant_remote_data_source.dart';
+import 'package:lavendera/features/tenant/data/repositories/tenant_repository_impl.dart';
+import 'package:lavendera/features/tenant/domain/usecases/get_tenant_usecase.dart';
+import 'package:lavendera/features/tenant/domain/usecases/update_tenant_usecase.dart';
+import 'package:lavendera/features/tenant/presentation/bloc/action/tenant_action_bloc.dart';
+import 'package:lavendera/features/tenant/presentation/bloc/detail/tenant_detail_bloc.dart';
 import 'package:lavendera/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:lavendera/features/user/data/repositories/user_repository_impl.dart';
 import 'package:lavendera/features/user/domain/usecases/create_user_usecase.dart';
@@ -83,19 +106,6 @@ import 'package:lavendera/features/user/domain/usecases/update_user_usecase.dart
 import 'package:lavendera/features/user/presentation/bloc/action/user_action_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/detail/user_detail_bloc.dart';
 import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
-import 'package:lavendera/features/order/data/datasources/order_remote_data_source.dart';
-import 'package:lavendera/features/order/data/repositories/order_repository_impl.dart';
-import 'package:lavendera/features/order/domain/repositories/order_repository.dart';
-import 'package:lavendera/features/order/domain/usecases/cancel_order_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/confirm_payment_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/create_order_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/get_order_by_id_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/get_orders_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/input_cash_payment_usecase.dart';
-import 'package:lavendera/features/order/domain/usecases/update_order_status_usecase.dart';
-import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
-import 'package:lavendera/features/order/presentation/bloc/detail/order_detail_bloc.dart';
-import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -158,9 +168,7 @@ Future<void> initDependencies() async {
     () => DeleteCustomerUsecase(sl<CustomerRepositoryImpl>()),
   );
   sl.registerFactory(
-    () => CustomerBloc(
-      getCustomersUsecase: sl<GetCustomersUsecase>(),
-    ),
+    () => CustomerBloc(getCustomersUsecase: sl<GetCustomersUsecase>()),
   );
   sl.registerFactory(
     () => CustomerActionBloc(
@@ -199,9 +207,7 @@ Future<void> initDependencies() async {
     () => DeleteDiscountUsecase(sl<DiscountRepositoryImpl>()),
   );
   sl.registerFactory(
-    () => DiscountBloc(
-      getDiscountsUsecase: sl<GetDiscountsUsecase>(),
-    ),
+    () => DiscountBloc(getDiscountsUsecase: sl<GetDiscountsUsecase>()),
   );
   sl.registerFactory(
     () => DiscountActionBloc(
@@ -270,9 +276,7 @@ Future<void> initDependencies() async {
     () => DeleteServiceUsecase(sl<ServiceRepositoryImpl>()),
   );
   sl.registerFactory(
-    () => ServiceBloc(
-      getServicesUsecase: sl<GetServicesUsecase>(),
-    ),
+    () => ServiceBloc(getServicesUsecase: sl<GetServicesUsecase>()),
   );
   sl.registerFactory(
     () => ServiceActionBloc(
@@ -302,9 +306,7 @@ Future<void> initDependencies() async {
     () => DeleteOutletUsecase(sl<OutletRepositoryImpl>()),
   );
   sl.registerFactory(
-    () => OutletBloc(
-      getOutletsUsecase: sl<GetOutletsUsecase>(),
-    ),
+    () => OutletBloc(getOutletsUsecase: sl<GetOutletsUsecase>()),
   );
   sl.registerFactory(
     () => OutletActionBloc(
@@ -325,9 +327,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => GetUserByIdUsecase(sl<UserRepositoryImpl>()));
   sl.registerLazySingleton(() => UpdateUserUsecase(sl<UserRepositoryImpl>()));
   sl.registerLazySingleton(() => DeleteUserUsecase(sl<UserRepositoryImpl>()));
-  sl.registerFactory(
-    () => UserBloc(getUsersUsecase: sl<GetUsersUsecase>()),
-  );
+  sl.registerFactory(() => UserBloc(getUsersUsecase: sl<GetUsersUsecase>()));
   sl.registerFactory(
     () => UserActionBloc(
       createUserUsecase: sl<CreateUserUsecase>(),
@@ -343,12 +343,22 @@ Future<void> initDependencies() async {
     () => OutletUserRemoteDataSource(dio: sl<Dio>()),
   );
   sl.registerLazySingleton<OutletUserRepositoryImpl>(
-    () => OutletUserRepositoryImpl(remoteDataSource: sl<OutletUserRemoteDataSource>()),
+    () => OutletUserRepositoryImpl(
+      remoteDataSource: sl<OutletUserRemoteDataSource>(),
+    ),
   );
-  sl.registerLazySingleton(() => GetOutletUsersUsecase(sl<OutletUserRepositoryImpl>()));
-  sl.registerLazySingleton(() => AssignUserToOutletUsecase(sl<OutletUserRepositoryImpl>()));
-  sl.registerLazySingleton(() => UnassignUserFromOutletUsecase(sl<OutletUserRepositoryImpl>()));
-  sl.registerLazySingleton(() => GetUserOutletsUsecase(sl<OutletUserRepositoryImpl>()));
+  sl.registerLazySingleton(
+    () => GetOutletUsersUsecase(sl<OutletUserRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => AssignUserToOutletUsecase(sl<OutletUserRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UnassignUserFromOutletUsecase(sl<OutletUserRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetUserOutletsUsecase(sl<OutletUserRepositoryImpl>()),
+  );
   sl.registerFactory(
     () => OutletUserBloc(getOutletUsersUsecase: sl<GetOutletUsersUsecase>()),
   );
@@ -368,19 +378,28 @@ Future<void> initDependencies() async {
     ),
   );
   sl.registerLazySingleton(
-    () => GetOutletPaymentMethodsUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+    () =>
+        GetOutletPaymentMethodsUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
   );
   sl.registerLazySingleton(
-    () => GetOutletPaymentMethodByIdUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+    () => GetOutletPaymentMethodByIdUsecase(
+      sl<OutletPaymentMethodRepositoryImpl>(),
+    ),
   );
   sl.registerLazySingleton(
-    () => CreateOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+    () => CreateOutletPaymentMethodUsecase(
+      sl<OutletPaymentMethodRepositoryImpl>(),
+    ),
   );
   sl.registerLazySingleton(
-    () => UpdateOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+    () => UpdateOutletPaymentMethodUsecase(
+      sl<OutletPaymentMethodRepositoryImpl>(),
+    ),
   );
   sl.registerLazySingleton(
-    () => DeleteOutletPaymentMethodUsecase(sl<OutletPaymentMethodRepositoryImpl>()),
+    () => DeleteOutletPaymentMethodUsecase(
+      sl<OutletPaymentMethodRepositoryImpl>(),
+    ),
   );
   sl.registerFactory(
     () => OutletPaymentMethodBloc(
@@ -404,13 +423,15 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => GetOrdersUsecase(sl<OrderRepository>()));
   sl.registerLazySingleton(() => GetOrderByIdUsecase(sl<OrderRepository>()));
   sl.registerLazySingleton(() => CreateOrderUsecase(sl<OrderRepository>()));
-  sl.registerLazySingleton(() => UpdateOrderStatusUsecase(sl<OrderRepository>()));
+  sl.registerLazySingleton(
+    () => UpdateOrderStatusUsecase(sl<OrderRepository>()),
+  );
   sl.registerLazySingleton(() => CancelOrderUsecase(sl<OrderRepository>()));
   sl.registerLazySingleton(() => ConfirmPaymentUsecase(sl<OrderRepository>()));
-  sl.registerLazySingleton(() => InputCashPaymentUsecase(sl<OrderRepository>()));
-  sl.registerFactory(
-    () => OrderBloc(getOrdersUsecase: sl<GetOrdersUsecase>()),
+  sl.registerLazySingleton(
+    () => InputCashPaymentUsecase(sl<OrderRepository>()),
   );
+  sl.registerFactory(() => OrderBloc(getOrdersUsecase: sl<GetOrdersUsecase>()));
   sl.registerFactory(
     () => OrderDetailBloc(getOrderByIdUsecase: sl<GetOrderByIdUsecase>()),
   );
@@ -422,5 +443,36 @@ Future<void> initDependencies() async {
       confirmPaymentUsecase: sl<ConfirmPaymentUsecase>(),
       inputCashPaymentUsecase: sl<InputCashPaymentUsecase>(),
     ),
+  );
+  // Tenant
+  sl.registerLazySingleton<TenantRemoteDataSource>(
+    () => TenantRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<TenantRepositoryImpl>(
+    () => TenantRepositoryImpl(remoteDataSource: sl<TenantRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(() => GetTenantUsecase(sl<TenantRepositoryImpl>()));
+  sl.registerLazySingleton(
+    () => UpdateTenantUsecase(sl<TenantRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => TenantDetailBloc(getTenantUsecase: sl<GetTenantUsecase>()),
+  );
+  sl.registerFactory(
+    () => TenantActionBloc(updateTenantUsecase: sl<UpdateTenantUsecase>()),
+  );
+  // Profile
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<ProfileRepositoryImpl>(
+    () =>
+        ProfileRepositoryImpl(remoteDataSource: sl<ProfileRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(
+    () => GetProfileUsecase(sl<ProfileRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => ProfileDetailBloc(getProfileUsecase: sl<GetProfileUsecase>()),
   );
 }

@@ -5,6 +5,7 @@ import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/widgets/button_widget.dart';
 import 'package:lavendera/features/auth/presentation/pages/widgets/text_field_widget.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/home_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -53,6 +54,9 @@ class _RegisterPageState extends State<RegisterPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthLoaded) {
+            context.read<ProfileDetailBloc>().add(
+              GetProfileRequest(id: state.userId),
+            );
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const Home()),
               (route) => false,

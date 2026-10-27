@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/customer/presentation/pages/customer_page.dart';
 import 'package:lavendera/features/discount/presentation/pages/discount_page.dart';
 import 'package:lavendera/features/order/presentation/pages/order_page.dart';
 import 'package:lavendera/features/outlet/presentation/pages/outlet_page.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
+import 'package:lavendera/features/profile/presentation/pages/profile_detail_page.dart';
 import 'package:lavendera/features/service/presentation/pages/service_page.dart';
 import 'package:lavendera/features/service_category/presentation/pages/service_category_page.dart';
+import 'package:lavendera/features/tenant/presentation/pages/tenant_detail_page.dart';
 import 'package:lavendera/features/user/presentation/pages/user_page.dart';
 
 class Home extends StatelessWidget {
@@ -45,6 +49,54 @@ class Home extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+            BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+              builder: (context, state) {
+                if (state is ProfileDetailLoaded) {
+                  return _buildMenuCard(
+                    context: context,
+                    title: 'Tenant',
+                    subtitle: 'Kelola tenant',
+                    icon: Icons.person,
+                    color: const Color(0xFF10B981),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TenantDetailPage(
+                            tenantId: state.profile.tenantId,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+
+            const SizedBox(height: 14),
+            BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+              builder: (context, state) {
+                if (state is ProfileDetailLoaded) {
+                  return _buildMenuCard(
+                    context: context,
+                    title: 'Profile',
+                    subtitle: 'profile',
+                    icon: Icons.receipt_long_rounded,
+                    color: const Color(0xFF0284C7),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileDetailPage(profileId: state.profile.id),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            const SizedBox(height: 14),
             _buildMenuCard(
               context: context,
               title: 'Pesanan (Order Kasir)',

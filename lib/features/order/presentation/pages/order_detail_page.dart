@@ -270,7 +270,14 @@ class _OrderDetailView extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          centerTitle: false,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 20,
+              color: Colors.black87,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh_rounded, color: Color(0xFF4A99AD)),
@@ -289,7 +296,6 @@ class _OrderDetailView extends StatelessWidget {
                 child: CircularProgressIndicator(color: Color(0xFF4A99AD)),
               );
             }
-
             if (state is OrderDetailError) {
               return Center(
                 child: Padding(

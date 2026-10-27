@@ -8,6 +8,7 @@ import 'package:lavendera/features/customer/domain/usecases/get_customers_usecas
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
 import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
+import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
 import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
@@ -529,6 +530,18 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
       listener: (context, state) {
         if (state is OrderActionSuccess) {
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.message,
+                style: const TextStyle(fontFamily: 'Poppins'),
+              ),
+              backgroundColor: const Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+              dismissDirection: .horizontal,
+            ),
+          );
+          context.read<OrderBloc>().add(GetOrdersRequest());
         }
       },
       child: Scaffold(
@@ -540,6 +553,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 20,
+              color: Colors.black87,
+            ),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
         body: _isLoadingInitialData

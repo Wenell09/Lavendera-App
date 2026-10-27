@@ -87,7 +87,14 @@ class _CustomerPageState extends State<CustomerPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        centerTitle: false,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black87,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),

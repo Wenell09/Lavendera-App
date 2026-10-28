@@ -82,24 +82,26 @@ class _EditOutletPaymentMethodPageState
         widget.paymentMethod.id,
         _imageFile!.path,
       );
+      if (!mounted) return;
       context.read<OutletPaymentMethodBloc>().add(
         GetOutletPaymentMethodsRequest(outletId: widget.outlet.id),
       );
-      if (mounted) setState(() => _imageUrl = 'uploaded'); // trigger UI update
+      setState(() => _imageUrl = 'uploaded');
     } catch (e) {
       debugPrint('Error upload: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal upload: $e'),
-            backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating,
-            dismissDirection: DismissDirection.horizontal,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal upload: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          dismissDirection: DismissDirection.horizontal,
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _isUploading = false);
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
     }
   }
 

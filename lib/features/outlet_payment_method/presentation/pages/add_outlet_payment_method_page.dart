@@ -106,7 +106,7 @@ class _AddOutletPaymentMethodPageState
                     debugPrint('Error uploading QRIS after create: $e');
                   }
                 }
-                if (!mounted) return;
+                if (!context.mounted) return;
                 context.read<OutletPaymentMethodBloc>().add(
                   GetOutletPaymentMethodsRequest(outletId: widget.outlet.id),
                 );

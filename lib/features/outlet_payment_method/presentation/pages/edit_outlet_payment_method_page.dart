@@ -89,8 +89,14 @@ class _EditOutletPaymentMethodPageState
     } catch (e) {
       debugPrint('Error upload: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Gagal upload: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal upload: $e'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            dismissDirection: DismissDirection.horizontal,
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -113,7 +119,12 @@ class _EditOutletPaymentMethodPageState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus gambar QRIS: $e')),
+          SnackBar(
+            content: Text('Gagal menghapus gambar QRIS: $e'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            dismissDirection: DismissDirection.horizontal,
+          ),
         );
       }
     } finally {
@@ -161,7 +172,12 @@ class _EditOutletPaymentMethodPageState
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Gagal menghapus gambar QRIS: $e')),
+                  SnackBar(
+                    content: Text('Gagal menghapus gambar QRIS: $e'),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                    dismissDirection: DismissDirection.horizontal,
+                  ),
                 );
                 return;
               }

@@ -103,6 +103,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
               style: TextStyle(fontFamily: 'Poppins'),
             ),
             backgroundColor: Color(0xFFEF4444),
+            dismissDirection: DismissDirection.horizontal,
           ),
         );
       }

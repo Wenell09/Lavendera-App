@@ -66,6 +66,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
                 SnackBar(
                   content: Text(state.message),
                   behavior: SnackBarBehavior.floating,
+                  dismissDirection: DismissDirection.horizontal,
                 ),
               );
               Navigator.pop(context, true);
@@ -75,6 +76,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
                   content: Text(state.message),
                   backgroundColor: Colors.redAccent,
                   behavior: SnackBarBehavior.floating,
+                  dismissDirection: DismissDirection.horizontal,
                 ),
               );
             }

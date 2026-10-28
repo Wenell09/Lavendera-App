@@ -123,6 +123,7 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
               SnackBar(
                 content: Text(state.message),
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           } else if (state is OutletActionError) {
@@ -131,6 +132,7 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                 content: Text(state.message),
                 backgroundColor: Colors.redAccent,
                 behavior: SnackBarBehavior.floating,
+                dismissDirection: DismissDirection.horizontal,
               ),
             );
           }

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
-import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/customer/domain/entities/customer.dart';
-import 'package:lavendera/features/customer/domain/usecases/get_customers_usecase.dart';
+import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
-import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
+import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
 import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
 import 'package:lavendera/features/order/presentation/widgets/order_cart_item.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
-import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
+import 'package:lavendera/features/outlet/presentation/bloc/outlet_bloc.dart';
+import 'package:lavendera/features/outlet_payment_method/domain/entities/outlet_payment_method.dart';
+import 'package:lavendera/features/outlet_payment_method/presentation/bloc/outlet_payment_method_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/user_outlet/user_outlet_bloc.dart';
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
-import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
+import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
 
 class CreateOrderPage extends StatefulWidget {
   const CreateOrderPage({super.key});
@@ -28,7 +30,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   List<Customer> _customers = [];
   List<LaundryService> _services = [];
   List<Discount> _discounts = [];
-  bool _isLoadingInitialData = true;
+  List<OutletPaymentMethod> _outletPaymentMethods = [];
   Outlet? _selectedOutlet;
   Customer? _selectedCustomer;
   Discount? _selectedDiscount;
@@ -38,6 +40,17 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   final _notesController = TextEditingController();
   int _paidAmount = 0;
 
+  bool _isOutletLoaded = false;
+  bool _isCustomerLoaded = false;
+  bool _isServiceLoaded = false;
+  bool _isDiscountLoaded = false;
+
+  bool get _isLoadingInitialData =>
+      !_isOutletLoaded ||
+      !_isCustomerLoaded ||
+      !_isServiceLoaded ||
+      !_isDiscountLoaded;
+
   @override
   void dispose() {
     _paidAmountController.dispose();
@@ -45,48 +58,22 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     super.dispose();
   }
 
-  Future<void> _loadAllInitialData(String role) async {
-    try {
-      final results = await Future.wait([
-        sl<GetOutletsUsecase>().call(limit: 100),
-        sl<GetCustomersUsecase>().call(limit: 100),
-        sl<GetServicesUsecase>().call(limit: 100),
-        sl<GetDiscountsUsecase>().call(limit: 100),
-      ]);
+  void _loadAllInitialData(String role, String userId) {
+    if (role.toUpperCase() == 'ADMIN') {
+      context.read<OutletBloc>().add(GetOutletsRequest(limit: 100));
+    } else {
+      context.read<UserOutletBloc>().add(GetUserOutletRequest(userId: userId));
+    }
+    context.read<CustomerBloc>().add(GetCustomersRequest(limit: 100));
+    context.read<ServiceBloc>().add(GetServicesRequest(limit: 100));
+    context.read<DiscountBloc>().add(GetDiscountsRequest(limit: 100));
+  }
 
-      final outletsRes = results[0].data as List<Outlet>;
-      final customersRes = results[1].data as List<Customer>;
-      final servicesRes = results[2].data as List<LaundryService>;
-      final discountsRes = results[3].data as List<Discount>;
-
-      if (mounted) {
-        setState(() {
-          _outlets = outletsRes.where((o) => o.isActive).toList();
-          if (_outlets.isNotEmpty) {
-            _selectedOutlet = _outlets.first;
-          }
-          _customers = customersRes;
-          _services = servicesRes.where((s) => s.isActive).toList();
-          _discounts = discountsRes.where((d) => d.isActive).toList();
-          _isLoadingInitialData = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _isLoadingInitialData = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Gagal memuat master data. Silakan muat ulang.',
-              style: TextStyle(fontFamily: 'Poppins'),
-            ),
-            backgroundColor: Color(0xFFEF4444),
-            dismissDirection: DismissDirection.horizontal,
-          ),
-        );
-      }
+  void _fetchPaymentMethods() {
+    if (_selectedOutlet != null) {
+      context.read<OutletPaymentMethodBloc>().add(
+        GetOutletPaymentMethodsRequest(outletId: _selectedOutlet!.id),
+      );
     }
   }
 
@@ -479,7 +466,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
       return;
     }
 
-    // Build Request Body according to documentation
     final body = <String, dynamic>{
       'outlet_id': _selectedOutlet!.id,
       'customer_id': _selectedCustomer!.id,
@@ -501,7 +487,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     if (notes.isNotEmpty) {
       body['notes'] = notes;
     }
-    debugPrint("HASIL DATA:$body");
     context.read<OrderActionBloc>().add(CreateOrderActionRequest(body: body));
   }
 
@@ -512,7 +497,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         BlocListener<OrderActionBloc, OrderActionState>(
           listener: (context, state) {
             if (state is OrderActionSuccess) {
-              Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -521,7 +505,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   ),
                   backgroundColor: const Color(0xFF10B981),
                   behavior: SnackBarBehavior.floating,
-                  dismissDirection: .horizontal,
+                  dismissDirection: DismissDirection.horizontal,
                 ),
               );
               context.read<OrderBloc>().add(GetOrdersRequest());
@@ -531,7 +515,99 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         BlocListener<ProfileDetailBloc, ProfileDetailState>(
           listener: (context, state) {
             if (state is ProfileDetailLoaded) {
-              _loadAllInitialData(state.profile.role);
+              _loadAllInitialData(state.profile.role, state.profile.id);
+            }
+          },
+        ),
+        BlocListener<OutletBloc, OutletState>(
+          listener: (context, state) {
+            if (state is OutletLoaded) {
+              setState(() {
+                _outlets = state.outlets.where((o) => o.isActive).toList();
+                if (_selectedOutlet == null && _outlets.isNotEmpty) {
+                  _selectedOutlet = _outlets.first;
+                } else if (_selectedOutlet != null &&
+                    !_outlets.any((o) => o.id == _selectedOutlet!.id)) {
+                  _selectedOutlet = _outlets.isNotEmpty ? _outlets.first : null;
+                }
+                _isOutletLoaded = true;
+              });
+              _fetchPaymentMethods();
+            } else if (state is OutletError) {
+              setState(() => _isOutletLoaded = true);
+            }
+          },
+        ),
+        BlocListener<UserOutletBloc, UserOutletState>(
+          listener: (context, state) {
+            if (state is UserOutletLoaded) {
+              setState(() {
+                final summary = state.userOutlet.outlet;
+                final outlet = Outlet(
+                  id: summary.id,
+                  name: summary.name,
+                  slug: summary.slug,
+                  phone: '',
+                  address: '',
+                  isPublicOrderEnabled: true,
+                  isActive: true,
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                );
+                _outlets = [outlet];
+                _selectedOutlet ??= outlet;
+                _isOutletLoaded = true;
+              });
+              _fetchPaymentMethods();
+            } else if (state is UserOutletError) {
+              setState(() => _isOutletLoaded = true);
+            }
+          },
+        ),
+        BlocListener<OutletPaymentMethodBloc, OutletPaymentMethodState>(
+          listener: (context, state) {
+            if (state is OutletPaymentMethodLoaded) {
+              setState(() {
+                _outletPaymentMethods = state.paymentMethods
+                    .where((pm) => pm.isActive)
+                    .toList();
+              });
+            }
+          },
+        ),
+        BlocListener<CustomerBloc, CustomerState>(
+          listener: (context, state) {
+            if (state is CustomerLoaded) {
+              setState(() {
+                _customers = state.customers;
+                _isCustomerLoaded = true;
+              });
+            } else if (state is CustomerError) {
+              setState(() => _isCustomerLoaded = true);
+            }
+          },
+        ),
+        BlocListener<ServiceBloc, ServiceState>(
+          listener: (context, state) {
+            if (state is ServiceLoaded) {
+              setState(() {
+                _services = state.services.where((s) => s.isActive).toList();
+                _isServiceLoaded = true;
+              });
+            } else if (state is ServiceError) {
+              setState(() => _isServiceLoaded = true);
+            }
+          },
+        ),
+        BlocListener<DiscountBloc, DiscountState>(
+          listener: (context, state) {
+            if (state is DiscountLoaded) {
+              setState(() {
+                _discounts = state.discounts.where((d) => d.isActive).toList();
+                _isDiscountLoaded = true;
+              });
+            } else if (state is DiscountError) {
+              setState(() => _isDiscountLoaded = true);
             }
           },
         ),
@@ -545,14 +621,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              size: 20,
-              color: Colors.black87,
-            ),
-            onPressed: () => Navigator.pop(context),
           ),
         ),
         body: _isLoadingInitialData
@@ -597,6 +665,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         setState(() {
                           _selectedOutlet = val;
                         });
+                        _fetchPaymentMethods();
                       },
                     ),
                   ),
@@ -744,7 +813,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           ),
                                         ),
                                         Text(
-                                          '//${CurrencyFormatter.format(item.service.price)} / ${item.service.unit}',
+                                          '${CurrencyFormatter.format(item.service.price)} / ${item.service.unit}',
                                           style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 11.5,
@@ -836,13 +905,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ),
                         ),
                         ..._discounts.map((discount) {
-                          discount.type.toLowerCase() == 'percentage'
+                          final label =
+                              discount.type.toLowerCase() == 'percentage'
                               ? '${discount.value}%'
                               : CurrencyFormatter.format(discount.value);
                           return DropdownMenuItem<Discount?>(
                             value: discount,
                             child: Text(
-                              '${discount.name} ()',
+                              '${discount.name} ($label)',
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 13,
@@ -1003,6 +1073,120 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 ),
                               ],
                             ),
+                          ),
+                        ] else ...[
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Informasi Pembayaran / Rekening Outlet',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF475569),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          BlocBuilder<
+                            OutletPaymentMethodBloc,
+                            OutletPaymentMethodState
+                          >(
+                            builder: (context, state) {
+                              if (state is OutletPaymentMethodLoading) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF4A99AD),
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                );
+                              }
+                              final filteredMethods = _outletPaymentMethods
+                                  .where((pm) => pm.type == _paymentMethod)
+                                  .toList();
+
+                              if (filteredMethods.isEmpty) {
+                                return Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF1F5F9),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Text(
+                                    'Tidak ada detail pembayaran untuk metode ini.',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 12,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: filteredMethods.length,
+                                separatorBuilder: (_, _) =>
+                                    const SizedBox(height: 8),
+                                itemBuilder: (context, index) {
+                                  final pm = filteredMethods[index];
+                                  final accNum = pm.accountNumber;
+                                  return Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          accNum != null && accNum.isNotEmpty
+                                              ? '${pm.providerName} - $accNum'
+                                              : pm.providerName,
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 13,
+                                            color: Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Atas Nama: ${pm.accountName}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 12,
+                                            color: Colors.grey.shade700,
+                                          ),
+                                        ),
+                                        if (pm.qrImageUrl != null &&
+                                            pm.qrImageUrl!.isNotEmpty) ...[
+                                          const SizedBox(height: 8),
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            child: Image.network(
+                                              pm.qrImageUrl!,
+                                              height: 120,
+                                              fit: BoxFit.contain,
+                                              errorBuilder: (_, _, _) =>
+                                                  const SizedBox(),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           ),
                         ],
                       ],

@@ -8,7 +8,7 @@ import 'package:lavendera/features/customer/presentation/pages/widgets/empty_wid
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
 import 'package:lavendera/features/outlet_user/domain/entities/user_summary.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
-import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user/outlet_user_bloc.dart';
 import 'package:lavendera/features/user/domain/entities/user.dart';
 import 'package:lavendera/features/user/presentation/bloc/user_bloc.dart';
 
@@ -165,6 +165,7 @@ class _OutletUserPageState extends State<OutletUserPage> {
               Text(
                 'Staf & Pengguna',
                 style: AppTextStyles.titleLarge.copyWith(
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
               ),

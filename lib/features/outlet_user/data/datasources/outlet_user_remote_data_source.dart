@@ -9,7 +9,10 @@ class OutletUserRemoteDataSource {
   final Dio dio;
   OutletUserRemoteDataSource({required this.dio});
 
-  Future<OutletWithUsersModel> assignUserToOutlet(String outletId, String userId) async {
+  Future<OutletWithUsersModel> assignUserToOutlet(
+    String outletId,
+    String userId,
+  ) async {
     try {
       final response = await dio.post(
         '$baseUrl/outlets/$outletId/users',
@@ -24,7 +27,12 @@ class OutletUserRemoteDataSource {
     }
   }
 
-  Future<OutletWithUsersModel> getOutletUsers(String outletId, {String? search, int page = 1, int limit = 10}) async {
+  Future<OutletWithUsersModel> getOutletUsers(
+    String outletId, {
+    String? search,
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
       final response = await dio.get(
         '$baseUrl/outlets/$outletId/users',
@@ -45,7 +53,9 @@ class OutletUserRemoteDataSource {
 
   Future<void> unassignUserFromOutlet(String outletId, String userId) async {
     try {
-      final response = await dio.delete('$baseUrl/outlets/$outletId/users/$userId');
+      final response = await dio.delete(
+        '$baseUrl/outlets/$outletId/users/$userId',
+      );
       debugPrint('Unassign User Result: ${response.data}');
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
@@ -54,7 +64,7 @@ class OutletUserRemoteDataSource {
     }
   }
 
-  Future<UserWithOutletsModel> getUserOutlets(String userId) async {
+  Future<UserWithOutletsModel> getUserOutlet(String userId) async {
     try {
       final response = await dio.get('$baseUrl/users/$userId/outlets');
       debugPrint('Get User Outlets Result: ${response.data}');

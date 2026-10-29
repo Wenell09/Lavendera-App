@@ -64,10 +64,11 @@ import 'package:lavendera/features/outlet_user/data/datasources/outlet_user_remo
 import 'package:lavendera/features/outlet_user/data/repositories/outlet_user_repository_impl.dart';
 import 'package:lavendera/features/outlet_user/domain/usecases/assign_user_to_outlet_usecase.dart';
 import 'package:lavendera/features/outlet_user/domain/usecases/get_outlet_users_usecase.dart';
-import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlets_usecase.dart';
+import 'package:lavendera/features/outlet_user/domain/usecases/get_user_outlet_usecase.dart';
 import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_from_outlet_usecase.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
-import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user/outlet_user_bloc.dart';
+import 'package:lavendera/features/outlet_user/presentation/bloc/user_outlet/user_outlet_bloc.dart';
 import 'package:lavendera/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:lavendera/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:lavendera/features/profile/domain/usecases/get_profile_usecase.dart';
@@ -357,10 +358,13 @@ Future<void> initDependencies() async {
     () => UnassignUserFromOutletUsecase(sl<OutletUserRepositoryImpl>()),
   );
   sl.registerLazySingleton(
-    () => GetUserOutletsUsecase(sl<OutletUserRepositoryImpl>()),
+    () => GetUserOutletUsecase(sl<OutletUserRepositoryImpl>()),
   );
   sl.registerFactory(
     () => OutletUserBloc(getOutletUsersUsecase: sl<GetOutletUsersUsecase>()),
+  );
+  sl.registerFactory(
+    () => UserOutletBloc(getUserOutletUsecase: sl<GetUserOutletUsecase>()),
   );
   sl.registerFactory(
     () => OutletUserActionBloc(

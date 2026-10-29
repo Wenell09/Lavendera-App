@@ -8,8 +8,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   ProfileRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Profile> getProfile(String id) async {
-    final model = await remoteDataSource.getProfile(id);
+  Future<Profile> getProfile() async {
+    final model = await remoteDataSource.getProfile();
     return model.toEntity();
   }
 }

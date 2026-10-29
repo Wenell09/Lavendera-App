@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/login_page.dart';
+import 'package:lavendera/features/navigation/presentation/pages/navigation_page.dart';
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
-import 'package:lavendera/home_page.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -18,11 +18,10 @@ class SplashPage extends StatelessWidget {
           );
         }
         if (state is AuthLoaded) {
-          context.read<ProfileDetailBloc>().add(
-            GetProfileRequest(id: state.userId),
+          context.read<ProfileDetailBloc>().add(GetProfileRequest());
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const NavigationPage()),
           );
-          Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (_) => const Home()));
         }
       },
       child: Scaffold(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 
 import '../../domain/entities/service_item.dart';
 import '../bloc/service_bloc.dart';
@@ -312,24 +313,38 @@ class _ServicePageState extends State<ServicePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddServicePage()),
-          );
+      floatingActionButton: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+        builder: (context, state) {
+          if (state is ProfileDetailLoaded) {
+            if (state.profile.role == "ADMIN") {
+              return FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddServicePage(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color(0xFF4A99AD),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: Text(
+                  'Tambah Layanan',
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          return const SizedBox.shrink();
         },
-        backgroundColor: const Color(0xFF4A99AD),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Tambah Layanan',
-          style: AppTextStyles.labelLarge.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
     );
   }

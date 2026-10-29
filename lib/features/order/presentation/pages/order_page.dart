@@ -159,14 +159,6 @@ class _OrderPageState extends State<OrderPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Colors.black87,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -207,7 +199,7 @@ class _OrderPageState extends State<OrderPage> {
                       fontSize: 13.5,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Cari nomor order atau nama customer...',
+                      hintText: 'Cari nomor order...',
                       hintStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
@@ -542,25 +534,6 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateOrderPage()),
-          );
-        },
-        backgroundColor: const Color(0xFF4A99AD),
-        elevation: 3,
-        icon: const Icon(Icons.point_of_sale_rounded, color: Colors.white),
-        label: const Text(
-          'Order Kasir',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }

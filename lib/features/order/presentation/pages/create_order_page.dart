@@ -9,19 +9,12 @@ import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecase.dart';
 import 'package:lavendera/features/order/presentation/bloc/action/order_action_bloc.dart';
 import 'package:lavendera/features/order/presentation/bloc/order_bloc.dart';
+import 'package:lavendera/features/order/presentation/widgets/order_cart_item.dart';
 import 'package:lavendera/features/outlet/domain/entities/outlet.dart';
 import 'package:lavendera/features/outlet/domain/usecases/get_outlets_usecase.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
 import 'package:lavendera/features/service/domain/usecases/get_services_usecase.dart';
-
-class OrderCartItem {
-  final LaundryService service;
-  num quantity;
-
-  OrderCartItem({required this.service, required this.quantity});
-
-  num get subtotal => service.price * quantity;
-}
 
 class CreateOrderPage extends StatefulWidget {
   const CreateOrderPage({super.key});
@@ -31,32 +24,19 @@ class CreateOrderPage extends StatefulWidget {
 }
 
 class _CreateOrderPageState extends State<CreateOrderPage> {
-  // Master data
   List<Outlet> _outlets = [];
   List<Customer> _customers = [];
   List<LaundryService> _services = [];
   List<Discount> _discounts = [];
   bool _isLoadingInitialData = true;
-
-  // Selected values
   Outlet? _selectedOutlet;
   Customer? _selectedCustomer;
   Discount? _selectedDiscount;
-  String _paymentMethod = 'cash'; // cash, bank_transfer, qris
-
-  // Cart
+  String _paymentMethod = 'cash';
   final List<OrderCartItem> _cartItems = [];
-
-  // Controllers
   final _paidAmountController = TextEditingController();
   final _notesController = TextEditingController();
   int _paidAmount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadAllInitialData();
-  }
 
   @override
   void dispose() {
@@ -65,7 +45,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     super.dispose();
   }
 
-  Future<void> _loadAllInitialData() async {
+  Future<void> _loadAllInitialData(String role) async {
     try {
       final results = await Future.wait([
         sl<GetOutletsUsecase>().call(limit: 100),
@@ -527,24 +507,35 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OrderActionBloc, OrderActionState>(
-      listener: (context, state) {
-        if (state is OrderActionSuccess) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.message,
-                style: const TextStyle(fontFamily: 'Poppins'),
-              ),
-              backgroundColor: const Color(0xFF10B981),
-              behavior: SnackBarBehavior.floating,
-              dismissDirection: .horizontal,
-            ),
-          );
-          context.read<OrderBloc>().add(GetOrdersRequest());
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<OrderActionBloc, OrderActionState>(
+          listener: (context, state) {
+            if (state is OrderActionSuccess) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.message,
+                    style: const TextStyle(fontFamily: 'Poppins'),
+                  ),
+                  backgroundColor: const Color(0xFF10B981),
+                  behavior: SnackBarBehavior.floating,
+                  dismissDirection: .horizontal,
+                ),
+              );
+              context.read<OrderBloc>().add(GetOrdersRequest());
+            }
+          },
+        ),
+        BlocListener<ProfileDetailBloc, ProfileDetailState>(
+          listener: (context, state) {
+            if (state is ProfileDetailLoaded) {
+              _loadAllInitialData(state.profile.role);
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
@@ -753,7 +744,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           ),
                                         ),
                                         Text(
-                                          '${CurrencyFormatter.format(item.service.price)} / ${item.service.unit}',
+                                          '//${CurrencyFormatter.format(item.service.price)} / ${item.service.unit}',
                                           style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 11.5,
@@ -845,14 +836,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ),
                         ),
                         ..._discounts.map((discount) {
-                          final valueText =
-                              discount.type.toLowerCase() == 'percentage'
+                          discount.type.toLowerCase() == 'percentage'
                               ? '${discount.value}%'
                               : CurrencyFormatter.format(discount.value);
                           return DropdownMenuItem<Discount?>(
                             value: discount,
                             child: Text(
-                              '${discount.name} ($valueText)',
+                              '${discount.name} ()',
                               style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 13,

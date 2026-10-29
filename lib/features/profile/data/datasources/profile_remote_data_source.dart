@@ -8,9 +8,9 @@ class ProfileRemoteDataSource {
   final Dio dio;
   ProfileRemoteDataSource({required this.dio});
 
-  Future<ProfileModel> getProfile(String id) async {
+  Future<ProfileModel> getProfile() async {
     try {
-      final response = await dio.get('$baseUrl/users/$id');
+      final response = await dio.get('$baseUrl/profile');
       debugPrint('Get Profile Result: ${response.data}');
       return ProfileModel.fromJson(response.data['data']);
     } on DioException catch (e) {

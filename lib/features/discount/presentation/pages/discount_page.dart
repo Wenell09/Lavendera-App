@@ -8,6 +8,7 @@ import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
 import 'package:lavendera/features/discount/presentation/pages/add_discount_page.dart';
 import 'package:lavendera/features/discount/presentation/pages/discount_detail_page.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 
 class DiscountPage extends StatefulWidget {
   const DiscountPage({super.key});
@@ -309,24 +310,38 @@ class _DiscountPageState extends State<DiscountPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddDiscountPage()),
-          );
+      floatingActionButton: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+        builder: (context, state) {
+          if (state is ProfileDetailLoaded) {
+            if (state.profile.role == "ADMIN") {
+              return FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddDiscountPage(),
+                    ),
+                  );
+                },
+                backgroundColor: const Color(0xFF4A99AD),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: Text(
+                  'Tambah Diskon',
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          return const SizedBox.shrink();
         },
-        backgroundColor: const Color(0xFF4A99AD),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Tambah Diskon',
-          style: AppTextStyles.labelLarge.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
     );
   }

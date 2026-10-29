@@ -17,10 +17,9 @@ class AuthRemoteDataSource {
       );
       final data = response.data['data'];
       final token = data['token'];
+      final role = data['user']['role'];
       final id = data['user']['id'];
-      debugPrint('Token: $token');
-      debugPrint('User ID: $id');
-      return {'id': id, 'token': token};
+      return {'id': id, 'token': token, 'role': role};
     } on DioException catch (e) {
       debugPrint('Status code: ${e.response?.statusCode}');
       debugPrint('Response error: ${e.response?.data}');

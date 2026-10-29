@@ -6,7 +6,7 @@ class GetProfileUsecase {
 
   GetProfileUsecase(this.repository);
 
-  Future<Profile> call(String id) async {
-    return await repository.getProfile(id);
+  Future<Profile> call() async {
+    return await repository.getProfile();
   }
 }

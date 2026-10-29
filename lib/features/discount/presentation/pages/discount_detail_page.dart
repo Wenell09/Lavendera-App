@@ -6,6 +6,7 @@ import 'package:lavendera/core/utils/currency_formatter.dart';
 import 'package:lavendera/features/discount/domain/entities/discount.dart';
 import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 
 class DiscountDetailPage extends StatefulWidget {
   final Discount discount;
@@ -88,9 +89,22 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: _showDeleteDialog,
+          BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+            builder: (context, state) {
+              if (state is ProfileDetailLoaded) {
+                if (state.profile.role == "ADMIN") {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                    ),
+                    onPressed: _showDeleteDialog,
+                  );
+                }
+                return const SizedBox.shrink();
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ],
       ),
@@ -192,7 +206,17 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                   contentPadding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 40),
-                _buildSubmitButton(),
+                BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+                  builder: (context, state) {
+                    if (state is ProfileDetailLoaded) {
+                      if (state.profile.role == "ADMIN") {
+                        return _buildSubmitButton();
+                      }
+                      return const SizedBox.shrink();
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
           ),

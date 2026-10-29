@@ -6,8 +6,8 @@ import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/register_page.dart';
 import 'package:lavendera/features/auth/presentation/pages/widgets/button_widget.dart';
 import 'package:lavendera/features/auth/presentation/pages/widgets/text_field_widget.dart';
+import 'package:lavendera/features/navigation/presentation/pages/navigation_page.dart';
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
-import 'package:lavendera/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,11 +43,9 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthLoaded) {
-            context.read<ProfileDetailBloc>().add(
-              GetProfileRequest(id: state.userId),
-            );
+            context.read<ProfileDetailBloc>().add(GetProfileRequest());
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const Home()),
+              MaterialPageRoute(builder: (context) => const NavigationPage()),
             );
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(

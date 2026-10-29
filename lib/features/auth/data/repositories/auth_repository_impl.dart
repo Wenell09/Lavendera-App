@@ -19,6 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
     await authLocalDataSource.saveSession(
       id: response["id"],
       token: response["token"],
+      role: response["role"],
     );
     return response;
   }
@@ -37,7 +38,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Map<String, dynamic>> loadData() async {
     final token = await authLocalDataSource.getToken();
     final userId = await authLocalDataSource.getUserId();
-    final Map<String, dynamic> response = {"token": token, "id": userId};
+    final role = await authLocalDataSource.getRole();
+    final Map<String, dynamic> response = {
+      "token": token,
+      "id": userId,
+      "role": role,
+    };
     return response;
   }
 }

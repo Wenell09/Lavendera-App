@@ -6,8 +6,7 @@ import 'package:lavendera/features/profile/domain/usecases/get_profile_usecase.d
 part 'profile_detail_event.dart';
 part 'profile_detail_state.dart';
 
-class ProfileDetailBloc
-    extends Bloc<ProfileDetailEvent, ProfileDetailState> {
+class ProfileDetailBloc extends Bloc<ProfileDetailEvent, ProfileDetailState> {
   final GetProfileUsecase _getProfileUsecase;
 
   ProfileDetailBloc({required this._getProfileUsecase})
@@ -15,7 +14,7 @@ class ProfileDetailBloc
     on<GetProfileRequest>((event, emit) async {
       emit(ProfileDetailLoading());
       try {
-        final profile = await _getProfileUsecase.call(event.id);
+        final profile = await _getProfileUsecase.call();
         emit(ProfileDetailLoaded(profile: profile));
       } on ApiException catch (e) {
         emit(ProfileDetailError(message: e.message));

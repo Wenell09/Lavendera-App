@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
+import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/presentation/bloc/action/service_action_bloc.dart';
 import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
 import 'package:lavendera/features/service_category/domain/usecases/get_service_categories_usecase.dart';
@@ -128,9 +129,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: _showDeleteDialog,
+          BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+            builder: (context, state) {
+              if (state is ProfileDetailLoaded) {
+                if (state.profile.role == "ADMIN") {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                    ),
+                    onPressed: _showDeleteDialog,
+                  );
+                }
+                return const SizedBox.shrink();
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ],
       ),
@@ -239,8 +253,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                         },
                       ),
                 const SizedBox(height: 20),
-
-                // Name
                 _buildTextField(
                   controller: _nameController,
                   label: 'Nama Layanan',
@@ -259,8 +271,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-
-                // Unit Selector
                 Text(
                   'Satuan Unit',
                   style: AppTextStyles.labelMedium.copyWith(
@@ -279,8 +289,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-
-                // Price
                 _buildTextField(
                   controller: _priceController,
                   label: 'Harga (Rp)',
@@ -299,8 +307,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-
-                // Min Quantity & Duration in Days
                 Row(
                   children: [
                     Expanded(
@@ -347,8 +353,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-
-                // Active Switch
                 SwitchListTile(
                   title: Text(
                     'Status Aktif',
@@ -363,9 +367,17 @@ class _ServiceDetailPageState extends State<ServiceDetailPage> {
                   contentPadding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 40),
-
-                // Submit Button
-                _buildSubmitButton(),
+                BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+                  builder: (context, state) {
+                    if (state is ProfileDetailLoaded) {
+                      if (state.profile.role == "ADMIN") {
+                        return _buildSubmitButton();
+                      }
+                      return const SizedBox.shrink();
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ],
             ),
           ),

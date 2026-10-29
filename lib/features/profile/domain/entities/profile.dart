@@ -4,9 +4,7 @@ class Profile {
   final String name;
   final String email;
   final String role;
-  final bool isActive;
   final DateTime createdAt;
-  final DateTime updatedAt;
 
   Profile({
     required this.id,
@@ -14,8 +12,6 @@ class Profile {
     required this.name,
     required this.email,
     required this.role,
-    required this.isActive,
     required this.createdAt,
-    required this.updatedAt,
   });
 }

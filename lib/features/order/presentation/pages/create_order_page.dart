@@ -17,6 +17,8 @@ import 'package:lavendera/features/outlet_user/presentation/bloc/user_outlet/use
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
+import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
+import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 
 class CreateOrderPage extends StatefulWidget {
   const CreateOrderPage({super.key});
@@ -34,27 +36,32 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   Outlet? _selectedOutlet;
   Customer? _selectedCustomer;
   Discount? _selectedDiscount;
+  ServiceCategory? _selectedServiceCategory;
   String _paymentMethod = 'cash';
   final List<OrderCartItem> _cartItems = [];
   final _paidAmountController = TextEditingController();
   final _notesController = TextEditingController();
+  final _serviceSearchController = TextEditingController();
   int _paidAmount = 0;
 
   bool _isOutletLoaded = false;
   bool _isCustomerLoaded = false;
   bool _isServiceLoaded = false;
+  bool _isServiceCategoryLoaded = false;
   bool _isDiscountLoaded = false;
 
   bool get _isLoadingInitialData =>
       !_isOutletLoaded ||
       !_isCustomerLoaded ||
       !_isServiceLoaded ||
+      !_isServiceCategoryLoaded ||
       !_isDiscountLoaded;
 
   @override
   void dispose() {
     _paidAmountController.dispose();
     _notesController.dispose();
+    _serviceSearchController.dispose();
     super.dispose();
   }
 
@@ -66,6 +73,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     }
     context.read<CustomerBloc>().add(GetCustomersRequest(limit: 100));
     context.read<ServiceBloc>().add(GetServicesRequest(limit: 100));
+    context.read<ServiceCategoryBloc>().add(GetServiceCategoriesRequest());
     context.read<DiscountBloc>().add(GetDiscountsRequest(limit: 100));
   }
 
@@ -157,115 +165,180 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredServices = _services.where((s) {
+              final matchesSearch = s.name.toLowerCase().contains(
+                _serviceSearchController.text.toLowerCase(),
+              );
+              final matchesCategory =
+                  _selectedServiceCategory == null ||
+                  s.category.id == _selectedServiceCategory!.id;
+              return matchesSearch && matchesCategory;
+            }).toList();
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.8,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              expand: false,
+              builder: (context, scrollController) {
+                return Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Pilih Layanan Laundry',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: _services.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Belum ada layanan tersedia',
-                              style: TextStyle(fontFamily: 'Poppins'),
-                            ),
-                          )
-                        : ListView.separated(
-                            controller: scrollController,
-                            itemCount: _services.length,
-                            separatorBuilder: (_, _) =>
-                                const Divider(height: 1),
-                            itemBuilder: (context, index) {
-                              final service = _services[index];
-                              return ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                leading: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF4A99AD)
-                                        .withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.local_laundry_service_rounded,
-                                    color: Color(0xFF4A99AD),
-                                    size: 20,
-                                  ),
-                                ),
-                                title: Text(
-                                  service.name,
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 13.5,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${CurrencyFormatter.format(service.price)} / ${service.unit} • ${service.durationDays} hari',
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Pilih Layanan Laundry',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: _serviceSearchController,
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Cari layanan...',
+                          hintStyle: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 12,
+                            color: Colors.grey.shade400,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            color: Color(0xFF64748B),
+                            size: 20,
+                          ),
+                          suffixIcon: _serviceSearchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, size: 18),
+                                  onPressed: () {
+                                    setModalState(() {
+                                      _serviceSearchController.clear();
+                                    });
+                                  },
+                                )
+                              : null,
+                          filled: true,
+                          fillColor: const Color(0xFFF1F5F9),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onChanged: (val) => setModalState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: filteredServices.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'Layanan tidak ditemukan',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
+                                    fontSize: 13,
+                                    color: Colors.grey.shade500,
                                   ),
                                 ),
-                                trailing: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(ctx);
-                                    _addServiceToCart(service);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF4A99AD),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                              )
+                            : ListView.separated(
+                                controller: scrollController,
+                                itemCount: filteredServices.length,
+                                separatorBuilder: (_, _) =>
+                                    const Divider(height: 1),
+                                itemBuilder: (context, index) {
+                                  final service = filteredServices[index];
+                                  return ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF4A99AD)
+                                            .withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.local_laundry_service_rounded,
+                                        color: Color(0xFF4A99AD),
+                                        size: 20,
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 6,
+                                    title: Text(
+                                      service.name,
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13.5,
+                                      ),
                                     ),
-                                  ),
-                                  child: const Text(
-                                    '+ Pilih',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12,
+                                    subtitle: Text(
+                                      '${CurrencyFormatter.format(service.price)} / ${service.unit} • ${service.durationDays} hari',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                                    trailing: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                        _addServiceToCart(service);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFF4A99AD,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                          vertical: 6,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '+ Pilih',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -622,10 +695,77 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh_rounded),
+              tooltip: 'Refresh Form',
+              onPressed: () {
+                final profileState = context.read<ProfileDetailBloc>().state;
+                if (profileState is ProfileDetailLoaded) {
+                  setState(() {
+                    _isOutletLoaded = false;
+                    _isCustomerLoaded = false;
+                    _isServiceLoaded = false;
+                    _isServiceCategoryLoaded = false;
+                    _isDiscountLoaded = false;
+                  });
+                  _loadAllInitialData(
+                    profileState.profile.role,
+                    profileState.profile.id,
+                  );
+                } else {
+                  context.read<ProfileDetailBloc>().add(GetProfileRequest());
+                }
+              },
+            ),
+          ],
         ),
         body: _isLoadingInitialData
-            ? const Center(
-                child: CircularProgressIndicator(color: Color(0xFF4A99AD)),
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(color: Color(0xFF4A99AD)),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Memuat data...',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: () {
+                        final profileState = context
+                            .read<ProfileDetailBloc>()
+                            .state;
+                        if (profileState is ProfileDetailLoaded) {
+                          _loadAllInitialData(
+                            profileState.profile.role,
+                            profileState.profile.id,
+                          );
+                        } else {
+                          context.read<ProfileDetailBloc>().add(
+                            GetProfileRequest(),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.refresh_rounded, size: 18),
+                      label: const Text(
+                        'Refresh Sekarang',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFF4A99AD),
+                      ),
+                    ),
+                  ],
+                ),
               )
             : ListView(
                 padding: const EdgeInsets.all(16),
@@ -1192,50 +1332,103 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 90),
+                  const SizedBox(height: 200),
                 ],
               ),
         bottomSheet: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                offset: const Offset(0, -4),
+                color: Colors.black.withValues(alpha: 0.1),
+                offset: const Offset(0, -2),
                 blurRadius: 10,
               ),
             ],
           ),
           child: SafeArea(
             top: false,
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Total Tagihan',
+                      'Subtotal',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 11,
-                        color: Color(0xFF64748B),
+                        fontSize: 13,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      CurrencyFormatter.format(_subtotal),
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_discountAmount > 0) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Diskon',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        '- ${CurrencyFormatter.format(_discountAmount)}',
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Total',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF4A99AD),
                       ),
                     ),
                     Text(
                       CurrencyFormatter.format(_totalAmount),
                       style: const TextStyle(
                         fontFamily: 'Poppins',
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        fontSize: 17,
-                        color: Color(0xFF0F172A),
+                        color: Color(0xFF4A99AD),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
                   child: BlocBuilder<OrderActionBloc, OrderActionState>(
                     builder: (context, state) {
                       final isLoading = state is OrderActionLoading;

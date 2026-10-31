@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
+import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lavendera/features/auth/presentation/pages/login_page.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/info_tile_widget.dart';
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 
@@ -22,7 +24,16 @@ class ProfileDetailPage extends StatelessWidget {
           ),
         ),
       ),
-      body: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is Unauthenticated) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+              (route) => false,
+            );
+          }
+        },
+        child: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
         builder: (context, state) {
           if (state is ProfileDetailLoading) {
             return const Center(
@@ -137,6 +148,25 @@ class ProfileDetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => context.read<AuthBloc>().add(LogoutRequest()),
+                      icon: const Icon(Icons.logout_rounded),
+                      label: const Text('Keluar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade50,
+                        foregroundColor: Colors.red.shade700,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.red.shade100),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                 ],
               ),
             );
@@ -144,7 +174,8 @@ class ProfileDetailPage extends StatelessWidget {
           return const SizedBox.shrink();
         },
       ),
-    );
+    ),
+  );
   }
 
   String _formatDate(DateTime date) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 
-import '../../../domain/entities/dashboard_entity.dart';
+import '../../domain/entities/dashboard_entity.dart';
 
 class DashboardOrderStatusWidget extends StatelessWidget {
   final List<DashboardOrderStatusEntity> orderStatuses;

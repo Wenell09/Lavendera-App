@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/utils/currency_formatter.dart';
 
-import '../../../domain/entities/dashboard_entity.dart';
+import '../../domain/entities/dashboard_entity.dart';
 
 class DashboardSalesChart extends StatefulWidget {
   final List<DashboardSalesChartEntity> chartData;

@@ -129,33 +129,14 @@ class ProfileDetailPage extends StatelessWidget {
                         ),
                         const Divider(height: 32, thickness: 0.5),
                         InfoTileWidget(
-                          icon: Icons.badge_outlined,
-                          label: 'User ID',
-                          value: profile.id,
+                          icon: Icons.update_outlined,
+                          label: 'Bergabung Pada',
+                          value: _formatDate(profile.createdAt),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.grey.shade100),
-                    ),
-                    child: Column(
-                      children: [
-                        InfoTileWidget(
-                          icon: Icons.update_outlined,
-                          label: 'Bergabung Pada',
-                          value: _formatDate(profile.createdAt),
-                          iconColor: Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 32),
                 ],
               ),
             );

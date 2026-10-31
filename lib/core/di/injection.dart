@@ -34,6 +34,10 @@ import 'package:lavendera/features/home/data/repositories/dashboard_repository_i
 import 'package:lavendera/features/home/domain/usecases/get_dashboard_usecase.dart';
 import 'package:lavendera/features/home/presentation/bloc/dashboard_bloc.dart';
 import 'package:lavendera/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:lavendera/features/report/data/datasources/report_remote_data_source.dart';
+import 'package:lavendera/features/report/data/repositories/report_repository_impl.dart';
+import 'package:lavendera/features/report/domain/usecases/get_financial_report_usecase.dart';
+import 'package:lavendera/features/report/presentation/bloc/report_bloc.dart';
 import 'package:lavendera/features/order/data/repositories/order_repository_impl.dart';
 import 'package:lavendera/features/order/domain/repositories/order_repository.dart';
 import 'package:lavendera/features/order/domain/usecases/cancel_order_usecase.dart';
@@ -497,5 +501,19 @@ Future<void> initDependencies() async {
   );
   sl.registerFactory(
     () => DashboardBloc(getDashboardUsecase: sl<GetDashboardUsecase>()),
+  );
+  // Report
+  sl.registerLazySingleton<ReportRemoteDataSource>(
+    () => ReportRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<ReportRepositoryImpl>(
+    () => ReportRepositoryImpl(remoteDataSource: sl<ReportRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(
+    () => GetFinancialReportUsecase(sl<ReportRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () =>
+        ReportBloc(getFinancialReportUsecase: sl<GetFinancialReportUsecase>()),
   );
 }

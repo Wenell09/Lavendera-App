@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lavendera/features/home/presentation/presentation/pages/home_page.dart';
 import 'package:lavendera/features/order/presentation/pages/create_order_page.dart';
 import 'package:lavendera/features/order/presentation/pages/order_page.dart';
 import 'package:lavendera/features/profile/presentation/pages/profile_detail_page.dart';
-import 'package:lavendera/features/home/presentation/presentation/pages/home_page.dart';
+import 'package:lavendera/features/report/presentation/pages/report_page.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
@@ -16,6 +17,7 @@ class _NavigationPageState extends State<NavigationPage> {
     HomePage(),
     OrderPage(),
     CreateOrderPage(),
+    ReportPage(),
     ProfileDetailPage(),
   ];
 
@@ -91,6 +93,11 @@ class _NavigationPageState extends State<NavigationPage> {
               ),
             ),
             label: '',
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.analytics_outlined),
+            selectedIcon: const Icon(Icons.analytics_rounded),
+            label: 'Laporan',
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outline_rounded),

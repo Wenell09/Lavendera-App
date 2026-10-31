@@ -35,10 +35,10 @@ class OrderPaymentModel {
       referenceNumber: json['reference_number']?.toString(),
       notes: json['notes']?.toString(),
       paidAt: json['paid_at'] != null
-          ? DateTime.tryParse(json['paid_at'].toString())
+          ? DateTime.tryParse(json['paid_at'].toString())?.toLocal()
           : null,
       verifiedAt: json['verified_at'] != null
-          ? DateTime.tryParse(json['verified_at'].toString())
+          ? DateTime.tryParse(json['verified_at'].toString())?.toLocal()
           : null,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())?.toLocal()

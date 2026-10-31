@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lavendera/features/home/presentation/bloc/dashboard_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/action/customer_action_bloc.dart';
 import 'package:lavendera/features/customer/presentation/bloc/customer_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
@@ -59,5 +60,6 @@ class Provider {
     BlocProvider<TenantDetailBloc>(create: (_) => sl<TenantDetailBloc>()),
     BlocProvider<TenantActionBloc>(create: (_) => sl<TenantActionBloc>()),
     BlocProvider<ProfileDetailBloc>(create: (_) => sl<ProfileDetailBloc>()),
+    BlocProvider<DashboardBloc>(create: (_) => sl<DashboardBloc>()),
   ];
 }

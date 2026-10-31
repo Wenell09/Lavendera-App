@@ -29,6 +29,10 @@ import 'package:lavendera/features/discount/domain/usecases/get_discounts_usecas
 import 'package:lavendera/features/discount/domain/usecases/update_discount_usecase.dart';
 import 'package:lavendera/features/discount/presentation/bloc/action/discount_action_bloc.dart';
 import 'package:lavendera/features/discount/presentation/bloc/discount_bloc.dart';
+import 'package:lavendera/features/home/data/datasources/dashboard_remote_data_source.dart';
+import 'package:lavendera/features/home/data/repositories/dashboard_repository_impl.dart';
+import 'package:lavendera/features/home/domain/usecases/get_dashboard_usecase.dart';
+import 'package:lavendera/features/home/presentation/bloc/dashboard_bloc.dart';
 import 'package:lavendera/features/order/data/datasources/order_remote_data_source.dart';
 import 'package:lavendera/features/order/data/repositories/order_repository_impl.dart';
 import 'package:lavendera/features/order/domain/repositories/order_repository.dart';
@@ -478,5 +482,20 @@ Future<void> initDependencies() async {
   );
   sl.registerFactory(
     () => ProfileDetailBloc(getProfileUsecase: sl<GetProfileUsecase>()),
+  );
+  // Dashboard
+  sl.registerLazySingleton<DashboardRemoteDataSource>(
+    () => DashboardRemoteDataSource(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<DashboardRepositoryImpl>(
+    () => DashboardRepositoryImpl(
+      remoteDataSource: sl<DashboardRemoteDataSource>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetDashboardUsecase(sl<DashboardRepositoryImpl>()),
+  );
+  sl.registerFactory(
+    () => DashboardBloc(getDashboardUsecase: sl<GetDashboardUsecase>()),
   );
 }

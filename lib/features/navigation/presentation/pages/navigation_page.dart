@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lavendera/features/order/presentation/pages/create_order_page.dart';
 import 'package:lavendera/features/order/presentation/pages/order_page.dart';
 import 'package:lavendera/features/profile/presentation/pages/profile_detail_page.dart';
-import 'package:lavendera/home_page.dart';
+import 'package:lavendera/features/home/presentation/presentation/pages/home_page.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});

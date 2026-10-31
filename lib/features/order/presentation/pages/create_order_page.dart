@@ -586,12 +586,20 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           listener: (context, state) {
             if (state is OutletLoaded) {
               setState(() {
-                _outlets = state.outlets.where((o) => o.isActive).toList();
+                final Map<String, Outlet> uniqueOutlets = {};
+                for (var o in state.outlets.where((o) => o.isActive)) {
+                  uniqueOutlets[o.id] = o;
+                }
+                _outlets = uniqueOutlets.values.toList();
                 if (_selectedOutlet == null && _outlets.isNotEmpty) {
                   _selectedOutlet = _outlets.first;
-                } else if (_selectedOutlet != null &&
-                    !_outlets.any((o) => o.id == _selectedOutlet!.id)) {
-                  _selectedOutlet = _outlets.isNotEmpty ? _outlets.first : null;
+                } else if (_selectedOutlet != null) {
+                  final matched = _outlets.where(
+                    (o) => o.id == _selectedOutlet!.id,
+                  );
+                  _selectedOutlet = matched.isNotEmpty
+                      ? matched.first
+                      : (_outlets.isNotEmpty ? _outlets.first : null);
                 }
                 _isOutletLoaded = true;
               });
@@ -764,7 +772,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                     title: 'Outlet Cabang',
                     icon: Icons.store_rounded,
                     child: DropdownButtonFormField<Outlet>(
-                      initialValue: _selectedOutlet,
+                      key: ValueKey(_selectedOutlet?.id),
+                      initialValue: _outlets.contains(_selectedOutlet)
+                          ? _selectedOutlet
+                          : (_outlets.isNotEmpty ? _outlets.first : null),
                       isExpanded: true,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
@@ -1007,7 +1018,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                     title: 'Diskon & Promo (Opsional)',
                     icon: Icons.percent_rounded,
                     child: DropdownButtonFormField<Discount?>(
-                      initialValue: _selectedDiscount,
+                      key: ValueKey(_selectedDiscount?.id),
+                      initialValue: _discounts.contains(_selectedDiscount)
+                          ? _selectedDiscount
+                          : null,
                       isExpanded: true,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(

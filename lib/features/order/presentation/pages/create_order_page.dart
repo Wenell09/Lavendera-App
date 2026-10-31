@@ -17,8 +17,6 @@ import 'package:lavendera/features/outlet_user/presentation/bloc/user_outlet/use
 import 'package:lavendera/features/profile/presentation/bloc/profile_detail_bloc.dart';
 import 'package:lavendera/features/service/domain/entities/service_item.dart';
 import 'package:lavendera/features/service/presentation/bloc/service_bloc.dart';
-import 'package:lavendera/features/service_category/domain/entities/service_category.dart';
-import 'package:lavendera/features/service_category/presentation/bloc/service_category_bloc.dart';
 
 class CreateOrderPage extends StatefulWidget {
   const CreateOrderPage({super.key});
@@ -36,7 +34,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   Outlet? _selectedOutlet;
   Customer? _selectedCustomer;
   Discount? _selectedDiscount;
-  ServiceCategory? _selectedServiceCategory;
   String _paymentMethod = 'cash';
   final List<OrderCartItem> _cartItems = [];
   final _paidAmountController = TextEditingController();
@@ -47,14 +44,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   bool _isOutletLoaded = false;
   bool _isCustomerLoaded = false;
   bool _isServiceLoaded = false;
-  bool _isServiceCategoryLoaded = false;
   bool _isDiscountLoaded = false;
 
   bool get _isLoadingInitialData =>
       !_isOutletLoaded ||
       !_isCustomerLoaded ||
       !_isServiceLoaded ||
-      !_isServiceCategoryLoaded ||
       !_isDiscountLoaded;
 
   @override
@@ -73,7 +68,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     }
     context.read<CustomerBloc>().add(GetCustomersRequest(limit: 100));
     context.read<ServiceBloc>().add(GetServicesRequest(limit: 100));
-    context.read<ServiceCategoryBloc>().add(GetServiceCategoriesRequest());
     context.read<DiscountBloc>().add(GetDiscountsRequest(limit: 100));
   }
 
@@ -168,13 +162,9 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             final filteredServices = _services.where((s) {
-              final matchesSearch = s.name.toLowerCase().contains(
+              return s.name.toLowerCase().contains(
                 _serviceSearchController.text.toLowerCase(),
               );
-              final matchesCategory =
-                  _selectedServiceCategory == null ||
-                  s.category.id == _selectedServiceCategory!.id;
-              return matchesSearch && matchesCategory;
             }).toList();
 
             return DraggableScrollableSheet(
@@ -706,7 +696,6 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                     _isOutletLoaded = false;
                     _isCustomerLoaded = false;
                     _isServiceLoaded = false;
-                    _isServiceCategoryLoaded = false;
                     _isDiscountLoaded = false;
                   });
                   _loadAllInitialData(

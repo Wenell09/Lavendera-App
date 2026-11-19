@@ -38,16 +38,31 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
   }
 
   void _showDeleteDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Outlet'),
-        content: Text('Anda yakin ingin menghapus outlet "${_outlet.name}"?'),
+        title: Text(
+          'Hapus Outlet',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
+        content: Text(
+          'Anda yakin ingin menghapus outlet "${_outlet.name}"?',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: Text(
+              'Batal',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -56,7 +71,13 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
               );
               Navigator.pop(context);
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Hapus',
+              style: TextStyle(
+                color: colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -65,14 +86,16 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -80,13 +103,15 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : colorScheme.surfaceContainerLowest,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_outlined,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
                 size: 20,
               ),
               onPressed: () => Navigator.push(
@@ -100,13 +125,13 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
           Container(
             margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
-              color: Colors.red.shade50,
+              color: colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline,
-                color: Colors.redAccent,
+                color: colorScheme.error,
                 size: 20,
               ),
               onPressed: () => _showDeleteDialog(context),
@@ -130,7 +155,7 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -146,14 +171,14 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(32),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.storefront_rounded,
                     size: 50,
-                    color: Color(0xFF4A99AD),
+                    color: colorScheme.primary,
                   ),
                 ),
               ),
@@ -161,7 +186,7 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
               Text(
                 _outlet.name,
                 style: AppTextStyles.displaySmall.copyWith(
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -169,9 +194,22 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: isDark ? colorScheme.surfaceContainer : Colors.white,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.grey.shade100),
+                  border: Border.all(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                        : Colors.grey.shade100,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.02,
+                      ),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
@@ -180,13 +218,21 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                       label: 'Slug',
                       value: _outlet.slug,
                     ),
-                    const Divider(height: 32, thickness: 0.5),
+                    Divider(
+                      height: 32,
+                      thickness: 0.5,
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
                     InfoTileWidget(
                       icon: Icons.phone_outlined,
                       label: 'Nomor Telepon',
                       value: _outlet.phone,
                     ),
-                    const Divider(height: 32, thickness: 0.5),
+                    Divider(
+                      height: 32,
+                      thickness: 0.5,
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
                     InfoTileWidget(
                       icon: Icons.location_on_outlined,
                       label: 'Alamat',
@@ -199,9 +245,22 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: isDark ? colorScheme.surfaceContainer : Colors.white,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.grey.shade100),
+                  border: Border.all(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                        : Colors.grey.shade100,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.02,
+                      ),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   children: [
@@ -214,7 +273,11 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                           ? 'Aktif'
                           : 'Non-aktif',
                     ),
-                    const Divider(height: 32, thickness: 0.5),
+                    Divider(
+                      height: 32,
+                      thickness: 0.5,
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
                     InfoTileWidget(
                       icon: _outlet.isActive
                           ? Icons.check_circle_outline
@@ -240,12 +303,12 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                        color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.people_outline,
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -257,21 +320,22 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                             'Staf & Pengguna',
                             style: AppTextStyles.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             'Kelola staf yang bertugas di outlet ini',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: Colors.grey,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Colors.grey,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -292,12 +356,12 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                        color: colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.payment_outlined,
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -309,21 +373,22 @@ class _OutletDetailViewState extends State<_OutletDetailView> {
                             'Metode Pembayaran',
                             style: AppTextStyles.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             'Kelola transfer bank dan QRIS outlet ini',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: Colors.grey,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: Colors.grey,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ],
                 ),

@@ -31,21 +31,22 @@ class _AddUserPageState extends State<AddUserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Tambah Staff',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -66,7 +67,7 @@ class _AddUserPageState extends State<AddUserPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -118,7 +119,7 @@ class _AddUserPageState extends State<AddUserPage> {
                       _obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: Colors.grey.shade500,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     onPressed: () {
                       setState(() {
@@ -136,10 +137,15 @@ class _AddUserPageState extends State<AddUserPage> {
                 ),
                 const SizedBox(height: 20),
                 SwitchListTile(
-                  title: const Text('Akun Aktif'),
+                  title: Text(
+                    'Akun Aktif',
+                    style: AppTextStyles.labelLarge.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
                   value: _isActive,
                   onChanged: (val) => setState(() => _isActive = val),
-                  activeThumbColor: const Color(0xFF4A99AD),
+                  activeTrackColor: colorScheme.primary,
                 ),
                 const SizedBox(height: 40),
                 BlocBuilder<UserActionBloc, UserActionState>(

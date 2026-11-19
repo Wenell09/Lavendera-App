@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/widgets/button_widget.dart';
@@ -43,11 +42,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onSurface),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -61,9 +62,9 @@ class _RegisterPageState extends State<RegisterPage> {
             );
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Registration failed. Please try again.'),
-                backgroundColor: Colors.redAccent,
+              SnackBar(
+                content: const Text('Registration failed. Please try again.'),
+                backgroundColor: colorScheme.error,
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
@@ -88,7 +89,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             borderRadius: BorderRadius.circular(18),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.06),
+                                color: Colors.black.withValues(
+                                  alpha: isDark ? 0.3 : 0.06,
+                                ),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
@@ -106,14 +109,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text(
                         'Create Account',
                         style: AppTextStyles.displaySmall.copyWith(
-                          color: Colors.black87,
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Register your laundry business to get started',
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.grey[600],
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 28),
@@ -164,7 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: Colors.grey,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () {
                             setState(() {
@@ -206,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           Text(
                             'Already have an account? ',
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.grey[600],
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           GestureDetector(
@@ -214,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               'Login',
                               style: AppTextStyles.titleMedium.copyWith(
-                                color: AppColors.blue.color,
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

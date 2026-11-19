@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lavendera/config/colors/app_colors.dart';
 
 class ButtonWidget extends StatelessWidget {
   final String label;
@@ -27,14 +26,18 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final effectiveBg = backgroundColor ?? colorScheme.primary;
+    final effectiveFg = textColor ?? colorScheme.onPrimary;
+
     return SizedBox(
       width: width ?? double.infinity,
       height: height,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? AppColors.blue.color,
-          foregroundColor: textColor ?? Colors.white,
+          backgroundColor: effectiveBg,
+          foregroundColor: effectiveFg,
           elevation: 0,
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
@@ -42,12 +45,12 @@ class ButtonWidget extends StatelessWidget {
           ),
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(effectiveFg),
                 ),
               )
             : Row(
@@ -55,7 +58,7 @@ class ButtonWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20),
+                    Icon(icon, size: 20, color: effectiveFg),
                     const SizedBox(width: 8),
                   ],
                   Text(
@@ -63,7 +66,7 @@ class ButtonWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: textColor ?? Colors.white,
+                      color: effectiveFg,
                     ),
                   ),
                 ],

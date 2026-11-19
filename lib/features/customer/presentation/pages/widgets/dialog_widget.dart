@@ -11,30 +11,45 @@ class DialogWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: AppTextStyles.headlineSmall),
-        content: Text(content, style: AppTextStyles.bodyMedium),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(
-              cancelLabel,
-              style: TextStyle(color: Colors.grey.shade600),
+      builder: (dialogContext) {
+        final colorScheme = Theme.of(dialogContext).colorScheme;
+        return AlertDialog(
+          backgroundColor: colorScheme.surfaceContainerHigh,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            title,
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: colorScheme.onSurface,
             ),
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(
-              confirmLabel,
-              style: const TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.bold,
+          content: Text(
+            content,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                cancelLabel,
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
-          ),
-        ],
-      ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                confirmLabel,
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

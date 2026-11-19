@@ -117,12 +117,12 @@ class _OrderPageState extends State<OrderPage> {
           ? DateTimeRange(start: _startDate!, end: _endDate!)
           : null,
       builder: (context, child) {
+        final theme = Theme.of(context);
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4A99AD),
+          data: theme.copyWith(
+            colorScheme: theme.colorScheme.copyWith(
+              primary: const Color(0xFF4A99AD),
               onPrimary: Colors.white,
-              onSurface: Color(0xFF0F172A),
             ),
           ),
           child: child!,
@@ -149,13 +149,15 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           'Pesanan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -166,14 +168,14 @@ class _OrderPageState extends State<OrderPage> {
                   ? Icons.filter_alt_rounded
                   : Icons.filter_alt_outlined,
               color: _startDate != null
-                  ? const Color(0xFF4A99AD)
-                  : const Color(0xFF64748B),
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
             ),
             tooltip: 'Filter Tanggal',
             onPressed: _pickDateRange,
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
+            icon: Icon(Icons.refresh, color: colorScheme.onSurface, size: 20),
             onPressed: () => _loadOrders(page: 1),
           ),
         ],
@@ -182,7 +184,7 @@ class _OrderPageState extends State<OrderPage> {
         children: [
           // Top Controls (Search & Status Tabs)
           Container(
-            color: Colors.white,
+            color: isDark ? colorScheme.surfaceContainer : Colors.white,
             padding: const EdgeInsets.only(bottom: 12),
             child: Column(
               children: [
@@ -194,25 +196,32 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                   child: TextField(
                     controller: _searchController,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 13.5,
+                      color: colorScheme.onSurface,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Cari nomor order...',
+                      hintText: 'Cari nomor order atau token order...',
                       hintStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
-                        color: Colors.grey.shade400,
+                        color: colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.search_rounded,
                         size: 20,
-                        color: Color(0xFF94A3B8),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear_rounded, size: 18),
+                              icon: Icon(
+                                Icons.clear_rounded,
+                                size: 18,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 _onSearchChanged('');
@@ -224,10 +233,33 @@ class _OrderPageState extends State<OrderPage> {
                         vertical: 12,
                       ),
                       filled: true,
-                      fillColor: const Color(0xFFF1F5F9),
+                      fillColor: isDark
+                          ? colorScheme.surfaceContainerHighest.withValues(
+                              alpha: 0.3,
+                            )
+                          : colorScheme.surfaceContainerLowest,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? colorScheme.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                )
+                              : colorScheme.outlineVariant.withValues(
+                                  alpha: 0.5,
+                                ),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colorScheme.primary,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                     onChanged: _onSearchChanged,
@@ -249,35 +281,34 @@ class _OrderPageState extends State<OrderPage> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4A99AD)
-                                .withValues(alpha: 0.1),
+                            color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.calendar_today_rounded,
                                 size: 12,
-                                color: Color(0xFF4A99AD),
+                                color: colorScheme.primary,
                               ),
                               const SizedBox(width: 6),
                               Text(
                                 '${_formatDateParam(_startDate)} s/d ${_formatDateParam(_endDate)}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF4A99AD),
+                                  color: colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(width: 4),
                               GestureDetector(
                                 onTap: _clearDateFilter,
-                                child: const Icon(
+                                child: Icon(
                                   Icons.close_rounded,
                                   size: 14,
-                                  color: Color(0xFF4A99AD),
+                                  color: colorScheme.primary,
                                 ),
                               ),
                             ],
@@ -307,17 +338,27 @@ class _OrderPageState extends State<OrderPage> {
                                 ? FontWeight.w600
                                 : FontWeight.w500,
                             color: isSelected
-                                ? Colors.white
-                                : const Color(0xFF64748B),
+                                ? colorScheme.onPrimary
+                                : colorScheme.onSurfaceVariant,
                           ),
-                          selectedColor: const Color(0xFF4A99AD),
-                          backgroundColor: const Color(0xFFF1F5F9),
+                          selectedColor: colorScheme.primary,
+                          backgroundColor: isDark
+                              ? colorScheme.surfaceContainerHighest.withValues(
+                                  alpha: 0.3,
+                                )
+                              : colorScheme.surfaceContainerLowest,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                             side: BorderSide(
                               color: isSelected
-                                  ? const Color(0xFF4A99AD)
-                                  : Colors.transparent,
+                                  ? colorScheme.primary
+                                  : (isDark
+                                        ? colorScheme.outlineVariant.withValues(
+                                            alpha: 0.3,
+                                          )
+                                        : colorScheme.outlineVariant.withValues(
+                                            alpha: 0.5,
+                                          )),
                             ),
                           ),
                           showCheckmark: false,
@@ -339,8 +380,10 @@ class _OrderPageState extends State<OrderPage> {
             child: BlocBuilder<OrderBloc, OrderState>(
               builder: (context, state) {
                 if (state is OrderLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF4A99AD)),
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: colorScheme.primary,
+                    ),
                   );
                 }
 
@@ -353,18 +396,18 @@ class _OrderPageState extends State<OrderPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.error_outline_rounded,
                             size: 48,
-                            color: Color(0xFFEF4444),
+                            color: colorScheme.error,
                           ),
                           const SizedBox(height: 12),
                           Text(
                             state.message,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 14,
-                              color: Color(0xFF64748B),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -372,16 +415,16 @@ class _OrderPageState extends State<OrderPage> {
                           ElevatedButton(
                             onPressed: () => _loadOrders(page: 1),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4A99AD),
+                              backgroundColor: colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Coba Lagi',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                           ),
@@ -419,24 +462,25 @@ class _OrderPageState extends State<OrderPage> {
                                 width: 80,
                                 height: 80,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF4A99AD)
-                                      .withValues(alpha: 0.1),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.receipt_long_rounded,
                                   size: 38,
-                                  color: Color(0xFF4A99AD),
+                                  color: colorScheme.primary,
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 'Belum Ada Pesanan',
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF0F172A),
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 6),
@@ -448,7 +492,7 @@ class _OrderPageState extends State<OrderPage> {
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 12.5,
-                                  color: Colors.grey.shade500,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -462,21 +506,21 @@ class _OrderPageState extends State<OrderPage> {
                                     ),
                                   );
                                 },
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.add_rounded,
                                   size: 18,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
-                                label: const Text(
+                                label: Text(
                                   'Buat Order Kasir',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                                    color: colorScheme.onPrimary,
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF4A99AD),
+                                  backgroundColor: colorScheme.primary,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 11,
@@ -504,12 +548,12 @@ class _OrderPageState extends State<OrderPage> {
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: isPaginationLoading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    color: Color(0xFF4A99AD),
+                                    color: colorScheme.primary,
                                   ),
                                 )
                               : const SizedBox.shrink(),

@@ -44,15 +44,30 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   }
 
   void _showDeleteDialog() {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Diskon'),
-        content: const Text('Anda yakin ingin menghapus diskon ini?'),
+        backgroundColor: colorScheme.surfaceContainerHigh,
+        title: Text(
+          'Hapus Diskon',
+          style: AppTextStyles.headlineSmall.copyWith(
+            color: colorScheme.onSurface,
+          ),
+        ),
+        content: Text(
+          'Anda yakin ingin menghapus diskon ini?',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: Text(
+              'Batal',
+              style: TextStyle(color: colorScheme.onSurfaceVariant),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -61,7 +76,13 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
               );
               Navigator.pop(context);
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Hapus',
+              style: TextStyle(
+                color: colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -70,21 +91,22 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Detail Diskon',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -94,9 +116,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
               if (state is ProfileDetailLoaded) {
                 if (state.profile.role == "ADMIN") {
                   return IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline,
-                      color: Colors.redAccent,
+                      color: colorScheme.error,
                     ),
                     onPressed: _showDeleteDialog,
                   );
@@ -124,7 +146,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -139,6 +161,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildTextField(
+                  context: context,
                   controller: _nameController,
                   label: 'Nama Diskon',
                   hint: 'Contoh: Promo Kemerdekaan',
@@ -149,7 +172,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 Text(
                   'Tipe Diskon',
                   style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.black87,
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -157,14 +180,25 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildTypeOption('percentage', 'Persentase (%)'),
+                      child: _buildTypeOption(
+                        context,
+                        'percentage',
+                        'Persentase (%)',
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildTypeOption('fixed', 'Nominal (Rp)')),
+                    Expanded(
+                      child: _buildTypeOption(
+                        context,
+                        'fixed',
+                        'Nominal (Rp)',
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
+                  context: context,
                   controller: _valueController,
                   label: 'Nilai Diskon',
                   hint: _type == 'percentage' ? 'Contoh: 15' : 'Contoh: 10.000',
@@ -196,12 +230,12 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                   title: Text(
                     'Status Aktif',
                     style: AppTextStyles.labelMedium.copyWith(
-                      color: Colors.black87,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   value: _isActive,
-                  activeThumbColor: const Color(0xFF4A99AD),
+                  activeThumbColor: colorScheme.primary,
                   onChanged: (v) => setState(() => _isActive = v),
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -210,7 +244,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                   builder: (context, state) {
                     if (state is ProfileDetailLoaded) {
                       if (state.profile.role == "ADMIN") {
-                        return _buildSubmitButton();
+                        return _buildSubmitButton(context);
                       }
                       return const SizedBox.shrink();
                     }
@@ -225,8 +259,11 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
     );
   }
 
-  Widget _buildTypeOption(String val, String label) {
+  Widget _buildTypeOption(BuildContext context, String val, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     bool isSelected = _type == val;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -238,18 +275,26 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF4A99AD).withValues(alpha: 0.1)
-              : Colors.grey.shade50,
+              ? colorScheme.primary.withValues(alpha: 0.15)
+              : (isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.grey.shade50),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF4A99AD) : Colors.grey.shade200,
+            color: isSelected
+                ? colorScheme.primary
+                : (isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                    : Colors.grey.shade200),
           ),
         ),
         child: Center(
           child: Text(
             label,
             style: AppTextStyles.labelMedium.copyWith(
-              color: isSelected ? const Color(0xFF4A99AD) : Colors.black54,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -259,6 +304,7 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -267,13 +313,16 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
     List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: AppTextStyles.labelMedium.copyWith(
-            color: Colors.black87,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -283,15 +332,19 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           validator: validator,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
+            prefixIcon: Icon(icon, size: 20, color: colorScheme.primary),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: isDark
+                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                : colorScheme.surfaceContainerLowest,
             contentPadding: const EdgeInsets.all(16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -299,12 +352,16 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade100),
+              borderSide: BorderSide(
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF4A99AD),
+              borderSide: BorderSide(
+                color: colorScheme.primary,
                 width: 1.5,
               ),
             ),
@@ -314,7 +371,9 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
     );
   }
 
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocBuilder<DiscountActionBloc, DiscountActionState>(
       builder: (context, state) {
         final isLoading = state is DiscountActionLoading;
@@ -340,8 +399,8 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
                   }
                 },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF4A99AD),
-            foregroundColor: Colors.white,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             padding: const EdgeInsets.symmetric(vertical: 18),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -349,18 +408,18 @@ class _DiscountDetailPageState extends State<DiscountDetailPage> {
             elevation: 0,
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 )
               : Text(
                   'Perbarui Diskon',
                   style: AppTextStyles.labelLarge.copyWith(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),

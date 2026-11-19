@@ -16,18 +16,24 @@ class DashboardQuickMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4A99AD);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final primaryColor = colorScheme.primary;
     final isAdmin = (profile?.role.toUpperCase() ?? '') == 'ADMIN';
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -43,10 +49,14 @@ class DashboardQuickMenuWidget extends StatelessWidget {
                 'Menu Operasional',
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              const Icon(Icons.grid_view_rounded, size: 18, color: Colors.grey),
+              Icon(
+                Icons.grid_view_rounded,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -174,11 +184,20 @@ class DashboardQuickMenuWidget extends StatelessWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -203,7 +222,7 @@ class DashboardQuickMenuWidget extends StatelessWidget {
                     title,
                     style: AppTextStyles.labelMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: colorScheme.onSurface,
                       fontSize: 12.5,
                     ),
                     maxLines: 2,

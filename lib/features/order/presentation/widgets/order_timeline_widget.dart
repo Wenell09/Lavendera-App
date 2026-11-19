@@ -45,20 +45,22 @@ class OrderTimelineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final isCanceled = currentStatus.toUpperCase() == 'DIBATALKAN';
 
     if (isCanceled) {
       return Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFFFEF2F2),
+          color: colorScheme.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFFCA5A5)),
+          border: Border.all(color: colorScheme.error.withValues(alpha: 0.3)),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.cancel_rounded, color: Color(0xFFDC2626), size: 24),
-            SizedBox(width: 12),
+            Icon(Icons.cancel_rounded, color: colorScheme.error, size: 24),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,16 +71,16 @@ class OrderTimelineWidget extends StatelessWidget {
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Color(0xFF991B1B),
+                      color: colorScheme.error,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     'Pesanan ini telah dibatalkan dan tidak lagi diproses.',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 12,
-                      color: Color(0xFFB91C1C),
+                      color: colorScheme.error.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -94,22 +96,26 @@ class OrderTimelineWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: isDark ? colorScheme.surfaceContainer : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 4, bottom: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
             child: Text(
               'Alur Status Pesanan',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF64748B),
+                color: colorScheme.onSurfaceVariant,
                 letterSpacing: 0.3,
               ),
             ),
@@ -124,8 +130,10 @@ class OrderTimelineWidget extends StatelessWidget {
                   child: Container(
                     height: 2.5,
                     color: isPassed
-                        ? const Color(0xFF4A99AD)
-                        : const Color(0xFFCBD5E1),
+                        ? colorScheme.primary
+                        : (isDark
+                            ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                            : const Color(0xFFCBD5E1)),
                   ),
                 );
               }
@@ -144,15 +152,19 @@ class OrderTimelineWidget extends StatelessWidget {
                     height: 32,
                     decoration: BoxDecoration(
                       color: isCurrent
-                          ? const Color(0xFF4A99AD)
+                          ? colorScheme.primary
                           : isCompleted
-                              ? const Color(0xFF4A99AD).withValues(alpha: 0.15)
-                              : Colors.white,
+                              ? colorScheme.primary.withValues(alpha: 0.15)
+                              : (isDark
+                                  ? colorScheme.surfaceContainerHighest
+                                  : Colors.white),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isCompleted
-                            ? const Color(0xFF4A99AD)
-                            : const Color(0xFFCBD5E1),
+                            ? colorScheme.primary
+                            : (isDark
+                                ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                                : const Color(0xFFCBD5E1)),
                         width: isCurrent ? 2.5 : 1.5,
                       ),
                     ),
@@ -161,10 +173,10 @@ class OrderTimelineWidget extends StatelessWidget {
                         step['icon'] as IconData,
                         size: 15,
                         color: isCurrent
-                            ? Colors.white
+                            ? colorScheme.onPrimary
                             : isCompleted
-                                ? const Color(0xFF4A99AD)
-                                : const Color(0xFF94A3B8),
+                                ? colorScheme.primary
+                                : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
@@ -176,10 +188,10 @@ class OrderTimelineWidget extends StatelessWidget {
                       fontSize: 10.5,
                       fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
                       color: isCurrent
-                          ? const Color(0xFF0F172A)
+                          ? colorScheme.onSurface
                           : isCompleted
-                              ? const Color(0xFF334155)
-                              : const Color(0xFF94A3B8),
+                              ? colorScheme.onSurface
+                              : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                   ),
                 ],

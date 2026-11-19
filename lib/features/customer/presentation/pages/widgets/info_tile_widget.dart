@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 
 class InfoTileWidget extends StatelessWidget {
@@ -18,22 +17,16 @@ class InfoTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: Icon(icon, color: iconColor ?? AppColors.blue.color, size: 20),
+          child: Icon(icon, color: iconColor ?? colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -43,14 +36,14 @@ class InfoTileWidget extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyles.labelSmall.copyWith(
-                  color: Colors.grey.shade500,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
                 style: AppTextStyles.bodyLarge.copyWith(
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
               ),

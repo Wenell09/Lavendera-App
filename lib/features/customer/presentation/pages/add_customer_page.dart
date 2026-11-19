@@ -29,21 +29,22 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Tambah Pelanggan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -64,7 +65,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),

@@ -57,15 +57,22 @@ class DashboardOrderStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -81,10 +88,14 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                 'Status Pesanan',
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              const Icon(Icons.alt_route_rounded, size: 18, color: Colors.grey),
+              Icon(
+                Icons.alt_route_rounded,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -116,9 +127,15 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: bgColor.withValues(alpha: 0.45),
+                      color: isDark
+                          ? color.withValues(alpha: 0.15)
+                          : bgColor.withValues(alpha: 0.45),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: color.withValues(alpha: 0.18)),
+                      border: Border.all(
+                        color: isDark
+                            ? color.withValues(alpha: 0.3)
+                            : color.withValues(alpha: 0.18),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,11 +147,15 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: isDark
+                                    ? colorScheme.surfaceContainerHigh
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.02),
+                                    color: Colors.black.withValues(
+                                      alpha: isDark ? 0.2 : 0.02,
+                                    ),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -148,7 +169,11 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: count > 0 ? color : Colors.grey.shade200,
+                                color: count > 0
+                                    ? color
+                                    : (isDark
+                                        ? colorScheme.surfaceContainerHighest
+                                        : Colors.grey.shade200),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -156,7 +181,7 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                                 style: AppTextStyles.labelSmall.copyWith(
                                   color: count > 0
                                       ? Colors.white
-                                      : Colors.grey.shade600,
+                                      : colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -169,7 +194,7 @@ class DashboardOrderStatusWidget extends StatelessWidget {
                           label,
                           style: AppTextStyles.labelMedium.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Colors.black87,
+                            color: colorScheme.onSurface,
                             fontSize: 12,
                             height: 1.25,
                           ),

@@ -77,21 +77,23 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Manajemen Staff',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -99,11 +101,13 @@ class _UserPageState extends State<UserPage> {
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : colorScheme.surfaceContainerLowest,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
+              icon: Icon(Icons.refresh, color: colorScheme.onSurface, size: 20),
               onPressed: () {
                 final text = _searchController.text.trim();
                 context.read<UserBloc>().add(
@@ -121,21 +125,23 @@ class _UserPageState extends State<UserPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _onSearchChanged,
-              style: AppTextStyles.bodyLarge,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: colorScheme.onSurface,
+              ),
               decoration: InputDecoration(
                 hintText: 'Cari nama atau email staff...',
                 hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.grey.shade400,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search,
-                  color: Color(0xFF4A99AD),
+                  color: colorScheme.primary,
                   size: 20,
                 ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.close, size: 18),
-                        color: Colors.grey.shade400,
+                        color: colorScheme.onSurfaceVariant,
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -144,23 +150,29 @@ class _UserPageState extends State<UserPage> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.grey.shade50,
+                fillColor: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : colorScheme.surfaceContainerLowest,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF4A99AD),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
                     width: 1.5,
                   ),
                 ),
@@ -171,10 +183,10 @@ class _UserPageState extends State<UserPage> {
             child: BlocBuilder<UserBloc, UserState>(
               builder: (context, state) {
                 if (state is UserLoading) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Color(0xFF4A99AD),
+                      color: colorScheme.primary,
                     ),
                   );
                 }
@@ -188,12 +200,14 @@ class _UserPageState extends State<UserPage> {
                           Icon(
                             Icons.error_outline,
                             size: 48,
-                            color: Colors.red.shade300,
+                            color: colorScheme.error,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             state.message,
-                            style: AppTextStyles.bodyLarge,
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 8),
@@ -201,7 +215,10 @@ class _UserPageState extends State<UserPage> {
                             onPressed: () {
                               _onSearchChanged(_searchController.text);
                             },
-                            child: const Text('Coba Lagi'),
+                            child: Text(
+                              'Coba Lagi',
+                              style: TextStyle(color: colorScheme.primary),
+                            ),
                           ),
                         ],
                       ),
@@ -237,15 +254,15 @@ class _UserPageState extends State<UserPage> {
                       const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     if (index >= users.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Center(
                           child: SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF4A99AD),
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
@@ -269,8 +286,7 @@ class _UserPageState extends State<UserPage> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4A99AD)
-                                .withValues(alpha: 0.1),
+                            color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(
@@ -279,7 +295,7 @@ class _UserPageState extends State<UserPage> {
                                   ? user.name[0].toUpperCase()
                                   : '?',
                               style: AppTextStyles.headlineSmall.copyWith(
-                                color: const Color(0xFF4A99AD),
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -291,7 +307,7 @@ class _UserPageState extends State<UserPage> {
                               child: Text(
                                 user.name,
                                 style: AppTextStyles.titleLarge.copyWith(
-                                  color: Colors.black87,
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -302,16 +318,16 @@ class _UserPageState extends State<UserPage> {
                               ),
                               decoration: BoxDecoration(
                                 color: user.isActive
-                                    ? Colors.green.shade50
-                                    : Colors.red.shade50,
+                                    ? Colors.green.withValues(alpha: 0.15)
+                                    : Colors.red.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 user.isActive ? 'AKTIF' : 'NONAKTIF',
                                 style: AppTextStyles.labelMedium.copyWith(
                                   color: user.isActive
-                                      ? Colors.green.shade700
-                                      : Colors.red.shade700,
+                                      ? Colors.green
+                                      : Colors.red,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -325,14 +341,14 @@ class _UserPageState extends State<UserPage> {
                               Icon(
                                 Icons.email_outlined,
                                 size: 14,
-                                color: Colors.grey.shade500,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   user.email,
                                   style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.grey.shade600,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -343,7 +359,7 @@ class _UserPageState extends State<UserPage> {
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           size: 14,
-                          color: Colors.grey.shade300,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     );
@@ -361,15 +377,14 @@ class _UserPageState extends State<UserPage> {
             MaterialPageRoute(builder: (context) => const AddUserPage()),
           );
         },
-        backgroundColor: const Color(0xFF4A99AD),
+        backgroundColor: colorScheme.primary,
         elevation: 4,
-        foregroundColor: const Color(0xFF4A99AD).withValues(alpha: 0.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        icon: const Icon(Icons.add, color: Colors.white),
+        icon: Icon(Icons.add, color: colorScheme.onPrimary),
         label: Text(
           'Tambah Staff',
           style: AppTextStyles.labelLarge.copyWith(
-            color: Colors.white,
+            color: colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),

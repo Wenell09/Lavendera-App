@@ -25,7 +25,6 @@ class SplashPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         body: Center(
           child: Container(
             width: 140,

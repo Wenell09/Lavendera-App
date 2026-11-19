@@ -58,30 +58,33 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   void _confirmCancelOrder(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Color(0xFFDC2626)),
-            SizedBox(width: 8),
+            Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+            const SizedBox(width: 8),
             Text(
               'Batalkan Order?',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
               ),
             ),
           ],
         ),
         content: Text(
           'Apakah Anda yakin ingin membatalkan order ${order.orderNumber}? Tindakan ini tidak dapat diurungkan.',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 13,
-            color: Color(0xFF475569),
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         actions: [
@@ -91,7 +94,7 @@ class _OrderDetailView extends StatelessWidget {
               'Kembali',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -104,17 +107,17 @@ class _OrderDetailView extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFDC2626),
+              backgroundColor: colorScheme.error,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Ya, Batalkan',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: Colors.white,
+                color: colorScheme.onError,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -125,6 +128,7 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   void _confirmPaymentModal(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
     if (order.payment == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -132,7 +136,7 @@ class _OrderDetailView extends StatelessWidget {
             'Informasi payment tidak tersedia',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
-          dismissDirection: .horizontal,
+          dismissDirection: DismissDirection.horizontal,
         ),
       );
       return;
@@ -141,27 +145,32 @@ class _OrderDetailView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
+        backgroundColor: colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle_outline_rounded, color: Color(0xFF10B981)),
-            SizedBox(width: 8),
+            const Icon(
+              Icons.check_circle_outline_rounded,
+              color: Color(0xFF10B981),
+            ),
+            const SizedBox(width: 8),
             Text(
               'Konfirmasi Pembayaran',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
               ),
             ),
           ],
         ),
         content: Text(
           'Konfirmasi bahwa pembayaran untuk order ${order.orderNumber} sejumlah ${CurrencyFormatter.format(order.totalAmount)} telah lunas diterima?',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 13,
-            color: Color(0xFF475569),
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         actions: [
@@ -171,7 +180,7 @@ class _OrderDetailView extends StatelessWidget {
               'Batal',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -226,6 +235,8 @@ class _OrderDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocListener<OrderActionBloc, OrderActionState>(
       listener: (context, actionState) {
         if (actionState is OrderActionSuccess) {
@@ -237,7 +248,7 @@ class _OrderDetailView extends StatelessWidget {
               ),
               backgroundColor: const Color(0xFF10B981),
               behavior: SnackBarBehavior.floating,
-              dismissDirection: .horizontal,
+              dismissDirection: DismissDirection.horizontal,
             ),
           );
           // Reload detail
@@ -253,34 +264,33 @@ class _OrderDetailView extends StatelessWidget {
                 actionState.message,
                 style: const TextStyle(fontFamily: 'Poppins'),
               ),
-              backgroundColor: const Color(0xFFEF4444),
+              backgroundColor: colorScheme.error,
               behavior: SnackBarBehavior.floating,
-              dismissDirection: .horizontal,
+              dismissDirection: DismissDirection.horizontal,
             ),
           );
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
           title: Text(
             'Detail Pesanan',
             style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.black,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new,
               size: 20,
-              color: Colors.black87,
+              color: colorScheme.onSurface,
             ),
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh_rounded, color: Color(0xFF4A99AD)),
+              icon: Icon(Icons.refresh_rounded, color: colorScheme.primary),
               onPressed: () {
                 context.read<OrderDetailBloc>().add(
                   GetOrderDetailRequest(id: orderId),
@@ -292,8 +302,8 @@ class _OrderDetailView extends StatelessWidget {
         body: BlocBuilder<OrderDetailBloc, OrderDetailState>(
           builder: (context, state) {
             if (state is OrderDetailLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF4A99AD)),
+              return Center(
+                child: CircularProgressIndicator(color: colorScheme.primary),
               );
             }
             if (state is OrderDetailError) {
@@ -303,18 +313,18 @@ class _OrderDetailView extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline_rounded,
                         size: 48,
-                        color: Color(0xFFEF4444),
+                        color: colorScheme.error,
                       ),
                       const SizedBox(height: 12),
                       Text(
                         state.message,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,
-                          color: Color(0xFF64748B),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -326,13 +336,13 @@ class _OrderDetailView extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4A99AD),
+                          backgroundColor: colorScheme.primary,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Coba Lagi',
                           style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ),
@@ -369,19 +379,19 @@ class _OrderDetailView extends StatelessWidget {
                         ],
 
                         // Customer & Outlet Info Card
-                        _buildPartyInfoCard(order),
+                        _buildPartyInfoCard(context, order),
                         const SizedBox(height: 14),
 
                         // Items Breakdown Card
-                        _buildItemsCard(order),
+                        _buildItemsCard(context, order),
                         const SizedBox(height: 14),
 
                         // Payment & Billing Summary Card
-                        _buildBillingCard(order),
+                        _buildBillingCard(context, order),
                         const SizedBox(height: 14),
 
                         // Notes & Metadata Card
-                        _buildMetadataCard(order),
+                        _buildMetadataCard(context, order),
                         const SizedBox(height: 30),
                       ],
                     ),
@@ -401,12 +411,19 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   Widget _buildHeaderCard(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,21 +434,21 @@ class _OrderDetailView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Nomor Pesanan',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 11,
-                      color: Color(0xFF64748B),
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
                     order.orderNumber,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
-                      color: Color(0xFF0F172A),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -445,7 +462,7 @@ class _OrderDetailView extends StatelessWidget {
               Icon(
                 Icons.calendar_today_rounded,
                 size: 14,
-                color: Colors.grey.shade500,
+                color: colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 6),
               Text(
@@ -453,7 +470,7 @@ class _OrderDetailView extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -464,26 +481,26 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   Widget _buildTrackingTokenCard(BuildContext context, String token) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF4A99AD).withValues(alpha: 0.08),
+        color: colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFF4A99AD).withValues(alpha: 0.25),
-        ),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-              color: Color(0xFF4A99AD),
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.qr_code_rounded,
-              color: Colors.white,
+              color: colorScheme.onPrimary,
               size: 20,
             ),
           ),
@@ -492,21 +509,21 @@ class _OrderDetailView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Token Lacak Pelanggan',
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 11,
-                    color: Color(0xFF334155),
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(
                   token,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    color: Color(0xFF0F172A),
+                    color: colorScheme.onSurface,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -514,9 +531,9 @@ class _OrderDetailView extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.copy_rounded,
-              color: Color(0xFF4A99AD),
+              color: colorScheme.primary,
               size: 20,
             ),
             tooltip: 'Salin Token',
@@ -530,7 +547,7 @@ class _OrderDetailView extends StatelessWidget {
                   ),
                   duration: Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
-                  dismissDirection: .horizontal,
+                  dismissDirection: DismissDirection.horizontal,
                 ),
               );
             },
@@ -540,13 +557,20 @@ class _OrderDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildPartyInfoCard(OrderEntity order) {
+  Widget _buildPartyInfoCard(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -558,12 +582,12 @@ class _OrderDetailView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.person_rounded,
-                  color: Colors.blue.shade700,
+                  color: colorScheme.primary,
                   size: 18,
                 ),
               ),
@@ -572,21 +596,21 @@ class _OrderDetailView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Pelanggan',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 11,
-                        color: Color(0xFF64748B),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       order.customer.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
-                        color: Color(0xFF0F172A),
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     if (order.customer.phone != null &&
@@ -597,7 +621,7 @@ class _OrderDetailView extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -609,7 +633,7 @@ class _OrderDetailView extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 11.5,
-                          color: Colors.grey.shade500,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -618,9 +642,12 @@ class _OrderDetailView extends StatelessWidget {
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(height: 1, color: Color(0xFFF1F5F9)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            ),
           ),
           // Outlet
           Row(
@@ -629,12 +656,12 @@ class _OrderDetailView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.teal.shade50,
+                  color: Colors.teal.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.store_rounded,
-                  color: Colors.teal.shade700,
+                  color: Colors.teal,
                   size: 18,
                 ),
               ),
@@ -643,21 +670,21 @@ class _OrderDetailView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Outlet Cabang',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 11,
-                        color: Color(0xFF64748B),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       order.outlet.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
-                        color: Color(0xFF0F172A),
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     if (order.outlet.address != null &&
@@ -668,7 +695,7 @@ class _OrderDetailView extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 11.5,
-                          color: Colors.grey.shade500,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -682,13 +709,20 @@ class _OrderDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsCard(OrderEntity order) {
+  Widget _buildItemsCard(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -696,21 +730,21 @@ class _OrderDetailView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Layanan Dipilih',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+                  color: colorScheme.onSurface,
                 ),
               ),
               Text(
                 '${order.items.length} item',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12,
-                  color: Color(0xFF64748B),
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -720,10 +754,10 @@ class _OrderDetailView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: order.items.length,
-            separatorBuilder: (_, _) => const Divider(
+            separatorBuilder: (_, _) => Divider(
               height: 16,
               thickness: 0.7,
-              color: Color(0xFFF1F5F9),
+              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
             ),
             itemBuilder: (context, index) {
               final item = order.items[index];
@@ -734,13 +768,13 @@ class _OrderDetailView extends StatelessWidget {
                     width: 38,
                     height: 38,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Icon(
                         Icons.local_laundry_service_rounded,
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                         size: 20,
                       ),
                     ),
@@ -752,11 +786,11 @@ class _OrderDetailView extends StatelessWidget {
                       children: [
                         Text(
                           item.service.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
                             fontSize: 13.5,
-                            color: Color(0xFF0F172A),
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -765,7 +799,7 @@ class _OrderDetailView extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -773,11 +807,11 @@ class _OrderDetailView extends StatelessWidget {
                   ),
                   Text(
                     CurrencyFormatter.format(item.subtotal),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w700,
                       fontSize: 13.5,
-                      color: Color(0xFF0F172A),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -789,13 +823,20 @@ class _OrderDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildBillingCard(OrderEntity order) {
+  Widget _buildBillingCard(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -803,33 +844,42 @@ class _OrderDetailView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Rincian Pembayaran',
                 style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+                  color: colorScheme.onSurface,
                 ),
               ),
               OrderStatusBadge(status: order.paymentStatus, isPayment: true),
             ],
           ),
           const SizedBox(height: 14),
-          _buildBillRow('Subtotal', CurrencyFormatter.format(order.subtotal)),
+          _buildBillRow(
+            context,
+            'Subtotal',
+            CurrencyFormatter.format(order.subtotal),
+          ),
           if (order.discountAmount > 0) ...[
             const SizedBox(height: 8),
             _buildBillRow(
+              context,
               'Diskon ${order.discount != null ? "(${order.discount!.name})" : ""}',
               '- ${CurrencyFormatter.format(order.discountAmount)}',
               isGreen: true,
             ),
           ],
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Divider(height: 1, color: Color(0xFFF1F5F9)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            ),
           ),
           _buildBillRow(
+            context,
             'Total Tagihan',
             CurrencyFormatter.format(order.totalAmount),
             isBold: true,
@@ -837,25 +887,32 @@ class _OrderDetailView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _buildBillRow(
+            context,
             'Uang Diterima',
             CurrencyFormatter.format(order.paidAmount),
           ),
           const SizedBox(height: 8),
           _buildBillRow(
+            context,
             'Kembalian',
             CurrencyFormatter.format(order.changeAmount),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Divider(height: 1, color: Color(0xFFF1F5F9)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+            ),
           ),
           _buildBillRow(
+            context,
             'Metode Pembayaran',
             (order.payment?.paymentMethod ?? 'CASH').toUpperCase(),
           ),
           if (order.payment?.paidAt != null) ...[
             const SizedBox(height: 8),
             _buildBillRow(
+              context,
               'Waktu Lunas',
               _formatDateTime(order.payment!.paidAt),
             ),
@@ -866,12 +923,15 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   Widget _buildBillRow(
+    BuildContext context,
     String label,
     String value, {
     bool isBold = false,
     bool isGreen = false,
     double fontSize = 13,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -881,7 +941,9 @@ class _OrderDetailView extends StatelessWidget {
             fontFamily: 'Poppins',
             fontSize: fontSize,
             fontWeight: isBold ? FontWeight.w700 : FontWeight.w400,
-            color: isBold ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+            color: isBold
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -891,44 +953,49 @@ class _OrderDetailView extends StatelessWidget {
             fontSize: fontSize,
             fontWeight: isBold ? FontWeight.w700 : FontWeight.w600,
             color: isGreen
-                ? const Color(0xFF16A34A)
-                : isBold
-                ? const Color(0xFF0F172A)
-                : const Color(0xFF334155),
+                ? Colors.green
+                : (isBold ? colorScheme.onSurface : colorScheme.onSurface),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildMetadataCard(OrderEntity order) {
+  Widget _buildMetadataCard(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Informasi Tambahan',
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF0F172A),
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           if (order.notes != null && order.notes!.isNotEmpty) ...[
-            const Text(
+            Text(
               'Catatan Khusus:',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 11,
-                color: Color(0xFF64748B),
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 4),
@@ -936,16 +1003,22 @@ class _OrderDetailView extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(
+                  color: isDark
+                      ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                      : const Color(0xFFE2E8F0),
+                ),
               ),
               child: Text(
                 order.notes!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12.5,
-                  color: Color(0xFF334155),
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),
@@ -953,23 +1026,29 @@ class _OrderDetailView extends StatelessWidget {
           ],
           if (order.estimatedDone != null)
             _buildBillRow(
+              context,
               'Estimasi Selesai',
               _formatDateTime(order.estimatedDone),
             ),
           if (order.completedAt != null) ...[
             const SizedBox(height: 6),
-            _buildBillRow('Waktu Selesai', _formatDateTime(order.completedAt)),
+            _buildBillRow(
+              context,
+              'Waktu Selesai',
+              _formatDateTime(order.completedAt),
+            ),
           ],
           if (order.canceledAt != null) ...[
             const SizedBox(height: 6),
             _buildBillRow(
+              context,
               'Waktu Dibatalkan',
               _formatDateTime(order.canceledAt),
             ),
           ],
           if (order.creator != null) ...[
             const SizedBox(height: 6),
-            _buildBillRow('Dibuat oleh', order.creator!.name),
+            _buildBillRow(context, 'Dibuat oleh', order.creator!.name),
           ],
         ],
       ),
@@ -977,6 +1056,8 @@ class _OrderDetailView extends StatelessWidget {
   }
 
   Widget _buildBottomActionBar(BuildContext context, OrderEntity order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final status = order.status.toUpperCase();
     final paymentStatus = order.paymentStatus.toUpperCase();
     final isCash = (order.payment?.paymentMethod ?? '').toLowerCase() == 'cash';
@@ -990,10 +1071,10 @@ class _OrderDetailView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
             offset: const Offset(0, -4),
             blurRadius: 10,
           ),
@@ -1013,17 +1094,17 @@ class _OrderDetailView extends StatelessWidget {
                       onPressed: () => _confirmCancelOrder(context, order),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        side: const BorderSide(color: Color(0xFFDC2626)),
+                        side: BorderSide(color: colorScheme.error),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Batalkan Order',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFDC2626),
+                          color: colorScheme.error,
                         ),
                       ),
                     ),
@@ -1040,20 +1121,20 @@ class _OrderDetailView extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.play_arrow_rounded,
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Proses Sekarang',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4A99AD),
+                        backgroundColor: colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         elevation: 0,
                         shape: RoundedRectangleBorder(

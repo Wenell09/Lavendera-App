@@ -33,8 +33,6 @@ class _HomePageState extends State<HomePage> {
   List<Outlet> _adminOutlets = [];
   bool _hasInitialFetched = false;
 
-  static const Color primaryColor = Color(0xFF4A99AD);
-
   @override
   void initState() {
     super.initState();
@@ -122,6 +120,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<ProfileDetailBloc, ProfileDetailState>(
@@ -158,18 +158,16 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
           title: Text(
             'Lavendera',
             style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.black87,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white,
           elevation: 0,
-          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
         ),
         body: SafeArea(
           child: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
@@ -194,18 +192,20 @@ class _HomePageState extends State<HomePage> {
                     child: BlocBuilder<DashboardBloc, DashboardState>(
                       builder: (context, state) {
                         if (state is DashboardLoading) {
-                          return const Center(
+                          return Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircularProgressIndicator(color: primaryColor),
-                                SizedBox(height: 14),
+                                CircularProgressIndicator(
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(height: 14),
                                 Text(
                                   'Memuat data dashboard...',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 13,
-                                    color: Colors.grey,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -222,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                               errorMessage: state.message,
                             );
                           }
-                          return _buildErrorState(state.message);
+                          return _buildErrorState(context, state.message);
                         }
 
                         if (state is DashboardLoaded) {
@@ -246,7 +246,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildErrorState(String message) {
+  Widget _buildErrorState(BuildContext context, String message) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(28.0),
@@ -256,13 +257,13 @@ class _HomePageState extends State<HomePage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: colorScheme.errorContainer.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.error_outline_rounded,
                 size: 48,
-                color: Colors.red.shade400,
+                color: colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
@@ -270,7 +271,7 @@ class _HomePageState extends State<HomePage> {
               'Gagal Memuat Dashboard',
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -278,7 +279,7 @@ class _HomePageState extends State<HomePage> {
               message,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 20),
@@ -287,8 +288,8 @@ class _HomePageState extends State<HomePage> {
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('Coba Lagi'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -310,8 +311,10 @@ class _HomePageState extends State<HomePage> {
     required DashboardEntity dashboard,
     String? errorMessage,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return RefreshIndicator(
-      color: primaryColor,
+      color: colorScheme.primary,
       onRefresh: () async {
         _fetchDashboard(isRefresh: true);
       },
@@ -323,15 +326,17 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.amber.shade50,
+                color: colorScheme.errorContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber.shade200),
+                border: Border.all(
+                  color: colorScheme.error.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 children: [
                   Icon(
                     Icons.warning_amber_rounded,
-                    color: Colors.amber.shade800,
+                    color: colorScheme.error,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -339,7 +344,7 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       errorMessage,
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.amber.shade900,
+                        color: colorScheme.onErrorContainer,
                       ),
                     ),
                   ),

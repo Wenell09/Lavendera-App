@@ -19,10 +19,11 @@ class DashboardFilterSheet extends StatelessWidget {
     required DateTime currentEndDate,
     required ValueChanged<DateTimeRange> onRangeSelected,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -36,7 +37,9 @@ class DashboardFilterSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4A99AD);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final primaryColor = colorScheme.primary;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -62,7 +65,9 @@ class DashboardFilterSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: isDark
+                        ? colorScheme.outlineVariant
+                        : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -72,14 +77,14 @@ class DashboardFilterSheet extends StatelessWidget {
                 'Filter Periode Laporan',
                 style: AppTextStyles.titleLarge.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Pilih rentang tanggal untuk memperbarui data dashboard',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Colors.grey.shade600,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 20),
@@ -161,7 +166,7 @@ class DashboardFilterSheet extends StatelessWidget {
                     color: primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.calendar_month_rounded,
                     color: primaryColor,
                     size: 20,
@@ -177,10 +182,10 @@ class DashboardFilterSheet extends StatelessWidget {
                 subtitle: Text(
                   'Tentukan tanggal mulai dan selesai secara manual',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: Colors.grey.shade600,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.chevron_right_rounded,
                   color: primaryColor,
                 ),
@@ -194,17 +199,6 @@ class DashboardFilterSheet extends StatelessWidget {
                     ),
                     firstDate: DateTime(2020),
                     lastDate: DateTime(2030),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: Theme.of(context).colorScheme.copyWith(
-                            primary: primaryColor,
-                            onPrimary: Colors.white,
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
                   );
                   if (picked != null) {
                     onRangeSelected(picked);
@@ -225,22 +219,26 @@ class DashboardFilterSheet extends StatelessWidget {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    const primaryColor = Color(0xFF4A99AD);
+    final colorScheme = Theme.of(context).colorScheme;
+    final primaryColor = colorScheme.primary;
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 2),
       title: Text(
         title,
         style: AppTextStyles.bodyLarge.copyWith(
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-          color: isSelected ? primaryColor : Colors.black87,
+          color: isSelected ? primaryColor : colorScheme.onSurface,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: AppTextStyles.bodySmall.copyWith(color: Colors.grey.shade500),
+        style: AppTextStyles.bodySmall.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
       trailing: isSelected
-          ? const Icon(Icons.check_circle_rounded, color: primaryColor)
+          ? Icon(Icons.check_circle_rounded, color: primaryColor)
           : null,
       onTap: onTap,
     );

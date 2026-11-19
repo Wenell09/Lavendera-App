@@ -96,6 +96,7 @@ class _OutletUserPageState extends State<OutletUserPage> {
   }
 
   void _showDeleteDialog(String userId, String userName) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -117,7 +118,7 @@ class _OutletUserPageState extends State<OutletUserPage> {
               );
               Navigator.pop(context);
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: Text('Hapus', style: TextStyle(color: colorScheme.error)),
           ),
         ],
       ),
@@ -126,6 +127,9 @@ class _OutletUserPageState extends State<OutletUserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return BlocListener<OutletUserActionBloc, OutletUserActionState>(
       listener: (context, state) {
         if (state is OutletUserActionSuccess) {
@@ -141,7 +145,7 @@ class _OutletUserPageState extends State<OutletUserPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: colorScheme.error,
               behavior: SnackBarBehavior.floating,
               dismissDirection: DismissDirection.horizontal,
             ),
@@ -149,13 +153,12 @@ class _OutletUserPageState extends State<OutletUserPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new,
               size: 20,
-              color: Colors.black87,
+              color: colorScheme.onSurface,
             ),
             onPressed: () => Navigator.pop(context),
           ),
@@ -165,13 +168,15 @@ class _OutletUserPageState extends State<OutletUserPage> {
               Text(
                 'Staf & Pengguna',
                 style: AppTextStyles.titleLarge.copyWith(
-                  color: Colors.black,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 widget.outlet.name,
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -183,19 +188,25 @@ class _OutletUserPageState extends State<OutletUserPage> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Cari staf...',
-                  prefixIcon: const Icon(
+                  hintStyle: AppTextStyles.bodyMedium.copyWith(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
+                  prefixIcon: Icon(
                     Icons.search,
-                    color: Color(0xFF4A99AD),
+                    color: colorScheme.primary,
                     size: 20,
                   ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.clear,
                             size: 20,
-                            color: Colors.grey,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () {
                             _searchController.clear();
@@ -205,23 +216,29 @@ class _OutletUserPageState extends State<OutletUserPage> {
                         )
                       : null,
                   filled: true,
-                  fillColor: Colors.grey.shade50,
+                  fillColor: isDark
+                      ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                      : colorScheme.surfaceContainerLowest,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                          : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF4A99AD),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
                       width: 1.5,
                     ),
                   ),
@@ -232,9 +249,9 @@ class _OutletUserPageState extends State<OutletUserPage> {
               child: BlocBuilder<OutletUserBloc, OutletUserState>(
                 builder: (context, state) {
                   if (state is OutletUserLoading) {
-                    return const Center(
+                    return Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                       ),
                     );
                   }
@@ -270,30 +287,33 @@ class _OutletUserPageState extends State<OutletUserPage> {
                             vertical: 8,
                           ),
                           leading: CircleAvatar(
-                            backgroundColor: const Color(0xFF4A99AD)
-                                .withValues(alpha: 0.1),
+                            backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
                             child: Text(
                               user.name.isNotEmpty
                                   ? user.name[0].toUpperCase()
                                   : '?',
-                              style: const TextStyle(
-                                color: Color(0xFF4A99AD),
+                              style: TextStyle(
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                           title: Text(
                             user.name,
-                            style: AppTextStyles.titleMedium,
+                            style: AppTextStyles.titleMedium.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
                           ),
                           subtitle: Text(
                             user.role,
-                            style: AppTextStyles.bodySmall,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           trailing: IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.delete_outline,
-                              color: Colors.redAccent,
+                              color: colorScheme.error,
                               size: 20,
                             ),
                             onPressed: () =>
@@ -310,12 +330,12 @@ class _OutletUserPageState extends State<OutletUserPage> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: _showAddUserSheet,
-          backgroundColor: const Color(0xFF4A99AD),
-          icon: const Icon(Icons.add, color: Colors.white),
+          backgroundColor: colorScheme.primary,
+          icon: Icon(Icons.add, color: colorScheme.onPrimary),
           label: Text(
             'Tambah Staf',
             style: AppTextStyles.labelLarge.copyWith(
-              color: Colors.white,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -345,11 +365,14 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: isDark ? colorScheme.surfaceContainerHigh : colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
@@ -358,7 +381,9 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: isDark
+                  ? colorScheme.outlineVariant.withValues(alpha: 0.4)
+                  : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -366,6 +391,7 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
           Text(
             'Pilih Staf',
             style: AppTextStyles.titleLarge.copyWith(
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -374,15 +400,25 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
             child: TextField(
               controller: _sheetSearchController,
               onChanged: (v) => setState(() => _searchQuery = v),
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: colorScheme.onSurface,
+              ),
               decoration: InputDecoration(
                 hintText: 'Cari staf...',
-                prefixIcon: const Icon(Icons.search, size: 20),
+                hintStyle: AppTextStyles.bodyMedium.copyWith(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 20,
+                  color: colorScheme.primary,
+                ),
                 suffixIcon: _sheetSearchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.clear,
                           size: 20,
-                          color: Colors.grey,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         onPressed: () {
                           _sheetSearchController.clear();
@@ -391,10 +427,27 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.grey.shade50,
+                fillColor: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : colorScheme.surfaceContainerLowest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),
@@ -403,7 +456,11 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
             child: BlocBuilder<UserBloc, UserState>(
               builder: (context, state) {
                 if (state is UserLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: colorScheme.primary,
+                    ),
+                  );
                 }
 
                 List<User> users = [];
@@ -437,22 +494,31 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(vertical: 4),
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFF4A99AD)
-                            .withValues(alpha: 0.1),
+                        backgroundColor: colorScheme.primary.withValues(alpha: 0.1),
                         child: Text(
                           user.name.isNotEmpty
                               ? user.name[0].toUpperCase()
                               : '?',
-                          style: const TextStyle(
-                            color: Color(0xFF4A99AD),
+                          style: TextStyle(
+                            color: colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      title: Text(user.name, style: AppTextStyles.bodyLarge),
+                      title: Text(
+                        user.name,
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
                       subtitle: Row(
                         children: [
-                          Text(user.role, style: AppTextStyles.bodySmall),
+                          Text(
+                            user.role,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -460,24 +526,24 @@ class _AddUserSelectionSheetState extends State<_AddUserSelectionSheet> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.green.shade50,
+                              color: Colors.green.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Aktif',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.green.shade700,
+                                color: Colors.green,
                               ),
                             ),
                           ),
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.add_circle_outline,
-                          color: Color(0xFF4A99AD),
+                          color: colorScheme.primary,
                         ),
                         onPressed: () {
                           context.read<OutletUserActionBloc>().add(

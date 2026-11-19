@@ -31,20 +31,29 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
       textTheme: _textTheme.apply(
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: colorScheme.onSurface,
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
         titleTextStyle: _textTheme.titleLarge?.copyWith(
-          color: colorScheme.onPrimary,
+          color: colorScheme.onSurface,
+          fontWeight: FontWeight.bold,
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+      ),
+      cardTheme: CardThemeData(color: colorScheme.surface, elevation: 0),
+      dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        thickness: 0.5,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: colorScheme.surface,
@@ -65,20 +74,34 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
       textTheme: _textTheme.apply(
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.black,
-        surfaceTintColor: Colors.black,
-        foregroundColor: Colors.black,
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: colorScheme.onSurface,
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
         titleTextStyle: _textTheme.titleLarge?.copyWith(
-          color: colorScheme.onPrimary,
+          color: colorScheme.onSurface,
+          fontWeight: FontWeight.bold,
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+      ),
+      cardTheme: CardThemeData(
+        color: colorScheme.surfaceContainer,
+        elevation: 0,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: colorScheme.surfaceContainerHigh,
+      ),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        thickness: 0.5,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: colorScheme.surface,

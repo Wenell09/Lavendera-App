@@ -70,18 +70,24 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final sortedData = _getSortedData();
     final isEmpty = sortedData.isEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -102,14 +108,14 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                       'Tren Penjualan & Pembayaran',
                       style: AppTextStyles.titleMedium.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Perbandingan omset vs kas diterima per tanggal',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.grey.shade500,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -122,31 +128,32 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
           // Legend Indicators
           Row(
             children: [
-              _buildLegendItem('Penjualan', salesColor),
+              _buildLegendItem(context, 'Penjualan', salesColor),
               const SizedBox(width: 16),
-              _buildLegendItem('Pembayaran', paymentColor),
+              _buildLegendItem(context, 'Pembayaran', paymentColor),
             ],
           ),
           const SizedBox(height: 16),
 
           if (isEmpty)
-            _buildEmptyState()
+            _buildEmptyState(context)
           else ...[
             // Selected Bar Info Banner (Tooltip detail)
             if (_selectedIndex != null &&
                 _selectedIndex! < sortedData.length) ...[
-              _buildDetailBanner(sortedData[_selectedIndex!]),
+              _buildDetailBanner(context, sortedData[_selectedIndex!]),
               const SizedBox(height: 12),
             ],
             // Bar Chart Visualizer
-            _buildChartContent(sortedData),
+            _buildChartContent(context, sortedData),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(BuildContext context, String label, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -163,14 +170,15 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
           label,
           style: AppTextStyles.labelSmall.copyWith(
             fontWeight: FontWeight.w500,
-            color: Colors.grey.shade700,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       height: 150,
       width: double.infinity,
@@ -178,12 +186,16 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bar_chart_rounded, size: 40, color: Colors.grey.shade300),
+          Icon(
+            Icons.bar_chart_rounded,
+            size: 40,
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+          ),
           const SizedBox(height: 8),
           Text(
             'Tidak ada data penjualan pada periode ini',
             style: AppTextStyles.bodySmall.copyWith(
-              color: Colors.grey.shade500,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -191,30 +203,42 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
     );
   }
 
-  Widget _buildDetailBanner(DashboardSalesChartEntity item) {
+  Widget _buildDetailBanner(
+    BuildContext context,
+    DashboardSalesChartEntity item,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.calendar_today_rounded,
                 size: 13,
-                color: Colors.black54,
+                color: colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 6),
               Text(
                 _formatAxisDate(item.date),
                 style: AppTextStyles.labelSmall.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],
@@ -243,7 +267,13 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
     );
   }
 
-  Widget _buildChartContent(List<DashboardSalesChartEntity> data) {
+  Widget _buildChartContent(
+    BuildContext context,
+    List<DashboardSalesChartEntity> data,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     num maxVal = 0;
     for (var d in data) {
       maxVal = math.max(
@@ -275,21 +305,24 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                     Text(
                       hasTransactions ? _formatCompactNumber(maxVal) : '0',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.grey.shade400,
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         fontSize: 9.5,
                       ),
                     ),
                     Text(
                       hasTransactions ? _formatCompactNumber(maxVal / 2) : '0',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.grey.shade400,
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         fontSize: 9.5,
                       ),
                     ),
                     Text(
                       '0',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.grey.shade400,
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         fontSize: 9.5,
                       ),
                     ),
@@ -322,17 +355,26 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                                   Divider(
                                     height: 1,
                                     thickness: 0.8,
-                                    color: Colors.grey.shade100,
+                                    color: isDark
+                                        ? colorScheme.outlineVariant
+                                            .withValues(alpha: 0.2)
+                                        : Colors.grey.shade100,
                                   ),
                                   Divider(
                                     height: 1,
                                     thickness: 0.8,
-                                    color: Colors.grey.shade100,
+                                    color: isDark
+                                        ? colorScheme.outlineVariant
+                                            .withValues(alpha: 0.2)
+                                        : Colors.grey.shade100,
                                   ),
                                   Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Colors.grey.shade200,
+                                    color: isDark
+                                        ? colorScheme.outlineVariant
+                                            .withValues(alpha: 0.3)
+                                        : Colors.grey.shade200,
                                   ),
                                 ],
                               ),
@@ -346,15 +388,16 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.shade100.withValues(
-                                        alpha: 0.85,
-                                      ),
+                                      color: isDark
+                                          ? colorScheme.surfaceContainerHighest
+                                          : Colors.grey.shade100
+                                              .withValues(alpha: 0.85),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       'Belum ada transaksi',
                                       style: AppTextStyles.labelSmall.copyWith(
-                                        color: Colors.grey.shade500,
+                                        color: colorScheme.onSurfaceVariant,
                                         fontSize: 11,
                                       ),
                                     ),
@@ -403,7 +446,11 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? Colors.grey.shade100
+                                          ? (isDark
+                                              ? colorScheme
+                                                  .surfaceContainerHighest
+                                                  .withValues(alpha: 0.4)
+                                              : Colors.grey.shade100)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
@@ -486,7 +533,7 @@ class _DashboardSalesChartState extends State<DashboardSalesChart> {
                               style: AppTextStyles.labelSmall.copyWith(
                                 color: isSelected
                                     ? salesColor
-                                    : Colors.grey.shade500,
+                                    : colorScheme.onSurfaceVariant,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
                                     : FontWeight.normal,

@@ -65,21 +65,22 @@ class _AddServicePageState extends State<AddServicePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Tambah Layanan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -100,7 +101,7 @@ class _AddServicePageState extends State<AddServicePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -118,21 +119,21 @@ class _AddServicePageState extends State<AddServicePage> {
                 Text(
                   'Kategori Layanan',
                   style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.black87,
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
                 _isLoadingCategories
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Center(
                           child: SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF4A99AD),
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
@@ -140,23 +141,29 @@ class _AddServicePageState extends State<AddServicePage> {
                     : DropdownButtonFormField<String>(
                         initialValue: _selectedCategoryId,
                         isExpanded: true,
+                        dropdownColor: colorScheme.surfaceContainer,
                         style: AppTextStyles.bodyLarge.copyWith(
-                          color: Colors.black87,
+                          color: colorScheme.onSurface,
                         ),
                         decoration: InputDecoration(
                           hintText: _categories.isEmpty
                               ? 'Belum ada kategori'
                               : 'Pilih Kategori',
                           hintStyle: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey.shade400,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.7),
                           ),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.category_outlined,
                             size: 20,
-                            color: Color(0xFF4A99AD),
+                            color: colorScheme.primary,
                           ),
                           filled: true,
-                          fillColor: Colors.grey.shade50,
+                          fillColor: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.3)
+                              : colorScheme.surfaceContainerLowest,
                           contentPadding: const EdgeInsets.all(16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -164,12 +171,19 @@ class _AddServicePageState extends State<AddServicePage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(color: Colors.grey.shade100),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? colorScheme.outlineVariant
+                                      .withValues(alpha: 0.3)
+                                  : colorScheme.outlineVariant
+                                      .withValues(alpha: 0.5),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF4A99AD),
+                            borderSide: BorderSide(
+                              color: colorScheme.primary,
                               width: 1.5,
                             ),
                           ),
@@ -192,6 +206,7 @@ class _AddServicePageState extends State<AddServicePage> {
 
                 // Name
                 _buildTextField(
+                  context: context,
                   controller: _nameController,
                   label: 'Nama Layanan',
                   hint: 'Contoh: Cuci Setrika Reguler',
@@ -214,24 +229,28 @@ class _AddServicePageState extends State<AddServicePage> {
                 Text(
                   'Satuan Unit',
                   style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.black87,
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: _buildUnitOption('kg', 'Kg')),
+                    Expanded(child: _buildUnitOption(context, 'kg', 'Kg')),
                     const SizedBox(width: 8),
-                    Expanded(child: _buildUnitOption('pcs', 'Pcs')),
+                    Expanded(child: _buildUnitOption(context, 'pcs', 'Pcs')),
                     const SizedBox(width: 8),
-                    Expanded(child: _buildUnitOption('pair', 'Pasang (Pair)')),
+                    Expanded(
+                      child:
+                          _buildUnitOption(context, 'pair', 'Pasang (Pair)'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
 
                 // Price
                 _buildTextField(
+                  context: context,
                   controller: _priceController,
                   label: 'Harga (Rp)',
                   hint: 'Contoh: 8.000',
@@ -261,6 +280,7 @@ class _AddServicePageState extends State<AddServicePage> {
                   children: [
                     Expanded(
                       child: _buildTextField(
+                        context: context,
                         controller: _minQuantityController,
                         label: 'Jumlah Minimum',
                         hint: '1',
@@ -282,6 +302,7 @@ class _AddServicePageState extends State<AddServicePage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildTextField(
+                        context: context,
                         controller: _durationDaysController,
                         label: 'Durasi (Hari)',
                         hint: '2',
@@ -309,19 +330,19 @@ class _AddServicePageState extends State<AddServicePage> {
                   title: Text(
                     'Status Aktif',
                     style: AppTextStyles.labelMedium.copyWith(
-                      color: Colors.black87,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   value: _isActive,
-                  activeThumbColor: const Color(0xFF4A99AD),
+                  activeThumbColor: colorScheme.primary,
                   onChanged: (v) => setState(() => _isActive = v),
                   contentPadding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 40),
 
                 // Submit Button
-                _buildSubmitButton(),
+                _buildSubmitButton(context),
               ],
             ),
           ),
@@ -330,26 +351,37 @@ class _AddServicePageState extends State<AddServicePage> {
     );
   }
 
-  Widget _buildUnitOption(String val, String label) {
+  Widget _buildUnitOption(BuildContext context, String val, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     bool isSelected = _unit == val;
+
     return GestureDetector(
       onTap: () => setState(() => _unit = val),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF4A99AD).withValues(alpha: 0.1)
-              : Colors.grey.shade50,
+              ? colorScheme.primary.withValues(alpha: 0.15)
+              : (isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.grey.shade50),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF4A99AD) : Colors.grey.shade200,
+            color: isSelected
+                ? colorScheme.primary
+                : (isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                    : Colors.grey.shade200),
           ),
         ),
         child: Center(
           child: Text(
             label,
             style: AppTextStyles.labelMedium.copyWith(
-              color: isSelected ? const Color(0xFF4A99AD) : Colors.black54,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -359,6 +391,7 @@ class _AddServicePageState extends State<AddServicePage> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -367,13 +400,16 @@ class _AddServicePageState extends State<AddServicePage> {
     String? Function(String?)? validator,
     List<TextInputFormatter>? inputFormatters,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: AppTextStyles.labelMedium.copyWith(
-            color: Colors.black87,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -383,15 +419,19 @@ class _AddServicePageState extends State<AddServicePage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           validator: validator,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
+            prefixIcon: Icon(icon, size: 20, color: colorScheme.primary),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: isDark
+                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                : colorScheme.surfaceContainerLowest,
             contentPadding: const EdgeInsets.all(16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -399,12 +439,16 @@ class _AddServicePageState extends State<AddServicePage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade100),
+              borderSide: BorderSide(
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF4A99AD),
+              borderSide: BorderSide(
+                color: colorScheme.primary,
                 width: 1.5,
               ),
             ),
@@ -414,7 +458,9 @@ class _AddServicePageState extends State<AddServicePage> {
     );
   }
 
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocBuilder<ServiceActionBloc, ServiceActionState>(
       builder: (context, state) {
         final isLoading = state is ServiceActionLoading;
@@ -446,8 +492,8 @@ class _AddServicePageState extends State<AddServicePage> {
                   }
                 },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF4A99AD),
-            foregroundColor: Colors.white,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             padding: const EdgeInsets.symmetric(vertical: 18),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -455,18 +501,18 @@ class _AddServicePageState extends State<AddServicePage> {
             elevation: 0,
           ),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
                 )
               : Text(
                   'Simpan Layanan',
                   style: AppTextStyles.labelLarge.copyWith(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),

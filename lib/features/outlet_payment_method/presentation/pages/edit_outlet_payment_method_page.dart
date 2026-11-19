@@ -154,6 +154,7 @@ class _EditOutletPaymentMethodPageState
   }
 
   void _showDeleteDialog() {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -176,7 +177,7 @@ class _EditOutletPaymentMethodPageState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Gagal menghapus gambar QRIS: $e'),
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: colorScheme.error,
                     behavior: SnackBarBehavior.floating,
                     dismissDirection: DismissDirection.horizontal,
                   ),
@@ -191,7 +192,7 @@ class _EditOutletPaymentMethodPageState
                 ),
               );
             },
-            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+            child: Text('Hapus', style: TextStyle(color: colorScheme.error)),
           ),
         ],
       ),
@@ -212,27 +213,28 @@ class _EditOutletPaymentMethodPageState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Detail Metode',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+            icon: Icon(Icons.delete_outline, color: colorScheme.error),
             onPressed: _showDeleteDialog,
           ),
         ],
@@ -259,7 +261,7 @@ class _EditOutletPaymentMethodPageState
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: colorScheme.error,
                     behavior: SnackBarBehavior.floating,
                     dismissDirection: DismissDirection.horizontal,
                   ),

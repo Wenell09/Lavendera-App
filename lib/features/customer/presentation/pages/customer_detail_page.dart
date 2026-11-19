@@ -15,17 +15,19 @@ class CustomerDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return BlocProvider(
       create: (_) =>
           sl<CustomerDetailBloc>()..add(GetCustomerByIdRequest(id: customerId)),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new,
               size: 20,
-              color: Colors.black87,
+              color: colorScheme.onSurface,
             ),
             onPressed: () => Navigator.pop(context),
           ),
@@ -39,13 +41,15 @@ class CustomerDetailPage extends StatelessWidget {
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: isDark
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                        : Colors.grey.shade50,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.edit_outlined,
-                      color: Colors.black87,
+                      color: colorScheme.onSurface,
                       size: 20,
                     ),
                     onPressed: () => Navigator.push(
@@ -67,13 +71,13 @@ class CustomerDetailPage extends StatelessWidget {
                 return Container(
                   margin: const EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: colorScheme.errorContainer.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete_outline,
-                      color: Colors.redAccent,
+                      color: colorScheme.error,
                       size: 20,
                     ),
                     onPressed: () =>
@@ -100,7 +104,7 @@ class CustomerDetailPage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: colorScheme.error,
                   behavior: SnackBarBehavior.floating,
                   dismissDirection: DismissDirection.horizontal,
                 ),
@@ -110,10 +114,10 @@ class CustomerDetailPage extends StatelessWidget {
           child: BlocBuilder<CustomerDetailBloc, CustomerDetailState>(
             builder: (context, state) {
               if (state is CustomerDetailLoading) {
-                return const Center(
+                return Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
-                    color: Color(0xFF4A99AD),
+                    color: colorScheme.primary,
                   ),
                 );
               }
@@ -125,12 +129,14 @@ class CustomerDetailPage extends StatelessWidget {
                       Icon(
                         Icons.error_outline,
                         size: 48,
-                        color: Colors.red.shade300,
+                        color: colorScheme.error,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         state.message,
-                        style: AppTextStyles.bodyLarge,
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
                         textAlign: .center,
                       ),
                       const SizedBox(height: 8),
@@ -165,7 +171,7 @@ class CustomerDetailPage extends StatelessWidget {
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                          color: colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(32),
                         ),
                         child: Center(
@@ -174,7 +180,7 @@ class CustomerDetailPage extends StatelessWidget {
                                 ? customer.name[0].toUpperCase()
                                 : '?',
                             style: AppTextStyles.displayLarge.copyWith(
-                              color: const Color(0xFF4A99AD),
+                              color: colorScheme.primary,
                               fontSize: 40,
                             ),
                           ),
@@ -184,7 +190,7 @@ class CustomerDetailPage extends StatelessWidget {
                       Text(
                         customer.name,
                         style: AppTextStyles.displaySmall.copyWith(
-                          color: Colors.black87,
+                          color: colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -192,9 +198,15 @@ class CustomerDetailPage extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: isDark
+                              ? colorScheme.surfaceContainer
+                              : Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.grey.shade100),
+                          border: Border.all(
+                            color: isDark
+                                ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                                : Colors.grey.shade100,
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -203,7 +215,13 @@ class CustomerDetailPage extends StatelessWidget {
                               label: 'Nomor Telepon',
                               value: customer.phone,
                             ),
-                            const Divider(height: 32, thickness: 0.5),
+                            Divider(
+                              height: 32,
+                              thickness: 0.5,
+                              color: isDark
+                                  ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                                  : null,
+                            ),
                             InfoTileWidget(
                               icon: Icons.location_on_outlined,
                               label: 'Alamat Lengkap',
@@ -216,9 +234,15 @@ class CustomerDetailPage extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: isDark
+                              ? colorScheme.surfaceContainer
+                              : Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.grey.shade100),
+                          border: Border.all(
+                            color: isDark
+                                ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                                : Colors.grey.shade100,
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -226,7 +250,7 @@ class CustomerDetailPage extends StatelessWidget {
                               icon: Icons.calendar_today_outlined,
                               label: 'Bergabung Sejak',
                               value: _formatDate(customer.createdAt),
-                              iconColor: Colors.grey,
+                              iconColor: colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lavendera/config/theme/theme_bloc.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/home/presentation/bloc/dashboard_bloc.dart';
@@ -30,6 +31,9 @@ class Provider {
   static List<BlocProvider> providers = [
     BlocProvider<AuthBloc>(
       create: (_) => sl<AuthBloc>()..add(LoadDataRequest()),
+    ),
+    BlocProvider<ThemeBloc>(
+      create: (_) => sl<ThemeBloc>()..add(LoadTheme()),
     ),
     BlocProvider<CustomerBloc>(create: (_) => sl<CustomerBloc>()),
     BlocProvider<CustomerActionBloc>(create: (_) => sl<CustomerActionBloc>()),

@@ -38,21 +38,23 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Edit Pelanggan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -65,7 +67,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -114,8 +116,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                         boxShadow: [
                           if (!isLoading)
                             BoxShadow(
-                              color: const Color(0xFF4A99AD)
-                                  .withValues(alpha: 0.3),
+                              color: colorScheme.primary.withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -139,28 +140,30 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4A99AD),
-                          foregroundColor: Colors.white,
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
-                          disabledBackgroundColor: Colors.grey.shade300,
+                          disabledBackgroundColor: isDark
+                              ? colorScheme.surfaceContainerHighest
+                              : Colors.grey.shade300,
                         ),
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
                               )
                             : Text(
                                 'Simpan Perubahan',
                                 style: AppTextStyles.labelLarge.copyWith(
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -186,13 +189,16 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
     String? Function(String?)? validator,
     int maxLines = 1,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: AppTextStyles.labelMedium.copyWith(
-            color: Colors.black87,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -202,37 +208,49 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
           keyboardType: keyboardType,
           validator: validator,
           maxLines: maxLines,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
+            prefixIcon: Icon(icon, size: 20, color: colorScheme.primary),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: isDark
+                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                : colorScheme.surfaceContainerLowest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                    : Colors.grey.shade200,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade100),
+              borderSide: BorderSide(
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                    : Colors.grey.shade200,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF4A99AD),
+              borderSide: BorderSide(
+                color: colorScheme.primary,
                 width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+              borderSide: BorderSide(color: colorScheme.error, width: 1),
             ),
           ),
         ),

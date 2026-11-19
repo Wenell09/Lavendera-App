@@ -18,6 +18,7 @@ class DashboardSummaryCards extends StatelessWidget {
           children: [
             Expanded(
               child: _buildFinancialCard(
+                context: context,
                 title: 'Total Penjualan',
                 amount: summary.totalSales,
                 subtitle: 'Omset bruto periode ini',
@@ -29,6 +30,7 @@ class DashboardSummaryCards extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _buildFinancialCard(
+                context: context,
                 title: 'Pembayaran Diterima',
                 amount: summary.totalPaymentsReceived,
                 subtitle: 'Kas diterima',
@@ -45,6 +47,7 @@ class DashboardSummaryCards extends StatelessWidget {
           children: [
             Expanded(
               child: _buildOperationalCard(
+                context: context,
                 title: 'Total Pesanan',
                 count: summary.totalOrders,
                 unit: 'Pesanan',
@@ -56,6 +59,7 @@ class DashboardSummaryCards extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _buildOperationalCard(
+                context: context,
                 title: 'Pesanan Aktif',
                 count: summary.activeOrders,
                 unit: 'Sedang Proses',
@@ -71,6 +75,7 @@ class DashboardSummaryCards extends StatelessWidget {
   }
 
   Widget _buildFinancialCard({
+    required BuildContext context,
     required String title,
     required num amount,
     required String subtitle,
@@ -78,15 +83,22 @@ class DashboardSummaryCards extends StatelessWidget {
     required Color accentColor,
     required Color badgeColor,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -102,7 +114,9 @@ class DashboardSummaryCards extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: badgeColor,
+                  color: isDark
+                      ? accentColor.withValues(alpha: 0.18)
+                      : badgeColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: accentColor, size: 20),
@@ -113,7 +127,7 @@ class DashboardSummaryCards extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodySmall.copyWith(
-              color: Colors.grey.shade600,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -125,7 +139,7 @@ class DashboardSummaryCards extends StatelessWidget {
               CurrencyFormatter.format(amount),
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
                 fontSize: 18,
               ),
             ),
@@ -134,7 +148,7 @@ class DashboardSummaryCards extends StatelessWidget {
           Text(
             subtitle,
             style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               fontSize: 10.5,
             ),
             maxLines: 1,
@@ -146,6 +160,7 @@ class DashboardSummaryCards extends StatelessWidget {
   }
 
   Widget _buildOperationalCard({
+    required BuildContext context,
     required String title,
     required int count,
     required String unit,
@@ -153,15 +168,22 @@ class DashboardSummaryCards extends StatelessWidget {
     required Color accentColor,
     required Color badgeColor,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -174,7 +196,7 @@ class DashboardSummaryCards extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: badgeColor,
+              color: isDark ? accentColor.withValues(alpha: 0.18) : badgeColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: accentColor, size: 20),
@@ -183,7 +205,7 @@ class DashboardSummaryCards extends StatelessWidget {
           Text(
             title,
             style: AppTextStyles.bodySmall.copyWith(
-              color: Colors.grey.shade600,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -196,7 +218,7 @@ class DashboardSummaryCards extends StatelessWidget {
                 count.toString(),
                 style: AppTextStyles.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                   fontSize: 22,
                 ),
               ),
@@ -205,7 +227,7 @@ class DashboardSummaryCards extends StatelessWidget {
                 child: Text(
                   unit,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.grey.shade500,
+                    color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,

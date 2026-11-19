@@ -78,21 +78,23 @@ class _DiscountPageState extends State<DiscountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Diskon',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -100,11 +102,17 @@ class _DiscountPageState extends State<DiscountPage> {
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.grey.shade50,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
+              icon: Icon(
+                Icons.refresh,
+                color: colorScheme.onSurface,
+                size: 20,
+              ),
               onPressed: () {
                 final text = _searchController.text.trim();
                 context.read<DiscountBloc>().add(
@@ -125,21 +133,23 @@ class _DiscountPageState extends State<DiscountPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _onSearchChanged,
-              style: AppTextStyles.bodyLarge,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: colorScheme.onSurface,
+              ),
               decoration: InputDecoration(
                 hintText: 'Cari diskon...',
                 hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.grey.shade400,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search,
-                  color: Color(0xFF4A99AD),
+                  color: colorScheme.primary,
                   size: 20,
                 ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.close, size: 18),
-                        color: Colors.grey.shade400,
+                        color: colorScheme.onSurfaceVariant,
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -148,23 +158,29 @@ class _DiscountPageState extends State<DiscountPage> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.grey.shade50,
+                fillColor: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : colorScheme.surfaceContainerLowest,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF4A99AD),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
                     width: 1.5,
                   ),
                 ),
@@ -187,10 +203,10 @@ class _DiscountPageState extends State<DiscountPage> {
             child: BlocBuilder<DiscountBloc, DiscountState>(
               builder: (context, state) {
                 if (state is DiscountLoading) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Color(0xFF4A99AD),
+                      color: colorScheme.primary,
                     ),
                   );
                 }
@@ -204,10 +220,15 @@ class _DiscountPageState extends State<DiscountPage> {
                           Icon(
                             Icons.error_outline,
                             size: 48,
-                            color: Colors.red.shade300,
+                            color: colorScheme.error,
                           ),
                           const SizedBox(height: 16),
-                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          Text(
+                            state.message,
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
                           TextButton(
                             onPressed: () {
                               final text = _searchController.text.trim();
@@ -248,13 +269,15 @@ class _DiscountPageState extends State<DiscountPage> {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.discount_outlined,
                             size: 64,
-                            color: Colors.grey.shade300,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.5),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -263,7 +286,7 @@ class _DiscountPageState extends State<DiscountPage> {
                               ? 'Diskon tidak ditemukan'
                               : 'Belum ada diskon',
                           style: AppTextStyles.headlineSmall.copyWith(
-                            color: Colors.black87,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -272,7 +295,7 @@ class _DiscountPageState extends State<DiscountPage> {
                               ? 'Coba kata kunci pencarian yang lain'
                               : 'Tambahkan diskon baru untuk mulai',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey.shade500,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -287,15 +310,15 @@ class _DiscountPageState extends State<DiscountPage> {
                       const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     if (index >= discounts.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Center(
                           child: SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF4A99AD),
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
@@ -323,16 +346,16 @@ class _DiscountPageState extends State<DiscountPage> {
                     ),
                   );
                 },
-                backgroundColor: const Color(0xFF4A99AD),
+                backgroundColor: colorScheme.primary,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: Icon(Icons.add, color: colorScheme.onPrimary),
                 label: Text(
                   'Tambah Diskon',
                   style: AppTextStyles.labelLarge.copyWith(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -347,14 +370,21 @@ class _DiscountPageState extends State<DiscountPage> {
   }
 
   Widget _buildDiscountCard(BuildContext context, Discount discount) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -368,16 +398,18 @@ class _DiscountPageState extends State<DiscountPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: Icon(Icons.percent, color: Color(0xFF4A99AD)),
+            child: Center(
+              child: Icon(Icons.percent, color: colorScheme.primary),
             ),
           ),
           title: Text(
             discount.name,
-            style: AppTextStyles.titleLarge.copyWith(color: Colors.black87),
+            style: AppTextStyles.titleLarge.copyWith(
+              color: colorScheme.onSurface,
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 4),
@@ -388,7 +420,7 @@ class _DiscountPageState extends State<DiscountPage> {
                       ? '${discount.value}%'
                       : CurrencyFormatter.format(discount.value),
                   style: AppTextStyles.bodyLarge.copyWith(
-                    color: const Color(0xFF4A99AD),
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -415,10 +447,10 @@ class _DiscountPageState extends State<DiscountPage> {
               ],
             ),
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.arrow_forward_ios,
             size: 14,
-            color: Colors.grey,
+            color: colorScheme.onSurfaceVariant,
           ),
           onTap: () {
             Navigator.push(
@@ -434,7 +466,10 @@ class _DiscountPageState extends State<DiscountPage> {
   }
 
   Widget _buildFilterChip(String label, String? type) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final isSelected = _typeFilter == type;
+
     return InkWell(
       onTap: () => setState(() => _typeFilter = type),
       borderRadius: BorderRadius.circular(20),
@@ -442,13 +477,17 @@ class _DiscountPageState extends State<DiscountPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF4A99AD) : Colors.grey.shade100,
+          color: isSelected
+              ? colorScheme.primary
+              : (isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                  : Colors.grey.shade100),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: AppTextStyles.bodyMedium.copyWith(
-            color: isSelected ? Colors.white : Colors.black87,
+            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),

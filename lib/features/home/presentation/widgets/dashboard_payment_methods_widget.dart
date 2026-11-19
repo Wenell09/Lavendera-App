@@ -56,17 +56,23 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final isEmpty = paymentMethods.isEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -82,13 +88,13 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
                 'Metode Pembayaran',
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.account_balance_wallet_outlined,
                 size: 18,
-                color: Colors.grey,
+                color: colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -100,7 +106,7 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
               child: Text(
                 'Belum ada transaksi pembayaran pada periode ini',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Colors.grey.shade500,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             )
@@ -109,8 +115,12 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: paymentMethods.length,
-              separatorBuilder: (context, index) =>
-                  Divider(height: 16, color: Colors.grey.shade100),
+              separatorBuilder: (context, index) => Divider(
+                height: 16,
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                    : Colors.grey.shade100,
+              ),
               itemBuilder: (context, index) {
                 final item = paymentMethods[index];
                 final label = _getMethodLabel(item.method);
@@ -121,12 +131,12 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4A99AD).withValues(alpha: 0.08),
+                        color: colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         icon,
-                        color: const Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                         size: 20,
                       ),
                     ),
@@ -139,14 +149,14 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
                             label,
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 1),
                           Text(
                             '${item.count} transaksi',
                             style: AppTextStyles.labelSmall.copyWith(
-                              color: Colors.grey.shade500,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -156,7 +166,7 @@ class DashboardPaymentMethodsWidget extends StatelessWidget {
                       CurrencyFormatter.format(item.total),
                       style: AppTextStyles.titleSmall.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],

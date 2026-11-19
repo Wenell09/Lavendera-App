@@ -68,7 +68,9 @@ class DashboardHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4A99AD);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final primaryColor = colorScheme.primary;
     final userName = profile?.name.isNotEmpty == true
         ? profile!.name
         : 'Pengguna';
@@ -79,9 +81,14 @@ class DashboardHeaderWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         border: Border(
-          bottom: BorderSide(color: Colors.grey.shade100, width: 1),
+          bottom: BorderSide(
+            color: isDark
+                ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                : Colors.grey.shade100,
+            width: 1,
+          ),
         ),
       ),
       child: Column(
@@ -98,7 +105,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                     Text(
                       _getGreeting(),
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: Colors.grey.shade500,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -107,7 +114,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                       userName,
                       style: AppTextStyles.headlineMedium.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                         fontSize: 20,
                       ),
                       maxLines: 1,
@@ -136,14 +143,14 @@ class DashboardHeaderWidget extends StatelessWidget {
                           ? Icons.admin_panel_settings_rounded
                           : Icons.badge_rounded,
                       size: 14,
-                      color: isAdmin ? const Color(0xFF059669) : primaryColor,
+                      color: isAdmin ? const Color(0xFF10B981) : primaryColor,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       role,
                       style: AppTextStyles.labelSmall.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isAdmin ? const Color(0xFF059669) : primaryColor,
+                        color: isAdmin ? const Color(0xFF10B981) : primaryColor,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -161,7 +168,7 @@ class DashboardHeaderWidget extends StatelessWidget {
               Expanded(
                 child: isAdmin
                     ? _buildAdminOutletSelector(context)
-                    : _buildStaffOutletBadge(),
+                    : _buildStaffOutletBadge(context),
               ),
               const SizedBox(width: 10),
               // Date Range Filter Button
@@ -174,14 +181,21 @@ class DashboardHeaderWidget extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: isDark
+                        ? colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.3)
+                        : Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(
+                      color: isDark
+                          ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                          : Colors.grey.shade200,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.calendar_today_rounded,
                         size: 14,
                         color: primaryColor,
@@ -192,7 +206,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                         child: Text(
                           _formatRangeLabel(startDate, endDate),
                           style: AppTextStyles.labelSmall.copyWith(
-                            color: Colors.black87,
+                            color: colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,
@@ -203,7 +217,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                       Icon(
                         Icons.keyboard_arrow_down_rounded,
                         size: 16,
-                        color: Colors.grey.shade600,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -217,33 +231,43 @@ class DashboardHeaderWidget extends StatelessWidget {
   }
 
   Widget _buildAdminOutletSelector(BuildContext context) {
-    const primaryColor = Color(0xFF4A99AD);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final primaryColor = colorScheme.primary;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: selectedOutletId,
           isExpanded: true,
+          dropdownColor: colorScheme.surfaceContainer,
           icon: Icon(
             Icons.unfold_more_rounded,
             size: 18,
-            color: Colors.grey.shade600,
+            color: colorScheme.onSurfaceVariant,
           ),
           style: AppTextStyles.bodySmall.copyWith(
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           items: [
             DropdownMenuItem<String?>(
               value: null,
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.store_mall_directory_rounded,
                     size: 16,
                     color: primaryColor,
@@ -264,7 +288,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                 value: o.id,
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.storefront_rounded,
                       size: 16,
                       color: primaryColor,
@@ -288,25 +312,34 @@ class DashboardHeaderWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStaffOutletBadge() {
-    const primaryColor = Color(0xFF4A99AD);
+  Widget _buildStaffOutletBadge(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final primaryColor = colorScheme.primary;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+              : Colors.grey.shade200,
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.storefront_rounded, size: 16, color: primaryColor),
+          Icon(Icons.storefront_rounded, size: 16, color: primaryColor),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               staffOutletName ?? 'Outlet Saya',
               style: AppTextStyles.labelSmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

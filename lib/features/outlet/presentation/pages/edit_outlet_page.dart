@@ -51,21 +51,23 @@ class _EditOutletPageState extends State<EditOutletPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Edit Outlet',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -78,7 +80,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.redAccent,
+                backgroundColor: colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 dismissDirection: DismissDirection.horizontal,
               ),
@@ -93,6 +95,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildTextField(
+                  context: context,
                   controller: _nameController,
                   label: 'Nama Outlet',
                   hint: 'Masukkan nama outlet',
@@ -101,6 +104,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
+                  context: context,
                   controller: _slugController,
                   label: 'Slug',
                   hint: 'Masukkan slug outlet',
@@ -109,6 +113,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
+                  context: context,
                   controller: _phoneController,
                   label: 'Nomor HP',
                   hint: 'Contoh: 6281234567890',
@@ -117,6 +122,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
                 ),
                 const SizedBox(height: 20),
                 _buildTextField(
+                  context: context,
                   controller: _addressController,
                   label: 'Alamat',
                   hint: 'Masukkan alamat lengkap',
@@ -131,9 +137,22 @@ class _EditOutletPageState extends State<EditOutletPage> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: isDark ? colorScheme.surfaceContainer : Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade100),
+                    border: Border.all(
+                      color: isDark
+                          ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                          : Colors.grey.shade100,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.2 : 0.02,
+                        ),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Material(
                     color: Colors.transparent,
@@ -143,41 +162,44 @@ class _EditOutletPageState extends State<EditOutletPage> {
                           title: Text(
                             'Order Publik Aktif',
                             style: AppTextStyles.labelMedium.copyWith(
-                              color: Colors.black87,
+                              color: colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           subtitle: Text(
                             'Izinkan order publik untuk outlet ini',
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.grey.shade500,
+                              color: colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),
                           value: _isPublicOrderEnabled,
-                          activeThumbColor: const Color(0xFF4A99AD),
+                          activeTrackColor: colorScheme.primary,
                           onChanged: (v) =>
                               setState(() => _isPublicOrderEnabled = v),
                           contentPadding: EdgeInsets.zero,
                         ),
-                        Divider(color: Colors.grey.shade200, height: 1),
+                        Divider(
+                          color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                          height: 1,
+                        ),
                         SwitchListTile(
                           title: Text(
                             'Status Aktif',
                             style: AppTextStyles.labelMedium.copyWith(
-                              color: Colors.black87,
+                              color: colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           subtitle: Text(
                             'Status operasional outlet',
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.grey.shade500,
+                              color: colorScheme.onSurfaceVariant,
                               fontSize: 12,
                             ),
                           ),
                           value: _isActive,
-                          activeThumbColor: const Color(0xFF4A99AD),
+                          activeTrackColor: colorScheme.primary,
                           onChanged: (v) => setState(() => _isActive = v),
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -195,8 +217,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
                         boxShadow: [
                           if (!isLoading)
                             BoxShadow(
-                              color: const Color(0xFF4A99AD)
-                                  .withValues(alpha: 0.3),
+                              color: colorScheme.primary.withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -227,28 +248,28 @@ class _EditOutletPageState extends State<EditOutletPage> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4A99AD),
-                          foregroundColor: Colors.white,
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
-                          disabledBackgroundColor: Colors.grey.shade300,
+                          disabledBackgroundColor: colorScheme.surfaceContainerHighest,
                         ),
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
                               )
                             : Text(
                                 'Simpan Perubahan',
                                 style: AppTextStyles.labelLarge.copyWith(
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -266,6 +287,7 @@ class _EditOutletPageState extends State<EditOutletPage> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required String hint,
@@ -274,13 +296,16 @@ class _EditOutletPageState extends State<EditOutletPage> {
     String? Function(String?)? validator,
     int maxLines = 1,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: AppTextStyles.labelMedium.copyWith(
-            color: Colors.black87,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -290,15 +315,19 @@ class _EditOutletPageState extends State<EditOutletPage> {
           keyboardType: keyboardType,
           validator: validator,
           maxLines: maxLines,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
-            prefixIcon: Icon(icon, size: 20, color: const Color(0xFF4A99AD)),
+            prefixIcon: Icon(icon, size: 20, color: colorScheme.primary),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: isDark
+                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                : colorScheme.surfaceContainerLowest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -309,18 +338,22 @@ class _EditOutletPageState extends State<EditOutletPage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade100),
+              borderSide: BorderSide(
+                color: isDark
+                    ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                    : colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(
-                color: Color(0xFF4A99AD),
+              borderSide: BorderSide(
+                color: colorScheme.primary,
                 width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.redAccent, width: 1),
+              borderSide: BorderSide(color: colorScheme.error, width: 1),
             ),
           ),
         ),

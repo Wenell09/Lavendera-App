@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/features/customer/presentation/pages/widgets/text_field_widget.dart';
@@ -36,25 +35,24 @@ class _EditTenantPageState extends State<EditTenantPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (context) => sl<TenantActionBloc>(),
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_new,
               size: 20,
-              color: Colors.black87,
+              color: colorScheme.onSurface,
             ),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
             'Edit Bisnis',
             style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.black87,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -74,7 +72,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: colorScheme.error,
                   behavior: SnackBarBehavior.floating,
                   dismissDirection: DismissDirection.horizontal,
                 ),
@@ -88,7 +86,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildHeaderInfo(),
+                  _buildHeaderInfo(context),
                   const SizedBox(height: 32),
                   TextFieldWidget(
                     controller: _nameController,
@@ -122,7 +120,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
                   Text(
                     'Catatan: Mengubah slug akan mengubah URL akses bisnis Anda.',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: Colors.grey.shade500,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -150,28 +148,29 @@ class _EditTenantPageState extends State<EditTenantPage> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blue.color,
-                          foregroundColor: Colors.white,
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
-                          disabledBackgroundColor: Colors.grey.shade300,
+                          disabledBackgroundColor:
+                              colorScheme.surfaceContainerHighest,
                         ),
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 height: 20,
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
                               )
                             : Text(
                                 'Simpan Perubahan',
                                 style: AppTextStyles.labelLarge.copyWith(
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -187,17 +186,19 @@ class _EditTenantPageState extends State<EditTenantPage> {
     );
   }
 
-  Widget _buildHeaderInfo() {
+  Widget _buildHeaderInfo(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.shade100),
+        border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.blue.shade700, size: 24),
+          Icon(Icons.info_outline, color: colorScheme.primary, size: 24),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -206,7 +207,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
                 Text(
                   'Informasi Penting',
                   style: AppTextStyles.labelMedium.copyWith(
-                    color: Colors.blue.shade900,
+                    color: colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -214,7 +215,7 @@ class _EditTenantPageState extends State<EditTenantPage> {
                 Text(
                   'Email admin (${widget.tenant.email}) tidak dapat diubah.',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: Colors.blue.shade700,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

@@ -151,10 +151,16 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   }
 
   void _showAddServiceBottomSheet() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark
+          ? colorScheme.surfaceContainerHigh
+          : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -183,43 +189,48 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           width: 40,
                           height: 4,
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: colorScheme.outlineVariant,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'Pilih Layanan Laundry',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _serviceSearchController,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
+                          color: colorScheme.onSurface,
                         ),
                         decoration: InputDecoration(
                           hintText: 'Cari layanan...',
                           hintStyle: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
-                            color: Colors.grey.shade400,
+                            color: colorScheme.onSurfaceVariant,
                           ),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.search_rounded,
-                            color: Color(0xFF64748B),
+                            color: colorScheme.onSurfaceVariant,
                             size: 20,
                           ),
                           suffixIcon: _serviceSearchController.text.isNotEmpty
                               ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 18),
+                                  icon: Icon(
+                                    Icons.clear,
+                                    size: 18,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                   onPressed: () {
                                     setModalState(() {
                                       _serviceSearchController.clear();
@@ -228,7 +239,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 )
                               : null,
                           filled: true,
-                          fillColor: const Color(0xFFF1F5F9),
+                          fillColor: isDark
+                              ? colorScheme.surfaceContainerHighest.withValues(
+                                  alpha: 0.3,
+                                )
+                              : colorScheme.surfaceContainerLowest,
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14,
@@ -236,7 +251,19 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
                           ),
                         ),
                         onChanged: (val) => setModalState(() {}),
@@ -250,15 +277,19 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 13,
-                                    color: Colors.grey.shade500,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               )
                             : ListView.separated(
                                 controller: scrollController,
                                 itemCount: filteredServices.length,
-                                separatorBuilder: (_, _) =>
-                                    const Divider(height: 1),
+                                separatorBuilder: (_, _) => Divider(
+                                  height: 1,
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                ),
                                 itemBuilder: (context, index) {
                                   final service = filteredServices[index];
                                   return ListTile(
@@ -266,22 +297,24 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                     leading: Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF4A99AD)
-                                            .withValues(alpha: 0.1),
+                                        color: colorScheme.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.local_laundry_service_rounded,
-                                        color: Color(0xFF4A99AD),
+                                        color: colorScheme.primary,
                                         size: 20,
                                       ),
                                     ),
                                     title: Text(
                                       service.name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontWeight: FontWeight.w600,
                                         fontSize: 13.5,
+                                        color: colorScheme.onSurface,
                                       ),
                                     ),
                                     subtitle: Text(
@@ -289,7 +322,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 12,
-                                        color: Colors.grey.shade600,
+                                        color: colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                     trailing: ElevatedButton(
@@ -298,9 +331,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                         _addServiceToCart(service);
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF4A99AD,
-                                        ),
+                                        backgroundColor: colorScheme.primary,
+                                        foregroundColor: colorScheme.onPrimary,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             8,
@@ -311,11 +343,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           vertical: 6,
                                         ),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         '+ Pilih',
                                         style: TextStyle(
                                           fontFamily: 'Poppins',
-                                          color: Colors.white,
+                                          color: colorScheme.onPrimary,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
                                         ),
@@ -337,13 +369,18 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   }
 
   void _showCustomerPickerBottomSheet() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final searchCtrl = TextEditingController();
     List<Customer> filtered = List.from(_customers);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark
+          ? colorScheme.surfaceContainerHigh
+          : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -367,32 +404,61 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
+                          color: colorScheme.outlineVariant,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Pilih Pelanggan',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: searchCtrl,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: colorScheme.onSurface,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Cari nama atau telepon pelanggan...',
-                        prefixIcon: const Icon(Icons.search_rounded),
+                        hintStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         filled: true,
-                        fillColor: const Color(0xFFF1F5F9),
+                        fillColor: isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.3,
+                              )
+                            : colorScheme.surfaceContainerLowest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
@@ -411,16 +477,23 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                     const SizedBox(height: 12),
                     Expanded(
                       child: filtered.isEmpty
-                          ? const Center(
+                          ? Center(
                               child: Text(
                                 'Pelanggan tidak ditemukan',
-                                style: TextStyle(fontFamily: 'Poppins'),
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             )
                           : ListView.separated(
                               itemCount: filtered.length,
-                              separatorBuilder: (_, _) =>
-                                  const Divider(height: 1),
+                              separatorBuilder: (_, _) => Divider(
+                                height: 1,
+                                color: colorScheme.outlineVariant.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
                               itemBuilder: (context, index) {
                                 final cust = filtered[index];
                                 final isSelected =
@@ -428,14 +501,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 return ListTile(
                                   contentPadding: EdgeInsets.zero,
                                   leading: CircleAvatar(
-                                    backgroundColor: const Color(0xFF4A99AD)
+                                    backgroundColor: colorScheme.primary
                                         .withValues(alpha: 0.1),
                                     child: Text(
                                       cust.name.isNotEmpty
                                           ? cust.name[0].toUpperCase()
                                           : '?',
-                                      style: const TextStyle(
-                                        color: Color(0xFF4A99AD),
+                                      style: TextStyle(
+                                        color: colorScheme.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -448,8 +521,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           ? FontWeight.w700
                                           : FontWeight.w600,
                                       color: isSelected
-                                          ? const Color(0xFF4A99AD)
-                                          : const Color(0xFF0F172A),
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurface,
                                     ),
                                   ),
                                   subtitle: Text(
@@ -457,13 +530,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 12,
-                                      color: Colors.grey.shade600,
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   trailing: isSelected
-                                      ? const Icon(
+                                      ? Icon(
                                           Icons.check_circle_rounded,
-                                          color: Color(0xFF4A99AD),
+                                          color: colorScheme.primary,
                                         )
                                       : null,
                                   onTap: () {
@@ -487,14 +560,15 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   }
 
   void _submitOrder() {
+    final colorScheme = Theme.of(context).colorScheme;
     if (_selectedOutlet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: const Text(
             'Silakan pilih outlet terlebih dahulu',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
-          backgroundColor: Color(0xFFDC2626),
+          backgroundColor: colorScheme.error,
           dismissDirection: DismissDirection.horizontal,
         ),
       );
@@ -503,12 +577,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
     if (_selectedCustomer == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: const Text(
             'Silakan pilih pelanggan terlebih dahulu',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
-          backgroundColor: Color(0xFFDC2626),
+          backgroundColor: colorScheme.error,
           dismissDirection: DismissDirection.horizontal,
         ),
       );
@@ -517,12 +591,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
     if (_cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: const Text(
             'Silakan tambahkan minimal 1 layanan laundry',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
-          backgroundColor: Color(0xFFDC2626),
+          backgroundColor: colorScheme.error,
           dismissDirection: DismissDirection.horizontal,
         ),
       );
@@ -555,6 +629,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<OrderActionBloc, OrderActionState>(
@@ -684,12 +762,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
           title: Text(
             'Order Kasir Baru',
             style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.black,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -722,14 +800,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(color: Color(0xFF4A99AD)),
+                    CircularProgressIndicator(color: colorScheme.primary),
                     const SizedBox(height: 16),
                     Text(
                       'Memuat data...',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
-                        color: Colors.grey.shade600,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -758,7 +836,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF4A99AD),
+                        foregroundColor: colorScheme.primary,
                       ),
                     ),
                   ],
@@ -777,16 +855,35 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ? _selectedOutlet
                           : (_outlets.isNotEmpty ? _outlets.first : null),
                       isExpanded: true,
+                      dropdownColor: isDark
+                          ? colorScheme.surfaceContainerHigh
+                          : Colors.white,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF1F5F9),
+                        fillColor: isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.3,
+                              )
+                            : colorScheme.surfaceContainerLowest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                       ),
                       items: _outlets.map((outlet) {
@@ -794,9 +891,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           value: outlet,
                           child: Text(
                             outlet.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 13.5,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                         );
@@ -821,21 +919,31 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
+                          color: isDark
+                              ? colorScheme.surfaceContainerHighest.withValues(
+                                  alpha: 0.3,
+                                )
+                              : colorScheme.surfaceContainerLowest,
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF4A99AD)
-                                    .withValues(alpha: 0.15),
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.15,
+                                ),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.person_search_rounded,
-                                color: Color(0xFF4A99AD),
+                                color: colorScheme.primary,
                                 size: 20,
                               ),
                             ),
@@ -848,11 +956,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                       children: [
                                         Text(
                                           _selectedCustomer!.name,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13.5,
-                                            color: Color(0xFF0F172A),
+                                            color: colorScheme.onSurface,
                                           ),
                                         ),
                                         Text(
@@ -860,7 +968,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 11.5,
-                                            color: Colors.grey.shade600,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -870,14 +978,14 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontSize: 13,
-                                        color: Colors.grey.shade500,
+                                        color: colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.arrow_forward_ios_rounded,
                               size: 14,
-                              color: Color(0xFF94A3B8),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ),
@@ -902,7 +1010,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF4A99AD),
+                        foregroundColor: colorScheme.primary,
                       ),
                     ),
                     child: _cartItems.isEmpty
@@ -914,7 +1022,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 Icon(
                                   Icons.shopping_bag_outlined,
                                   size: 32,
-                                  color: Colors.grey.shade400,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
@@ -922,7 +1030,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 12,
-                                    color: Colors.grey.shade500,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -932,8 +1040,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: _cartItems.length,
-                            separatorBuilder: (_, _) =>
-                                const Divider(height: 16),
+                            separatorBuilder: (_, _) => Divider(
+                              height: 16,
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.4,
+                              ),
+                            ),
                             itemBuilder: (context, index) {
                               final item = _cartItems[index];
                               return Row(
@@ -945,11 +1057,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                       children: [
                                         Text(
                                           item.service.name,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13,
-                                            color: Color(0xFF0F172A),
+                                            color: colorScheme.onSurface,
                                           ),
                                         ),
                                         Text(
@@ -957,7 +1069,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 11.5,
-                                            color: Colors.grey.shade500,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -966,27 +1078,28 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                   Row(
                                     children: [
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.remove_circle_outline_rounded,
                                           size: 20,
-                                          color: Color(0xFFDC2626),
+                                          color: colorScheme.error,
                                         ),
                                         onPressed: () =>
                                             _updateCartItemQuantity(index, -1),
                                       ),
                                       Text(
                                         '${item.quantity}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontWeight: FontWeight.w700,
                                           fontSize: 13.5,
+                                          color: colorScheme.onSurface,
                                         ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.add_circle_outline_rounded,
                                           size: 20,
-                                          color: Color(0xFF4A99AD),
+                                          color: colorScheme.primary,
                                         ),
                                         onPressed: () =>
                                             _updateCartItemQuantity(index, 1),
@@ -997,11 +1110,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                     width: 75,
                                     child: Text(
                                       CurrencyFormatter.format(item.subtotal),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontWeight: FontWeight.w700,
                                         fontSize: 13,
-                                        color: Color(0xFF0F172A),
+                                        color: colorScheme.onSurface,
                                       ),
                                       textAlign: TextAlign.end,
                                     ),
@@ -1023,27 +1136,46 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ? _selectedDiscount
                           : null,
                       isExpanded: true,
+                      dropdownColor: isDark
+                          ? colorScheme.surfaceContainerHigh
+                          : Colors.white,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF1F5F9),
+                        fillColor: isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.3,
+                              )
+                            : colorScheme.surfaceContainerLowest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                       ),
                       items: [
-                        const DropdownMenuItem<Discount?>(
+                        DropdownMenuItem<Discount?>(
                           value: null,
                           child: Text(
                             'Tanpa Diskon',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 13,
-                              color: Color(0xFF64748B),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -1056,9 +1188,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                             value: discount,
                             child: Text(
                               '${discount.name} ($label)',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 13,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           );
@@ -1082,22 +1215,39 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       controller: _notesController,
                       maxLines: 2,
                       maxLength: 1000,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
+                        color: colorScheme.onSurface,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Contoh: Tolong pakai pewangi lavender...',
                         hintStyle: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 12,
-                          color: Colors.grey.shade400,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF1F5F9),
+                        fillColor: isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.3,
+                              )
+                            : colorScheme.surfaceContainerLowest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                         contentPadding: const EdgeInsets.all(12),
                       ),
@@ -1135,13 +1285,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         ),
                         if (_paymentMethod == 'cash') ...[
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'Nominal Uang Diterima',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF475569),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -1149,23 +1299,39 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                             controller: _paidAmountController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [CurrencyInputFormatter()],
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
+                              color: colorScheme.onSurface,
                             ),
                             decoration: InputDecoration(
                               prefixText: 'Rp ',
-                              prefixStyle: const TextStyle(
+                              prefixStyle: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF4A99AD),
+                                color: colorScheme.primary,
                               ),
                               filled: true,
-                              fillColor: const Color(0xFFF1F5F9),
+                              fillColor: isDark
+                                  ? colorScheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.3)
+                                  : colorScheme.surfaceContainerLowest,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
                               ),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 14,
@@ -1188,19 +1354,28 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: _changeAmount >= 0
-                                  ? const Color(0xFFF0FDF4)
-                                  : const Color(0xFFFEF2F2),
+                                  ? (isDark
+                                        ? const Color(0xFF064E3B).withValues(
+                                            alpha: 0.3,
+                                          )
+                                        : const Color(0xFFF0FDF4))
+                                  : (isDark
+                                        ? const Color(0xFF7F1D1D).withValues(
+                                            alpha: 0.3,
+                                          )
+                                        : const Color(0xFFFEF2F2)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Kembalian:',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
+                                    color: colorScheme.onSurface,
                                   ),
                                 ),
                                 Text(
@@ -1210,8 +1385,10 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: _changeAmount >= 0
-                                        ? const Color(0xFF16A34A)
-                                        : const Color(0xFFDC2626),
+                                        ? (isDark
+                                              ? const Color(0xFF34D399)
+                                              : const Color(0xFF16A34A))
+                                        : colorScheme.error,
                                   ),
                                 ),
                               ],
@@ -1219,13 +1396,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ),
                         ] else ...[
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'Informasi Pembayaran / Rekening Outlet',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF475569),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -1235,11 +1412,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           >(
                             builder: (context, state) {
                               if (state is OutletPaymentMethodLoading) {
-                                return const Center(
+                                return Center(
                                   child: Padding(
-                                    padding: EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.all(8.0),
                                     child: CircularProgressIndicator(
-                                      color: Color(0xFF4A99AD),
+                                      color: colorScheme.primary,
                                       strokeWidth: 2,
                                     ),
                                   ),
@@ -1253,15 +1430,18 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                 return Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF1F5F9),
+                                    color: isDark
+                                        ? colorScheme.surfaceContainerHighest
+                                              .withValues(alpha: 0.3)
+                                        : colorScheme.surfaceContainerLowest,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'Tidak ada detail pembayaran untuk metode ini.',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 12,
-                                      color: Color(0xFF64748B),
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 );
@@ -1278,10 +1458,16 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                   return Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFF1F5F9),
+                                      color: isDark
+                                          ? colorScheme.surfaceContainerHighest
+                                                .withValues(alpha: 0.3)
+                                          : colorScheme.surfaceContainerLowest,
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: Colors.grey.shade300,
+                                        color: colorScheme.outlineVariant
+                                            .withValues(
+                                              alpha: isDark ? 0.2 : 0.5,
+                                            ),
                                       ),
                                     ),
                                     child: Column(
@@ -1292,11 +1478,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           accNum != null && accNum.isNotEmpty
                                               ? '${pm.providerName} - $accNum'
                                               : pm.providerName,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
-                                            color: Color(0xFF0F172A),
+                                            color: colorScheme.onSurface,
                                           ),
                                         ),
                                         const SizedBox(height: 2),
@@ -1305,7 +1491,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                                           style: TextStyle(
                                             fontFamily: 'Poppins',
                                             fontSize: 12,
-                                            color: Colors.grey.shade700,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                         if (pm.qrImageUrl != null &&
@@ -1341,14 +1527,21 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         bottomSheet: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? colorScheme.surfaceContainer : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                 offset: const Offset(0, -2),
                 blurRadius: 10,
               ),
             ],
+            border: Border(
+              top: BorderSide(
+                color: colorScheme.outlineVariant.withValues(
+                  alpha: isDark ? 0.2 : 0.4,
+                ),
+              ),
+            ),
           ),
           child: SafeArea(
             top: false,
@@ -1358,21 +1551,21 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Subtotal',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
-                        color: Colors.black,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       CurrencyFormatter.format(_subtotal),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -1382,49 +1575,51 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Diskon',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
-                          color: Colors.red,
+                          color: colorScheme.error,
                         ),
                       ),
                       Text(
                         '- ${CurrencyFormatter.format(_discountAmount)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Colors.red,
+                          color: colorScheme.error,
                         ),
                       ),
                     ],
                   ),
                 ],
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Divider(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Total',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                       ),
                     ),
                     Text(
                       CurrencyFormatter.format(_totalAmount),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF4A99AD),
+                        color: colorScheme.primary,
                       ),
                     ),
                   ],
@@ -1438,7 +1633,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       return ElevatedButton(
                         onPressed: isLoading ? null : _submitOrder,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4A99AD),
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -1446,20 +1642,20 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                           ),
                         ),
                         child: isLoading
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 22,
                                 height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.5,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Buat Pesanan',
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -1481,12 +1677,20 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     Widget? action,
     required Widget child,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.2 : 0.5,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1496,15 +1700,15 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
             children: [
               Row(
                 children: [
-                  Icon(icon, size: 18, color: const Color(0xFF4A99AD)),
+                  Icon(icon, size: 18, color: colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 13.5,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -1524,7 +1728,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     required String method,
     required IconData icon,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isSelected = _paymentMethod == method;
+
     return Expanded(
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -1538,11 +1746,19 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF4A99AD).withValues(alpha: 0.1)
-                : const Color(0xFFF1F5F9),
+                ? colorScheme.primary.withValues(alpha: 0.12)
+                : (isDark
+                      ? colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.3,
+                        )
+                      : colorScheme.surfaceContainerLowest),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isSelected ? const Color(0xFF4A99AD) : Colors.transparent,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.outlineVariant.withValues(
+                      alpha: isDark ? 0.2 : 0.3,
+                    ),
               width: 1.5,
             ),
           ),
@@ -1552,8 +1768,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                 icon,
                 size: 20,
                 color: isSelected
-                    ? const Color(0xFF4A99AD)
-                    : const Color(0xFF64748B),
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: 4),
               Text(
@@ -1563,8 +1779,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   fontSize: 11.5,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   color: isSelected
-                      ? const Color(0xFF4A99AD)
-                      : const Color(0xFF64748B),
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
                 ),
               ),
             ],

@@ -18,16 +18,25 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final radius = borderRadius ?? BorderRadius.circular(16);
 
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.white,
+        color:
+            backgroundColor ??
+            (isDark ? colorScheme.surfaceContainer : Colors.white),
         borderRadius: radius,
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

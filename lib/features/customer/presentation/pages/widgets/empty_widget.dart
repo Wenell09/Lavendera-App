@@ -17,6 +17,8 @@ class EmptyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -24,15 +26,21 @@ class EmptyWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 64, color: Colors.grey.shade300),
+            child: Icon(
+              icon,
+              size: 64,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
           ),
           const SizedBox(height: 24),
           Text(
             title,
-            style: AppTextStyles.headlineSmall.copyWith(color: Colors.black87),
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: colorScheme.onSurface,
+            ),
             textAlign: TextAlign.center,
           ),
           if (subtitle != null) ...[
@@ -40,7 +48,7 @@ class EmptyWidget extends StatelessWidget {
             Text(
               subtitle!,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.grey.shade500,
+                color: colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

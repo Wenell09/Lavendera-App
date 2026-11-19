@@ -49,21 +49,23 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Kategori Layanan',
           style: AppTextStyles.headlineMedium.copyWith(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 20,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -71,11 +73,17 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.grey.shade50,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.black87, size: 20),
+              icon: Icon(
+                Icons.refresh,
+                color: colorScheme.onSurface,
+                size: 20,
+              ),
               onPressed: () {
                 context.read<ServiceCategoryBloc>().add(
                   GetServiceCategoriesRequest(),
@@ -92,21 +100,23 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _onSearchChanged,
-              style: AppTextStyles.bodyLarge,
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: colorScheme.onSurface,
+              ),
               decoration: InputDecoration(
                 hintText: 'Cari kategori...',
                 hintStyle: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.grey.shade400,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search,
-                  color: Color(0xFF4A99AD),
+                  color: colorScheme.primary,
                   size: 20,
                 ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.close, size: 18),
-                        color: Colors.grey.shade400,
+                        color: colorScheme.onSurfaceVariant,
                         onPressed: () {
                           _searchController.clear();
                           _onSearchChanged('');
@@ -115,23 +125,29 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.grey.shade50,
+                fillColor: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : colorScheme.surfaceContainerLowest,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide: BorderSide(
+                    color: isDark
+                        ? colorScheme.outlineVariant.withValues(alpha: 0.3)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF4A99AD),
+                  borderSide: BorderSide(
+                    color: colorScheme.primary,
                     width: 1.5,
                   ),
                 ),
@@ -142,10 +158,10 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
             child: BlocBuilder<ServiceCategoryBloc, ServiceCategoryState>(
               builder: (context, state) {
                 if (state is ServiceCategoryLoading) {
-                  return const Center(
+                  return Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.5,
-                      color: Color(0xFF4A99AD),
+                      color: colorScheme.primary,
                     ),
                   );
                 }
@@ -159,10 +175,15 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                           Icon(
                             Icons.error_outline,
                             size: 48,
-                            color: Colors.red.shade300,
+                            color: colorScheme.error,
                           ),
                           const SizedBox(height: 16),
-                          Text(state.message, style: AppTextStyles.bodyLarge),
+                          Text(
+                            state.message,
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
                           TextButton(
                             onPressed: () {
                               context.read<ServiceCategoryBloc>().add(
@@ -197,13 +218,15 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.category_outlined,
                             size: 64,
-                            color: Colors.grey.shade300,
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.5),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -212,7 +235,7 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                               ? 'Kategori tidak ditemukan'
                               : 'Belum ada kategori',
                           style: AppTextStyles.headlineSmall.copyWith(
-                            color: Colors.black87,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -221,7 +244,7 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                               ? 'Coba kata kunci pencarian yang lain'
                               : 'Tambahkan category baru untuk mulai',
                           style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.grey.shade500,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -256,16 +279,16 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
                     ),
                   );
                 },
-                backgroundColor: const Color(0xFF4A99AD),
+                backgroundColor: colorScheme.primary,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: Icon(Icons.add, color: colorScheme.onPrimary),
                 label: Text(
                   'Tambah Kategori',
                   style: AppTextStyles.labelLarge.copyWith(
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -280,14 +303,21 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
   }
 
   Widget _buildCategoryCard(BuildContext context, ServiceCategory category) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade100,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -301,21 +331,23 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+              color: colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: Icon(Icons.category_outlined, color: Color(0xFF4A99AD)),
+            child: Center(
+              child: Icon(Icons.category_outlined, color: colorScheme.primary),
             ),
           ),
           title: Text(
             category.name,
-            style: AppTextStyles.titleLarge.copyWith(color: Colors.black87),
+            style: AppTextStyles.titleLarge.copyWith(
+              color: colorScheme.onSurface,
+            ),
           ),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.arrow_forward_ios,
             size: 14,
-            color: Colors.grey,
+            color: colorScheme.onSurfaceVariant,
           ),
           onTap: () {
             Navigator.push(

@@ -77,6 +77,7 @@ import 'package:lavendera/features/outlet_user/domain/usecases/unassign_user_fro
 import 'package:lavendera/features/outlet_user/presentation/bloc/action/outlet_user_action_bloc.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/outlet_user/outlet_user_bloc.dart';
 import 'package:lavendera/features/outlet_user/presentation/bloc/user_outlet/user_outlet_bloc.dart';
+import 'package:lavendera/config/theme/theme_bloc.dart';
 import 'package:lavendera/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:lavendera/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:lavendera/features/profile/domain/usecases/get_profile_usecase.dart';
@@ -473,6 +474,11 @@ Future<void> initDependencies() async {
   sl.registerFactory(
     () => TenantActionBloc(updateTenantUsecase: sl<UpdateTenantUsecase>()),
   );
+  // Theme
+  sl.registerFactory(
+    () => ThemeBloc(secureStorage: sl<FlutterSecureStorage>()),
+  );
+
   // Profile
   sl.registerLazySingleton<ProfileRemoteDataSource>(
     () => ProfileRemoteDataSource(dio: sl<Dio>()),

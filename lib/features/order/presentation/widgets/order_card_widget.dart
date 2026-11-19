@@ -61,15 +61,22 @@ class OrderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
+        border: Border.all(
+          color: isDark
+              ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+              : Colors.grey.shade200,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -94,28 +101,28 @@ class OrderCardWidget extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(7),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF4A99AD).withValues(alpha: 0.1),
+                            color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.receipt_long_rounded,
                             size: 16,
-                            color: Color(0xFF4A99AD),
+                            color: colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           order.orderNumber,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
-                            color: Color(0xFF0F172A),
+                            color: colorScheme.onSurface,
                           ),
                         ),
                       ],
                     ),
-                    OrderStatusBadge(status: order.status, ),
+                    OrderStatusBadge(status: order.status),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -123,29 +130,34 @@ class OrderCardWidget extends StatelessWidget {
                 // Customer & Outlet
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.person_outline_rounded,
                       size: 15,
-                      color: Color(0xFF64748B),
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         order.customer.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color: Color(0xFF1E293B),
+                          color: colorScheme.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        color: isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                            : Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -153,7 +165,7 @@ class OrderCardWidget extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 10.5,
-                          color: Colors.grey.shade600,
+                          color: colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -166,10 +178,10 @@ class OrderCardWidget extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.local_laundry_service_outlined,
                       size: 15,
-                      color: Color(0xFF94A3B8),
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -178,7 +190,7 @@ class OrderCardWidget extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -187,7 +199,11 @@ class OrderCardWidget extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Divider(height: 1, thickness: 0.8, color: Color(0xFFF1F5F9)),
+                Divider(
+                  height: 1,
+                  thickness: 0.8,
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                ),
                 const SizedBox(height: 12),
 
                 // Footer: Total & Payment Info
@@ -203,17 +219,17 @@ class OrderCardWidget extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 11,
-                            color: Colors.grey.shade400,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           CurrencyFormatter.format(order.totalAmount),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
-                            color: Color(0xFF0F172A),
+                            color: colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -221,19 +237,29 @@ class OrderCardWidget extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3.5,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                            color: isDark
+                                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                                : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.grey.shade300, width: 0.6),
+                            border: Border.all(
+                              color: isDark
+                                  ? colorScheme.outlineVariant.withValues(alpha: 0.2)
+                                  : Colors.grey.shade300,
+                              width: 0.6,
+                            ),
                           ),
                           child: Text(
                             _getPaymentMethodLabel(order.payment?.paymentMethod),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 9.5,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF475569),
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),

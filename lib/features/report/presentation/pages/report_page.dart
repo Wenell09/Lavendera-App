@@ -30,8 +30,6 @@ class _ReportPageState extends State<ReportPage> {
   bool _hasInitialFetched = false;
   final ScrollController _scrollController = ScrollController();
 
-  static const Color primaryColor = Color(0xFF4A99AD);
-
   @override
   void initState() {
     super.initState();
@@ -273,18 +271,16 @@ class _ReportPageState extends State<ReportPage> {
         ),
       ],
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           title: Text(
             'Laporan Keuangan',
             style: AppTextStyles.headlineMedium.copyWith(
-              color: Colors.black87,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.white,
           elevation: 0,
-          surfaceTintColor: Colors.transparent,
         ),
         body: SafeArea(
           child: BlocBuilder<ProfileDetailBloc, ProfileDetailState>(
@@ -303,19 +299,24 @@ class _ReportPageState extends State<ReportPage> {
                   Expanded(
                     child: BlocBuilder<ReportBloc, ReportState>(
                       builder: (context, state) {
+                        final theme = Theme.of(context);
+                        final colorScheme = theme.colorScheme;
+
                         if (state is ReportLoading) {
-                          return const Center(
+                          return Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircularProgressIndicator(color: primaryColor),
-                                SizedBox(height: 14),
+                                CircularProgressIndicator(
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(height: 14),
                                 Text(
                                   'Memuat laporan keuangan...',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 13,
-                                    color: Colors.grey,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -361,12 +362,21 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildFilterBar(bool isAdmin) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         border: Border(
-          bottom: BorderSide(color: Colors.grey.shade100, width: 1),
+          bottom: BorderSide(
+            color: colorScheme.outlineVariant.withValues(
+              alpha: isDark ? 0.2 : 0.4,
+            ),
+            width: 1,
+          ),
         ),
       ),
       child: Row(
@@ -385,17 +395,23 @@ class _ReportPageState extends State<ReportPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : colorScheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(
+                  color: colorScheme.outlineVariant.withValues(
+                    alpha: isDark ? 0.2 : 0.4,
+                  ),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_rounded,
                     size: 14,
-                    color: primaryColor,
+                    color: colorScheme.primary,
                   ),
                   const SizedBox(width: 6),
                   ConstrainedBox(
@@ -403,7 +419,7 @@ class _ReportPageState extends State<ReportPage> {
                     child: Text(
                       _formatRangeLabel(_startDate, _endDate),
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
                       maxLines: 1,
@@ -414,7 +430,7 @@ class _ReportPageState extends State<ReportPage> {
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 16,
-                    color: Colors.grey.shade600,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -426,35 +442,48 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildAdminOutletSelector() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.2 : 0.4,
+          ),
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: _selectedOutletId,
           isExpanded: true,
+          dropdownColor: isDark
+              ? colorScheme.surfaceContainerHigh
+              : Colors.white,
           icon: Icon(
             Icons.unfold_more_rounded,
             size: 18,
-            color: Colors.grey.shade600,
+            color: colorScheme.onSurfaceVariant,
           ),
           style: AppTextStyles.bodySmall.copyWith(
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: colorScheme.onSurface,
           ),
           items: [
             DropdownMenuItem<String?>(
               value: null,
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.store_mall_directory_rounded,
                     size: 16,
-                    color: primaryColor,
+                    color: colorScheme.primary,
                   ),
                   const SizedBox(width: 6),
                   const Expanded(
@@ -472,10 +501,10 @@ class _ReportPageState extends State<ReportPage> {
                 value: o.id,
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.storefront_rounded,
                       size: 16,
-                      color: primaryColor,
+                      color: colorScheme.primary,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -497,23 +526,33 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildStaffOutletBadge() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isDark
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.2 : 0.4,
+          ),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.storefront_rounded, size: 16, color: primaryColor),
+          Icon(Icons.storefront_rounded, size: 16, color: colorScheme.primary),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               _staffOutletName ?? 'Outlet Saya',
               style: AppTextStyles.labelSmall.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -525,6 +564,9 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildErrorState(String message) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(28.0),
@@ -534,13 +576,13 @@ class _ReportPageState extends State<ReportPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.red.shade50,
+                color: colorScheme.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.error_outline_rounded,
                 size: 48,
-                color: Colors.red.shade400,
+                color: colorScheme.error,
               ),
             ),
             const SizedBox(height: 16),
@@ -548,7 +590,7 @@ class _ReportPageState extends State<ReportPage> {
               'Gagal Memuat Laporan',
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -556,7 +598,7 @@ class _ReportPageState extends State<ReportPage> {
               message,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 20),
@@ -565,8 +607,8 @@ class _ReportPageState extends State<ReportPage> {
               icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('Coba Lagi'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -589,10 +631,13 @@ class _ReportPageState extends State<ReportPage> {
     required bool isLoadingMore,
     String? errorMessage,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final summary = report.summary;
 
     return RefreshIndicator(
-      color: primaryColor,
+      color: colorScheme.primary,
       onRefresh: () async {
         _fetchReport(isRefresh: true);
       },
@@ -612,15 +657,23 @@ class _ReportPageState extends State<ReportPage> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: isDark
+                      ? const Color(0xFF78350F).withValues(alpha: 0.3)
+                      : Colors.amber.shade50,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.amber.shade700.withValues(alpha: 0.5)
+                        : Colors.amber.shade200,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.warning_amber_rounded,
-                      color: Colors.amber.shade800,
+                      color: isDark
+                          ? Colors.amber.shade300
+                          : Colors.amber.shade800,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -628,7 +681,9 @@ class _ReportPageState extends State<ReportPage> {
                       child: Text(
                         errorMessage,
                         style: AppTextStyles.labelSmall.copyWith(
-                          color: Colors.amber.shade900,
+                          color: isDark
+                              ? Colors.amber.shade200
+                              : Colors.amber.shade900,
                         ),
                       ),
                     ),
@@ -659,7 +714,7 @@ class _ReportPageState extends State<ReportPage> {
                     'Riwayat Transaksi Pembayaran',
                     style: AppTextStyles.titleMedium.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Container(
@@ -668,13 +723,13 @@ class _ReportPageState extends State<ReportPage> {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
+                      color: colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       '${report.pagination?.total ?? payments.length} Transaksi',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: primaryColor,
+                        color: colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                       ),
@@ -695,9 +750,13 @@ class _ReportPageState extends State<ReportPage> {
                   horizontal: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? colorScheme.surfaceContainer : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade100),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(
+                      alpha: isDark ? 0.2 : 0.5,
+                    ),
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -705,14 +764,16 @@ class _ReportPageState extends State<ReportPage> {
                     Icon(
                       Icons.receipt_long_rounded,
                       size: 48,
-                      color: Colors.grey.shade300,
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Belum ada transaksi pembayaran',
                       style: AppTextStyles.titleMedium.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -720,7 +781,7 @@ class _ReportPageState extends State<ReportPage> {
                       'Tidak ada riwayat pembayaran terverifikasi pada periode ini.',
                       textAlign: TextAlign.center,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: Colors.grey.shade500,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -741,15 +802,15 @@ class _ReportPageState extends State<ReportPage> {
           }
 
           // Bottom Loading Spinner for pagination
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(
               child: SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  color: primaryColor,
+                  color: colorScheme.primary,
                 ),
               ),
             ),
@@ -772,7 +833,6 @@ class _ReportPageState extends State<ReportPage> {
                 subtitle: 'Omset bruto',
                 icon: Icons.trending_up_rounded,
                 accentColor: const Color(0xFF4A99AD),
-                bgColor: const Color(0xFFE6F4F7),
               ),
             ),
             const SizedBox(width: 10),
@@ -783,7 +843,6 @@ class _ReportPageState extends State<ReportPage> {
                 subtitle: 'Kas terverifikasi',
                 icon: Icons.payments_rounded,
                 accentColor: const Color(0xFF10B981),
-                bgColor: const Color(0xFFECFDF5),
               ),
             ),
           ],
@@ -799,7 +858,6 @@ class _ReportPageState extends State<ReportPage> {
                 subtitle: 'Potongan harga',
                 icon: Icons.percent_rounded,
                 accentColor: const Color(0xFFF59E0B),
-                bgColor: const Color(0xFFFFFBEB),
               ),
             ),
             const SizedBox(width: 10),
@@ -810,7 +868,6 @@ class _ReportPageState extends State<ReportPage> {
                 subtitle: 'Jumlah order',
                 icon: Icons.receipt_long_rounded,
                 accentColor: const Color(0xFF6366F1),
-                bgColor: const Color(0xFFEEF2FF),
               ),
             ),
           ],
@@ -825,17 +882,24 @@ class _ReportPageState extends State<ReportPage> {
     required String subtitle,
     required IconData icon,
     required Color accentColor,
-    required Color bgColor,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.2 : 0.5,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -851,7 +915,7 @@ class _ReportPageState extends State<ReportPage> {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: bgColor,
+                  color: accentColor.withValues(alpha: isDark ? 0.2 : 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: accentColor, size: 18),
@@ -862,7 +926,7 @@ class _ReportPageState extends State<ReportPage> {
           Text(
             title,
             style: AppTextStyles.bodySmall.copyWith(
-              color: Colors.grey.shade600,
+              color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
@@ -875,7 +939,7 @@ class _ReportPageState extends State<ReportPage> {
               value,
               style: AppTextStyles.titleLarge.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: colorScheme.onSurface,
                 fontSize: 16.5,
               ),
             ),
@@ -884,7 +948,7 @@ class _ReportPageState extends State<ReportPage> {
           Text(
             subtitle,
             style: AppTextStyles.labelSmall.copyWith(
-              color: Colors.grey.shade400,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
               fontSize: 10.5,
             ),
           ),
@@ -894,6 +958,10 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildPaymentCard(FinancialReportPaymentEntity payment) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     final methodLabel = _getMethodLabel(payment.paymentMethod);
     final methodIcon = _getMethodIcon(payment.paymentMethod);
     final isVerified = payment.status.toLowerCase() == 'verified';
@@ -901,12 +969,16 @@ class _ReportPageState extends State<ReportPage> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? colorScheme.surfaceContainer : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.2 : 0.5,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -927,7 +999,11 @@ class _ReportPageState extends State<ReportPage> {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: isDark
+                          ? colorScheme.surfaceContainerHighest.withValues(
+                              alpha: 0.3,
+                            )
+                          : colorScheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -936,7 +1012,7 @@ class _ReportPageState extends State<ReportPage> {
                           : 'Order',
                       style: AppTextStyles.labelSmall.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                         fontSize: 11.5,
                       ),
                     ),
@@ -947,8 +1023,14 @@ class _ReportPageState extends State<ReportPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: isVerified
-                      ? const Color(0xFF10B981).withValues(alpha: 0.12)
-                      : Colors.grey.shade100,
+                      ? const Color(
+                          0xFF10B981,
+                        ).withValues(alpha: isDark ? 0.2 : 0.12)
+                      : (isDark
+                            ? colorScheme.surfaceContainerHighest.withValues(
+                                alpha: 0.3,
+                              )
+                            : colorScheme.surfaceContainerLowest),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -960,16 +1042,20 @@ class _ReportPageState extends State<ReportPage> {
                           : Icons.info_outline_rounded,
                       size: 12,
                       color: isVerified
-                          ? const Color(0xFF059669)
-                          : Colors.grey.shade600,
+                          ? (isDark
+                                ? const Color(0xFF34D399)
+                                : const Color(0xFF059669))
+                          : colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       isVerified ? 'Terverifikasi' : payment.status,
                       style: AppTextStyles.labelSmall.copyWith(
                         color: isVerified
-                            ? const Color(0xFF059669)
-                            : Colors.grey.shade700,
+                            ? (isDark
+                                  ? const Color(0xFF34D399)
+                                  : const Color(0xFF059669))
+                            : colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                         fontSize: 10.5,
                       ),
@@ -996,7 +1082,7 @@ class _ReportPageState extends State<ReportPage> {
                           : 'Pelanggan Umum',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: colorScheme.onSurface,
                         fontSize: 14,
                       ),
                       maxLines: 1,
@@ -1009,14 +1095,14 @@ class _ReportPageState extends State<ReportPage> {
                           Icon(
                             Icons.storefront_rounded,
                             size: 13,
-                            color: Colors.grey.shade500,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               payment.outletName,
                               style: AppTextStyles.labelSmall.copyWith(
-                                color: Colors.grey.shade500,
+                                color: colorScheme.onSurfaceVariant,
                                 fontSize: 11,
                               ),
                               maxLines: 1,
@@ -1034,13 +1120,18 @@ class _ReportPageState extends State<ReportPage> {
                 CurrencyFormatter.format(payment.amount),
                 style: AppTextStyles.titleMedium.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF059669),
+                  color: isDark
+                      ? const Color(0xFF34D399)
+                      : const Color(0xFF059669),
                   fontSize: 15,
                 ),
               ),
             ],
           ),
-          const Divider(height: 18),
+          Divider(
+            height: 18,
+            color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+          ),
 
           // Payment Method & Paid Date
           Row(
@@ -1048,12 +1139,12 @@ class _ReportPageState extends State<ReportPage> {
             children: [
               Row(
                 children: [
-                  Icon(methodIcon, size: 15, color: primaryColor),
+                  Icon(methodIcon, size: 15, color: colorScheme.primary),
                   const SizedBox(width: 6),
                   Text(
                     methodLabel,
                     style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.grey.shade700,
+                      color: colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -1062,7 +1153,7 @@ class _ReportPageState extends State<ReportPage> {
               Text(
                 _formatDateTime(payment.paidAt),
                 style: AppTextStyles.labelSmall.copyWith(
-                  color: Colors.grey.shade400,
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: 11,
                 ),
               ),

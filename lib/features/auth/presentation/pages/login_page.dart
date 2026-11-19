@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lavendera/config/colors/app_colors.dart';
 import 'package:lavendera/config/typography/app_text_styles.dart';
 import 'package:lavendera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lavendera/features/auth/presentation/pages/register_page.dart';
@@ -38,8 +37,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthLoaded) {
@@ -49,9 +50,11 @@ class _LoginPageState extends State<LoginPage> {
             );
           } else if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Login failed. Please check your credentials.'),
-                backgroundColor: Colors.redAccent,
+              SnackBar(
+                content: const Text(
+                  'Login failed. Please check your credentials.',
+                ),
+                backgroundColor: colorScheme.error,
                 dismissDirection: DismissDirection.horizontal,
               ),
             );
@@ -76,7 +79,9 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.06),
+                                color: Colors.black.withValues(
+                                  alpha: isDark ? 0.3 : 0.06,
+                                ),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
@@ -94,14 +99,15 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         'Welcome Back',
                         style: AppTextStyles.displaySmall.copyWith(
-                          color: Colors.black87,
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Sign in to continue to Lavendera',
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.grey[600],
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -128,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: Colors.grey,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () {
                             setState(() {
@@ -167,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                           Text(
                             "Don't have an account? ",
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.grey[600],
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           GestureDetector(
@@ -181,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               'Register',
                               style: AppTextStyles.titleMedium.copyWith(
-                                color: AppColors.blue.color,
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

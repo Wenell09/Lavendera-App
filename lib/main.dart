@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lavendera/config/supabase/supabase_url.dart';
 import 'package:lavendera/config/theme/app_theme.dart';
+import 'package:lavendera/config/theme/theme_bloc.dart';
 import 'package:lavendera/core/di/injection.dart';
 import 'package:lavendera/core/provider/provider.dart';
 import 'package:lavendera/features/splash/presentation/pages/splash_page.dart';
@@ -20,20 +21,25 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const new({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: Provider.providers,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Lavendera',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.light,
-        home: const SplashPage(),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Lavendera',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: state.themeMode,
+            home: const SplashPage(),
+          );
+        },
       ),
     );
   }
 }
+
